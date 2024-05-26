@@ -1,0 +1,7 @@
+export default {
+  SCREEN_PADDING: 20,
+  MARGIN_SMALL: 8,
+  MARGIN_MEDIUM: 16,
+  PADDING_SMALL: 8,
+  PADDING_MEDIUM: 16,
+};
