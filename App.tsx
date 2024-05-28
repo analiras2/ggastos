@@ -1,8 +1,25 @@
 import React from 'react';
-import Home from '@screens/home';
+import {NavigationContainer} from '@react-navigation/native';
+import Stacks, {RootStackParamList, StackRoutes} from './src/navigation/stacks';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 const App = () => {
-  return <Home title="Analira" />;
+  const RootStack = createNativeStackNavigator<RootStackParamList>();
+
+  return (
+    <NavigationContainer>
+      <RootStack.Navigator initialRouteName={StackRoutes.SETTINGS}>
+        {Stacks().map(stack => (
+          <RootStack.Screen
+            key={stack.name}
+            name={stack.name}
+            component={stack.component}
+            options={stack.options || {}}
+          />
+        ))}
+      </RootStack.Navigator>
+    </NavigationContainer>
+  );
 };
 
 export default App;

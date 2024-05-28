@@ -1,14 +1,8 @@
 import {createElement} from 'react';
 import HomeView from './view';
 
-type Props = {
-  title: string;
-};
-
-const HomeScreen = ({title}: Props) => {
-  const viewProps = {title};
-
-  return createElement(HomeView, viewProps);
+const HomeScreen = () => {
+  return createElement(HomeView);
 };
 
 export default HomeScreen;

@@ -6,7 +6,6 @@ type Props = {
 };
 
 export const StatusBar = styled.SafeAreaView<Props>`
-  padding: -20px;
   background-color: ${Colors.primary};
 `;
 
@@ -25,6 +24,6 @@ export const ScrollView = styled.ScrollView.attrs(() => ({
 export const Body = styled.View<Props>`
   flex: 1;
   padding-horizontal: ${({noPadding}) =>
-    noPadding ? 0 : Layout.SCREEN_PADDING};
+    noPadding ? 0 : Layout.padding.SCREEN};
   margin-bottom: 44px;
 `;
