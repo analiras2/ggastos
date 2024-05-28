@@ -1,17 +1,17 @@
 export default {
   padding: {
-    SCREEN: '20px',
-    SMALL: '8px',
-    MEDIUM: '16px',
+    SCREEN: 20,
+    SMALL: 8,
+    MEDIUM: 16,
   },
   margin: {
-    SMALL: '8px',
-    MEDIUM: '16px',
+    SMALL: 8,
+    MEDIUM: 16,
   },
   font: {
-    LABEL: '12px',
-    DEFAULT: '14px',
-    TITLE: '16px',
-    HEADER: '24px',
+    LABEL: 12,
+    DEFAULT: 14,
+    TITLE: 16,
+    HEADER: 24,
   },
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import Stacks, {RootStackParamList, StackRoutes} from './src/navigation/stacks';
+import Stacks, {RootStackParamList} from './src/navigation/stacks';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 const App = () => {
@@ -8,7 +8,7 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <RootStack.Navigator initialRouteName={StackRoutes.SETTINGS}>
+      <RootStack.Navigator>
         {Stacks().map(stack => (
           <RootStack.Screen
             key={stack.name}

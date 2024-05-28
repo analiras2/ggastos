@@ -1,6 +1,6 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-// import Icon from 'react-native-vector-icons/SimpleLineIcons';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {StackRoutes} from '@navigation/stacks';
 import {SettingsScreen, HomeScreen, ChartScreen} from '@screens/index';
 
@@ -10,9 +10,10 @@ const Tab = createBottomTabNavigator();
 
 const NavigationBar = () => (
   <Tab.Navigator
+    initialRouteName={StackRoutes.HOME}
     screenOptions={() => ({
       tabBarStyle: {
-        height: 86,
+        height: 90,
         paddingTop: Layout.padding.SMALL,
         backgroundColor: Colors.primary,
         borderTopWidth: 1,
@@ -20,7 +21,7 @@ const NavigationBar = () => (
       tabBarLabelStyle: {
         fontSize: Layout.font.LABEL,
       },
-      tabBarInactiveTintColor: Colors.iconLight,
+      tabBarInactiveTintColor: Colors.icon,
       tabBarActiveTintColor: Colors.iconLight,
     })}>
     <Tab.Screen
@@ -29,13 +30,13 @@ const NavigationBar = () => (
       options={{
         headerShown: false,
         title: 'Settings',
-        // tabBarIcon: ({focused, color, size}) => (
-        //   <Icon
-        //     name={focused ? 'settings' : 'account-outline'}
-        //     color={color}
-        //     size={size}
-        //   />
-        // ),
+        tabBarIcon: ({focused, color, size}) => (
+          <Icon
+            name={focused ? 'settings' : 'settings-outline'}
+            color={color}
+            size={size}
+          />
+        ),
       }}
     />
     <Tab.Screen
@@ -44,13 +45,13 @@ const NavigationBar = () => (
       options={{
         headerShown: false,
         title: 'Home',
-        // tabBarIcon: ({focused, color, size}) => (
-        //   <Icon
-        //     name={focused ? 'grid' : 'grid-outline'}
-        //     color={color}
-        //     size={size}
-        //   />
-        // ),
+        tabBarIcon: ({focused, color, size}) => (
+          <Icon
+            name={focused ? 'home' : 'home-outline'}
+            color={color}
+            size={size}
+          />
+        ),
       }}
     />
     <Tab.Screen
@@ -59,13 +60,13 @@ const NavigationBar = () => (
       options={{
         headerShown: false,
         title: 'Chart',
-        // tabBarIcon: ({focused, color, size}) => (
-        //   <Icon
-        //     name={focused ? 'pie-chart' : 'account-outline'}
-        //     color={color}
-        //     size={size}
-        //   />
-        // ),
+        tabBarIcon: ({focused, color, size}) => (
+          <Icon
+            name={focused ? 'pie-chart' : 'pie-chart-outline'}
+            color={color}
+            size={size}
+          />
+        ),
       }}
     />
   </Tab.Navigator>

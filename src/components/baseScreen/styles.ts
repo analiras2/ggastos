@@ -24,6 +24,6 @@ export const ScrollView = styled.ScrollView.attrs(() => ({
 export const Body = styled.View<Props>`
   flex: 1;
   padding-horizontal: ${({noPadding}) =>
-    noPadding ? 0 : Layout.padding.SCREEN};
+    noPadding ? 0 : Layout.padding.SCREEN}px;
   margin-bottom: 44px;
 `;

@@ -1,5 +1,4 @@
 import NavigationBar from '@components/navigationBar';
-import {HomeScreen} from '@screens/index';
 import {FunctionComponent} from 'react';
 
 export type RootStackParamList = {
@@ -19,11 +18,6 @@ const Stacks = () => [
   {
     name: StackRoutes.BOTTOM_TABS,
     component: NavigationBar,
-    options: {headerShown: false},
-  },
-  {
-    name: StackRoutes.HOME,
-    component: HomeScreen,
     options: {headerShown: false},
   },
 ];

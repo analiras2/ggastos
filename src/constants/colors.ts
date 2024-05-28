@@ -17,4 +17,5 @@ export default {
   modalBackground: blackAlpha80,
   iconLight: white,
   iconDark: black,
+  icon: mercury,
 };
