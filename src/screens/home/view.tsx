@@ -3,7 +3,7 @@ import {BaseScreen, Text} from '@components/index';
 
 const HomeScreen = () => {
   return (
-    <BaseScreen title="Analira">
+    <BaseScreen headerType={BaseScreen.headerType.MONTH}>
       <Text>Home</Text>
     </BaseScreen>
   );

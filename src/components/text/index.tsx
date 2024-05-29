@@ -12,7 +12,7 @@ const STYLES = {
 
 type Props = {
   type?: {fontSize: number; fontWeight?: string};
-  children: string;
+  children: string | number;
   color?: string;
   money?: boolean;
   margin?: number;
@@ -43,7 +43,10 @@ const Text = ({
   ];
 
   if (money) {
-    const value = parseFloat(children).toFixed(2).split('.');
+    const value =
+      typeof children === 'string'
+        ? parseFloat(children).toFixed(2).split('.')
+        : children.toFixed(2).split('.');
 
     return (
       <Txt style={currentStyle}>

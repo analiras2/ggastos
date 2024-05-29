@@ -12,6 +12,7 @@ export default {
   label: gray,
   title: white,
   background: concrete,
+  backgroundLight: white,
   border: mercury,
   card: white,
   modalBackground: blackAlpha80,
