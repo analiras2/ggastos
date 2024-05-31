@@ -9,6 +9,7 @@ const concrete = '#f2f2f2';
 export default {
   primary: mineShaft,
   text: black,
+  textLight: white,
   label: gray,
   title: white,
   background: concrete,
@@ -19,4 +20,6 @@ export default {
   iconLight: white,
   iconDark: black,
   icon: mercury,
+  divider: mercury,
+  shadow: black,
 };

@@ -7,7 +7,6 @@ export const Container = styled.View`
   background-color: ${Colors.primary};
   padding-bottom: ${Layout.padding.SMALL}px;
   padding-horizontal: ${Layout.padding.MEDIUM}px;
-  margin-bottom: 32px;
 `;
 
 export const CurrentMonth = styled.TouchableOpacity`

@@ -11,10 +11,7 @@ export const Container = styled.View`
   margin-horizontal: 20px;
   position: absolute;
   top: 76px;
-  shadow-color: #000;
-  shadow-opacity: 0.3;
-  shadow-radius: 4.65px;
-  elevation: 4;
+  ${Layout.shadowStyle}
 `;
 
 export const Balance = styled.View`
@@ -28,7 +25,7 @@ export const BalanceItem = styled.View`
 `;
 
 export const Divider = styled.View`
-  background-color: ${Colors.border};
+  background-color: ${Colors.divider};
   height: 44px;
   width: 1px;
 `;

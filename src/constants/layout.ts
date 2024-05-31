@@ -1,6 +1,15 @@
 import {Dimensions} from 'react-native';
+import Colors from './colors';
 
 const {width, height} = Dimensions.get('window');
+
+const shadowStyle = {
+  elevation: '4',
+  shadowColor: Colors.shadow,
+  shadowOpacity: '0.3',
+  shadowRadius: 2.5,
+  shadowOffset: '0px 2px',
+};
 
 export default {
   W_HEIGHT: height,
@@ -20,4 +29,5 @@ export default {
     TITLE: 16,
     HEADER: 24,
   },
+  shadowStyle,
 };

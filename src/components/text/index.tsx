@@ -15,9 +15,7 @@ type Props = {
   children: string | number;
   color?: string;
   money?: boolean;
-  margin?: number;
-  marginVertical?: number;
-  marginHorizontal?: number;
+  mb?: number;
   style?: {};
 };
 
@@ -26,18 +24,14 @@ const Text = ({
   children,
   money,
   color = Colors.text,
-  margin = 0,
-  marginVertical = 0,
-  marginHorizontal = 0,
   style,
+  mb,
 }: Props) => {
   const currentStyle = [
     type,
     {
       color,
-      margin,
-      marginVertical,
-      marginHorizontal,
+      marginBottom: mb,
     },
     style,
   ];

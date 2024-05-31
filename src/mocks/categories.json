@@ -1,0 +1,20 @@
+[
+  {
+    "color": "red",
+    "name": "Desp. Pessoais",
+    "totalExpected": 700,
+    "totalSpent": 500
+  },
+  {
+    "color": "blue",
+    "name": "Saúde",
+    "totalExpected": 400,
+    "totalSpent": 250
+  },
+  {
+    "color": "green",
+    "name": "Renda",
+    "totalExpected": 400,
+    "totalSpent": 250
+  }
+]

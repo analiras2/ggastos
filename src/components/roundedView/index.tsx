@@ -22,7 +22,7 @@ type Props = {
 const BalanceView = ({data}: {data: BalanceData}) => (
   <St.Balance>
     <St.BalanceItem>
-      <Text style={{color: Colors.label}} type={Text.styles.LABEL}>
+      <Text color={Colors.label} type={Text.styles.LABEL}>
         {Strings.expectedBalance}
       </Text>
       <Text type={Text.styles.TITLE} money>
@@ -31,7 +31,7 @@ const BalanceView = ({data}: {data: BalanceData}) => (
     </St.BalanceItem>
     <St.Divider />
     <St.BalanceItem>
-      <Text style={{color: Colors.label}} type={Text.styles.LABEL}>
+      <Text color={Colors.label} type={Text.styles.LABEL}>
         {Strings.currentBalance}
       </Text>
       <Text type={Text.styles.HEADER} money>
@@ -42,9 +42,7 @@ const BalanceView = ({data}: {data: BalanceData}) => (
 );
 
 const TitleView = ({title}: {title: string}) => (
-  <Text type={Text.styles.HEADER} color={Colors.primary}>
-    {title}
-  </Text>
+  <Text type={Text.styles.HEADER}>{title}</Text>
 );
 
 const RoundedView = ({type, data, title = ''}: Props) => {
