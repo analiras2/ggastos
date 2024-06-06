@@ -1,8 +1,9 @@
-import {Colors, MONTHS} from '@constants/index';
+import {Colors, MONTHS, Strings, getYears} from '@constants/index';
 import React, {useState, useRef, Fragment, useEffect} from 'react';
 import {FlatList, TouchableOpacity} from 'react-native';
 import * as St from './styles';
-import {RoundedView, Text} from '@components/index';
+import {RoundedView, Selector, Text} from '@components/index';
+import {GroupItem} from '@models/groupItem';
 
 type MonthItem = {
   id: number;
@@ -15,9 +16,12 @@ type Props = {
   expectedBalance: number;
 };
 
+const options = getYears(2020).map(item => new GroupItem(item.toString()));
+
 const MonthHeader = ({currentBalance, expectedBalance}: Props) => {
   const listRef = useRef<FlatList<MonthItem>>(null);
 
+  const [showYearSelector, setShowYearSelector] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
@@ -49,8 +53,7 @@ const MonthHeader = ({currentBalance, expectedBalance}: Props) => {
           renderItem={({item, index}) => {
             if (currentMonth === index) {
               return (
-                <St.CurrentMonth
-                  onPress={() => console.log('setYearSelectorVisible')}>
+                <St.CurrentMonth onPress={() => setShowYearSelector(true)}>
                   <Text type={Text.styles.HEADER} color={Colors.title}>
                     {item.month}
                   </Text>
@@ -71,6 +74,13 @@ const MonthHeader = ({currentBalance, expectedBalance}: Props) => {
       <RoundedView
         type={RoundedView.layoutType.BALANCE}
         data={{expected: expectedBalance, current: currentBalance}}
+      />
+      <Selector
+        options={options}
+        onHide={() => setShowYearSelector(false)}
+        toShow={showYearSelector}
+        title={Strings.selectTheYear}
+        onSelectListener={item => setCurrentYear(Number(item.id))}
       />
     </Fragment>
   );

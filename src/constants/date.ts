@@ -12,3 +12,14 @@ export const MONTHS = [
   {id: 10, month: 'Novembro', monthSort: 'Nov'},
   {id: 11, month: 'Dezembro', monthSort: 'Dez'},
 ];
+
+export const getYears = (startYear: number) => {
+  const endYear = new Date().getFullYear();
+  if (!startYear) {
+    return [endYear];
+  }
+
+  return Array(endYear - startYear + 1)
+    .fill()
+    .map((_, index) => startYear + index);
+};
