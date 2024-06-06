@@ -1,5 +1,5 @@
 import styled from 'styled-components/native';
-import {Colors} from '@constants/index';
+import {Colors, Layout} from '@constants/index';
 
 export const Btn = styled.TouchableOpacity`
   align-self: flex-start;
@@ -11,5 +11,6 @@ export const Btn = styled.TouchableOpacity`
 `;
 
 export const Link = styled.TouchableOpacity`
-  height: 40px;
+  align-self: center;
+  padding: ${Layout.padding.SMALL}px;
 `;
