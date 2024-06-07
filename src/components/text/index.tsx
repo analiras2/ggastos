@@ -16,6 +16,7 @@ type Props = {
   color?: string;
   money?: boolean;
   mb?: number;
+  textAlign?: 'left' | 'center' | 'right' | 'justify';
   style?: {};
 };
 
@@ -26,12 +27,14 @@ const Text = ({
   color = Colors.text,
   style,
   mb,
+  textAlign,
 }: Props) => {
   const currentStyle = [
     type,
     {
       color,
       marginBottom: mb,
+      textAlign,
     },
     style,
   ];

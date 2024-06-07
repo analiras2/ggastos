@@ -1,6 +1,7 @@
 import React from 'react';
-import MonthHeader from '../headers/month';
 import * as St from './styles';
+import {MonthHeader, SimpleTitleHeader} from '@components/index';
+import {Strings} from '@constants/index';
 
 enum HEADER_TYPE {
   SIMPLE,
@@ -16,39 +17,33 @@ type Props = {
   noPadding?: boolean;
 };
 
-const SimpleHeader = () => (
-  <MonthHeader currentBalance={0} expectedBalance={0} /> // TODO
-);
-const MonthHeaderComponent = () => (
-  <MonthHeader currentBalance={50} expectedBalance={10} />
-);
-const DetailsHeader = () => (
-  <MonthHeader currentBalance={0} expectedBalance={0} /> // TODO
-);
+const getHeaderComponent = (headerType: HEADER_TYPE, title?: string) => {
+  const currentTitle = title || Strings.appName;
 
-const getHeaderComponent = (headerType?: HEADER_TYPE) => {
   const headerMap = {
-    [HEADER_TYPE.SIMPLE]: SimpleHeader,
-    [HEADER_TYPE.MONTH]: MonthHeaderComponent,
-    [HEADER_TYPE.DETAILS]: DetailsHeader,
+    [HEADER_TYPE.SIMPLE]: <SimpleTitleHeader title={currentTitle} />,
+    [HEADER_TYPE.MONTH]: (
+      <MonthHeader currentBalance={50} expectedBalance={10} />
+    ),
+    [HEADER_TYPE.DETAILS]: (
+      <MonthHeader currentBalance={50} expectedBalance={10} />
+    ), // TODO: insert correct component
   };
 
-  return headerType ? headerMap[headerType] : SimpleHeader;
+  return headerMap[headerType];
 };
 
 const BaseScreen = ({
   title,
-  headerType,
+  headerType = HEADER_TYPE.SIMPLE,
   noScroll,
   noPadding,
   children,
 }: Props) => {
-  const HeaderComponent = getHeaderComponent(headerType);
-
   return (
     <St.StatusBar>
       <St.Container>
-        <HeaderComponent />
+        {getHeaderComponent(headerType, title)}
         {noScroll ? (
           <St.Body noPadding={noPadding}>{children}</St.Body>
         ) : (

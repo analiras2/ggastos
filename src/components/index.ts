@@ -1,6 +1,7 @@
 export {default as BaseScreen} from './baseScreen';
 export {default as Button} from './button';
 export {default as MonthHeader} from './headers/month';
+export {default as SimpleTitleHeader} from './headers/simpleTitle';
 export {default as LabeledValue} from './labeledValue';
 export {default as CategoryListItem} from './listItems/categoryItem';
 export {default as ListItem} from './listItems/simpleItem';
