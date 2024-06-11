@@ -25,5 +25,5 @@ export const Body = styled.View<Props>`
   flex: 1;
   padding-horizontal: ${({noPadding}) =>
     noPadding ? 0 : Layout.padding.SCREEN}px;
-  margin-bottom: 44px;
+  margin-bottom: ${({noPadding}) => (noPadding ? 10 : 44)}px;
 `;

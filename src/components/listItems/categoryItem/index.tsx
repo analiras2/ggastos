@@ -3,23 +3,17 @@ import Text from '@components/text';
 import {Colors, Strings} from '@constants/index';
 import React from 'react';
 import * as St from './styles';
-
-type Data = {
-  color: string;
-  name: string;
-  totalExpected: number;
-  totalSpent: number;
-};
+import {Category} from '@models/category';
 
 type Props = {
   index: number;
-  data: Data;
-  onCallback: () => void;
+  data: Category;
+  onPress: (item: Category) => void;
 };
 
-const CategoryListItem = ({index, data, onCallback}: Props) => {
+const CategoryListItem = ({index, data, onPress}: Props) => {
   return (
-    <St.Container onPress={onCallback} isFirst={index === 0}>
+    <St.Container onPress={() => onPress(data)} isFirst={index === 0}>
       <Text type={Text.styles.TITLE_BOLD} color={data.color} mb={4}>
         {data.name}
       </Text>

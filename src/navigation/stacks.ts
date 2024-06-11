@@ -1,15 +1,8 @@
 import NavigationBar from '@components/navigationBar';
-import {FunctionComponent} from 'react';
-
-export type RootStackParamList = {
-  [StackRoutes.CHART]: FunctionComponent<{}>;
-  [StackRoutes.HOME]: FunctionComponent<{}>;
-  [StackRoutes.SETTINGS]: FunctionComponent<{}>;
-};
 
 export enum StackRoutes {
   HOME = 'home',
-  BOTTOM_TABS = 'bottom tabs',
+  BOTTOM_TABS = 'bottom_tabs',
   SETTINGS = 'settings',
   CHART = 'chart',
 }

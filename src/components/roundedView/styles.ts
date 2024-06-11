@@ -11,7 +11,8 @@ export const Container = styled.View`
   margin-horizontal: 20px;
   position: absolute;
   top: 76px;
-  ${Layout.shadowStyle}
+  z-index: 99;
+  ${Layout.shadowStyle};
 `;
 
 export const Balance = styled.View`

@@ -1,22 +1,25 @@
 import React from 'react';
 import {FlatList} from 'react-native';
 import {BaseScreen, CategoryListItem} from '@components/index';
-import CATEGORY_MOCK from '../../mocks/categories.json';
+import {HomeStackProps} from '@types/navigation';
+import * as St from './styles';
 
-const HomeScreen = () => {
+const HomeScreen = ({monthModel, goToCategoryDetails}: HomeStackProps) => {
   return (
-    <BaseScreen headerType={BaseScreen.headerType.MONTH} noScroll>
-      <FlatList
-        data={CATEGORY_MOCK}
-        keyExtractor={({name}) => name}
-        renderItem={({item, index}) => (
-          <CategoryListItem
-            index={index}
-            data={item}
-            onCallback={() => console.log(item)}
-          />
-        )}
-      />
+    <BaseScreen headerType={BaseScreen.headerType.MONTH} noScroll noPadding>
+      <St.Container>
+        <FlatList
+          data={monthModel.categories}
+          keyExtractor={({name}) => name}
+          renderItem={({item, index}) => (
+            <CategoryListItem
+              index={index}
+              data={item}
+              onPress={goToCategoryDetails}
+            />
+          )}
+        />
+      </St.Container>
     </BaseScreen>
   );
 };
