@@ -12,7 +12,7 @@ const Tab = createBottomTabNavigator();
 
 const screenOptions = () => ({
   tabBarStyle: {
-    height: 90,
+    height: Layout.IS_IOS ? 90 : 64,
     paddingTop: Layout.padding.SMALL,
     backgroundColor: Colors.primary,
     borderTopWidth: 1,

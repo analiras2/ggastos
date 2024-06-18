@@ -1,4 +1,4 @@
-import {Dimensions} from 'react-native';
+import {Dimensions, Platform} from 'react-native';
 import Colors from './colors';
 
 const {width, height} = Dimensions.get('window');
@@ -12,6 +12,8 @@ const shadowStyle = {
 };
 
 export default {
+  IS_IOS: Platform.OS === 'ios',
+  IS_ANDROID: Platform.OS === 'android',
   W_HEIGHT: height,
   W_WIDTH: width,
   padding: {

@@ -1,6 +1,6 @@
 import React from 'react';
 import {FlatList} from 'react-native';
-import {BaseScreen, CategoryListItem} from '@components/index';
+import {BaseScreen, CategoryListItem, FabButton} from '@components/index';
 import {HomeStackProps} from '@types/navigation';
 import * as St from './styles';
 
@@ -19,6 +19,7 @@ const HomeScreen = ({monthModel, goToCategoryDetails}: HomeStackProps) => {
             />
           )}
         />
+        <FabButton onPress={() => console.log('add')} />
       </St.Container>
     </BaseScreen>
   );
