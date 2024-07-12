@@ -11,13 +11,13 @@ const SimpleTitleHeader = ({title}: Props) => {
   return (
     <St.Container>
       <Text
-        type={Text.styles.HEADER}
+        type="HEADER"
         color={Colors.title}
         textAlign="center"
         mb={Layout.margin.MEDIUM}>
         {Strings.appName}
       </Text>
-      <Text type={Text.styles.TITLE_BOLD} color={Colors.title}>
+      <Text type="TITLE" color={Colors.title} bold>
         {title}
       </Text>
     </St.Container>

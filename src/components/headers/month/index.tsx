@@ -1,4 +1,4 @@
-import {Colors, MONTHS, Strings, getYears} from '@constants/index';
+import {Colors, Layout, MONTHS, Strings, getYears} from '@constants/index';
 import React, {useState, useRef, Fragment, useEffect} from 'react';
 import {FlatList, TouchableOpacity} from 'react-native';
 import * as St from './styles';
@@ -16,6 +16,8 @@ type Props = {
   currentBalance: number;
   expectedBalance: number;
 };
+
+const ITEM_HEIGHT = 54;
 
 const options = getYears(2020).map(item => new GroupItem(item.toString()));
 
@@ -55,7 +57,7 @@ const MonthHeader = ({currentBalance, expectedBalance}: Props) => {
             if (currentMonth === index) {
               return (
                 <St.CurrentMonth onPress={() => setShowYearSelector(true)}>
-                  <Text type={Text.styles.HEADER} color={Colors.title}>
+                  <Text type="HEADER" color={Colors.title}>
                     {item.month}
                   </Text>
                   <Text color={Colors.title}>{currentYear}</Text>
@@ -70,6 +72,13 @@ const MonthHeader = ({currentBalance, expectedBalance}: Props) => {
               </TouchableOpacity>
             );
           }}
+          {...(Layout.IS_ANDROID && {
+            getItemLayout: (data, index) => ({
+              length: ITEM_HEIGHT,
+              offset: ITEM_HEIGHT * index,
+              index,
+            }),
+          })}
         />
       </St.Container>
       <RoundedView

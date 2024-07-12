@@ -14,7 +14,7 @@ type Props = {
 
 const LabeledValue = ({title, value, light, color}: Props) => (
   <St.Container>
-    <Text type={Text.styles.LABEL} color={light ? Colors.textLight : color}>
+    <Text type="LABEL" color={light ? Colors.textLight : color}>
       {title}
     </Text>
     <Text color={light ? Colors.textLight : Colors.text} money>

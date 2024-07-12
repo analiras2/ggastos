@@ -1,60 +1,63 @@
 import React from 'react';
 import {Text as Txt} from 'react-native';
 import {Colors} from '@constants/index';
+import type {TextStyle} from 'react-native';
 
 const STYLES = {
   LABEL: {fontSize: 12},
   DEFAULT: {fontSize: 14},
   TITLE: {fontSize: 16},
-  TITLE_BOLD: {fontSize: 16, fontWeight: 'bold'},
   HEADER: {fontSize: 24},
-};
+} as const;
+
+type typeKeys = keyof typeof STYLES;
 
 type Props = {
-  type?: {fontSize: number; fontWeight?: string};
+  type?: typeKeys;
   children: string | number;
   color?: string;
   money?: boolean;
   mb?: number;
   textAlign?: 'left' | 'center' | 'right' | 'justify';
-  style?: {};
+  bold?: boolean;
+  style?: TextStyle;
 };
 
 const Text = ({
-  type = STYLES.DEFAULT,
+  type = 'DEFAULT',
   children,
   money,
   color = Colors.text,
   style,
   mb,
+  bold,
   textAlign,
 }: Props) => {
   const currentStyle = [
-    type,
+    STYLES[type],
     {
       color,
       marginBottom: mb,
       textAlign,
+      fontWeight: bold ? 'bold' : 'normal',
     },
     style,
-  ];
+  ] as TextStyle;
 
   if (money) {
-    const value =
+    const formattedValue =
       typeof children === 'string'
         ? parseFloat(children).toFixed(2).split('.')
         : children.toFixed(2).split('.');
 
     return (
       <Txt style={currentStyle}>
-        <Txt style={STYLES.TITLE}>{`R$${value[0]}`}</Txt>
-        <Txt style={STYLES.LABEL}>{`,${value[1]}`}</Txt>
+        <Txt style={STYLES.TITLE}>{`R$${formattedValue[0]}`}</Txt>
+        <Txt style={STYLES.LABEL}>{`,${formattedValue[1]}`}</Txt>
       </Txt>
     );
   }
   return <Txt style={currentStyle}>{children}</Txt>;
 };
-
-Text.styles = STYLES;
 
 export default Text;

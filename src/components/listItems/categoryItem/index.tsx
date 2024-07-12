@@ -14,7 +14,7 @@ type Props = {
 const CategoryListItem = ({index, data, onPress}: Props) => {
   return (
     <St.Container onPress={() => onPress(data)} isFirst={index === 0}>
-      <Text type={Text.styles.TITLE_BOLD} color={data.color} mb={4}>
+      <Text type="TITLE" color={data.color} mb={4} bold>
         {data.name}
       </Text>
       <St.Data>
