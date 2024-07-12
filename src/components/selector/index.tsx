@@ -49,11 +49,7 @@ export function Selector({
               renderItem={renderItem}
               ItemSeparatorComponent={DividerComponent}
             />
-            <Button
-              type={Button.types.LINK}
-              onPress={onHide}
-              text={Strings.cancel}
-            />
+            <Button type="LINK" onPress={onHide} text={Strings.cancel} />
           </St.Body>
         </St.View>
       </St.Container>

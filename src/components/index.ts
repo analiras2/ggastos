@@ -1,7 +1,6 @@
 export {default as FadeAnimation} from './animation/fadeAnimation';
 export {default as BaseScreen} from './baseScreen';
 export {default as Button} from './button';
-export {default as FabButton} from './button/floating/fabButton';
 export {default as MonthHeader} from './headers/month';
 export {default as SimpleTitleHeader} from './headers/simpleTitle';
 export {default as LabeledValue} from './labeledValue';
