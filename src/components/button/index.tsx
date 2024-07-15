@@ -1,7 +1,7 @@
 import React from 'react';
 import * as St from './styles';
 import Text from '../text';
-import {Colors} from '@constants/index';
+import {Colors} from '~constants/index';
 import FabButton from './floating/fabButton';
 
 const TYPE = {

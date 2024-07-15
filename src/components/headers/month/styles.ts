@@ -1,6 +1,6 @@
 import styled from 'styled-components/native';
-import {Colors, Layout} from '@constants/index';
-import Text from '@components/text';
+import {Colors, Layout} from '~constants/index';
+import Text from '~components/text';
 
 export const Container = styled.View`
   height: 100px;

@@ -1,9 +1,9 @@
-import LabeledValue from '@components/labeledValue';
-import Text from '@components/text';
-import {Colors, Strings} from '@constants/index';
+import LabeledValue from '~components/labeledValue';
+import Text from '~components/text';
+import {Colors, Strings} from '~constants/index';
 import React from 'react';
 import * as St from './styles';
-import {Category} from '@models/category';
+import {Category} from '~models/category';
 
 type Props = {
   index: number;

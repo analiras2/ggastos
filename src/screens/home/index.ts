@@ -1,8 +1,8 @@
 import {createElement} from 'react';
 import HomeView from './view';
-import {Category, Month} from '@models/index';
-import {HomeStackProps} from '@types/navigation';
-import {useDateContext} from '@contexts/dateContext';
+import {Category, Month} from '~models/index';
+import {IHomeStackProps} from '~types/navigation';
+import {useDateContext} from '~contexts/dateContext';
 
 const HomeScreen = () => {
   const {currentMonth, currentYear} = useDateContext();
@@ -13,7 +13,7 @@ const HomeScreen = () => {
     console.log('goToDetails', item);
   };
 
-  const props: HomeStackProps = {
+  const props: IHomeStackProps = {
     monthModel: new Month(dateId),
     goToCategoryDetails,
   };

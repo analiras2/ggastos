@@ -1,9 +1,9 @@
 import React from 'react';
 import {ListRenderItem, Modal} from 'react-native';
-import {Button, ListItem, RoundedView} from '@components/index';
-import {Strings} from '@constants/index';
+import {Button, ListItem, RoundedView} from '~components/index';
+import {Strings} from '~constants/index';
 import * as St from './styles';
-import {GroupItem} from '@models/groupItem';
+import {GroupItem} from '~models/groupItem';
 
 type Props = {
   toShow: boolean;

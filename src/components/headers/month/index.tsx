@@ -1,10 +1,10 @@
-import {Colors, Layout, MONTHS, Strings, getYears} from '@constants/index';
+import {Colors, Layout, MONTHS, Strings, getYears} from '~constants/index';
 import React, {useState, useRef, Fragment, useEffect} from 'react';
 import {FlatList, TouchableOpacity} from 'react-native';
 import * as St from './styles';
-import {RoundedView, Selector, Text} from '@components/index';
-import {GroupItem} from '@models/groupItem';
-import {useDateContext} from '@contexts/dateContext';
+import {RoundedView, Selector, Text} from '~components/index';
+import {GroupItem} from '~models/groupItem';
+import {useDateContext} from '~contexts/dateContext';
 
 type MonthItem = {
   id: number;

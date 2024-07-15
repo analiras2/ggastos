@@ -1,10 +1,10 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {StackRoutes} from '@navigation/stacks';
-import {SettingsScreen, HomeScreen, ChartScreen} from '@screens/index';
-import {Colors, Layout} from '@constants/index';
-import {DateProvider} from '@contexts/dateContext';
+import {StackRoutes} from '~navigation/stacks';
+import {SettingsScreen, HomeScreen, ChartScreen} from '~screens/index';
+import {Colors, Layout} from '~constants/index';
+import {DateProvider} from '~contexts/dateContext';
 
 type TabBarIcon = {focused: boolean; color: string; size: number};
 

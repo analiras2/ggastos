@@ -1,6 +1,6 @@
 import React from 'react';
-import Text from '@components/text';
-import {Colors} from '@constants/index';
+import Text from '~components/text';
+import {Colors} from '~constants/index';
 import {FlexAlignType} from 'react-native';
 import * as St from './styles';
 

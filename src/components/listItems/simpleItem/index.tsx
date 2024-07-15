@@ -1,8 +1,8 @@
 import React from 'react';
 import {TouchableOpacity} from 'react-native';
 import * as St from './styles';
-import Text from '@components/text';
-import {GroupItem} from '@models/groupItem';
+import Text from '~components/text';
+import {GroupItem} from '~models/groupItem';
 
 type Props = {
   item: GroupItem;

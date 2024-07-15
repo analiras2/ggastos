@@ -1,10 +1,10 @@
 import React from 'react';
-import {BaseScreen, Text} from '@components/index';
-import {Strings} from '@constants/index';
+import {BaseScreen, Text} from '~components/index';
+import {Strings} from '~constants/index';
 
 const SettingsScreen = () => {
   return (
-    <BaseScreen title={Strings.configuration}>
+    <BaseScreen header={{type: 'SIMPLE', title: Strings.configuration}}>
       <Text>Settings</Text>
     </BaseScreen>
   );

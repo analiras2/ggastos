@@ -1,5 +1,5 @@
 import styled from 'styled-components/native';
-import {Colors, Layout} from '@constants/index';
+import {Colors, Layout} from '~constants/index';
 
 export const Container = styled.TouchableOpacity<{isFirst: boolean}>`
   flex: 1;

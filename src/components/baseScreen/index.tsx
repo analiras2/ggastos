@@ -1,49 +1,55 @@
 import React from 'react';
 import * as St from './styles';
-import {MonthHeader, SimpleTitleHeader} from '@components/index';
-import {Strings} from '@constants/index';
+import {MonthHeader, SimpleTitleHeader} from '~components/index';
+import {IBalanceData} from '~types/balance';
 
-enum HEADER_TYPE {
-  SIMPLE,
-  MONTH,
-  DETAILS,
+const HEADER_TYPE = {
+  SIMPLE: 'SIMPLE',
+  MONTH: 'MONTH',
+  DETAILS: 'DETAILS',
+} as const;
+
+export interface ISimpleHeaderProps {
+  type: typeof HEADER_TYPE.SIMPLE;
+  title: string;
+}
+
+export interface IBalanceHeaderProps {
+  type: typeof HEADER_TYPE.MONTH | typeof HEADER_TYPE.DETAILS;
+  balance: IBalanceData;
 }
 
 type Props = {
   children: React.ReactNode | React.ReactNode[];
-  title?: string;
-  headerType?: HEADER_TYPE;
+  header: ISimpleHeaderProps | IBalanceHeaderProps;
   noScroll?: boolean;
   noPadding?: boolean;
 };
 
-const getHeaderComponent = (headerType: HEADER_TYPE, title?: string) => {
-  const currentTitle = title || Strings.appName;
-
-  const headerMap = {
-    [HEADER_TYPE.SIMPLE]: <SimpleTitleHeader title={currentTitle} />,
-    [HEADER_TYPE.MONTH]: (
-      <MonthHeader currentBalance={50} expectedBalance={10} />
-    ),
-    [HEADER_TYPE.DETAILS]: (
-      <MonthHeader currentBalance={50} expectedBalance={10} />
-    ), // TODO: insert correct component
-  };
-
-  return headerMap[headerType];
+const getHeaderComponent = (
+  header: ISimpleHeaderProps | IBalanceHeaderProps,
+) => {
+  if (header.type === HEADER_TYPE.SIMPLE) {
+    const {title} = header as ISimpleHeaderProps;
+    return <SimpleTitleHeader title={title} />;
+  } else {
+    const {balance} = header as IBalanceHeaderProps;
+    return (
+      <MonthHeader
+        currentBalance={balance.current}
+        expectedBalance={balance.expected}
+      />
+    );
+  }
 };
 
-const BaseScreen = ({
-  title,
-  headerType = HEADER_TYPE.SIMPLE,
-  noScroll,
-  noPadding,
-  children,
-}: Props) => {
+const BaseScreen = ({header, noScroll, noPadding, children}: Props) => {
+  const HeaderComponent = getHeaderComponent(header);
+
   return (
     <St.StatusBar>
       <St.Container>
-        {getHeaderComponent(headerType, title)}
+        {HeaderComponent}
         {noScroll ? (
           <St.Body noPadding={noPadding}>{children}</St.Body>
         ) : (
@@ -55,7 +61,5 @@ const BaseScreen = ({
     </St.StatusBar>
   );
 };
-
-BaseScreen.headerType = HEADER_TYPE;
 
 export default BaseScreen;

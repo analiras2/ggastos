@@ -1,6 +1,6 @@
 import React from 'react';
-import {Text} from '@components/index';
-import {Colors, Layout, Strings} from '@constants/index';
+import {Text} from '~components/index';
+import {Colors, Layout, Strings} from '~constants/index';
 import * as St from './styles';
 
 type Props = {

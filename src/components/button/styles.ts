@@ -1,5 +1,5 @@
 import styled from 'styled-components/native';
-import {Colors, Layout} from '@constants/index';
+import {Colors, Layout} from '~constants/index';
 
 export const Btn = styled.TouchableOpacity`
   align-self: flex-start;

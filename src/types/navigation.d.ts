@@ -1,7 +1,7 @@
-import {Category, Month} from '@models/index';
+import {Category, Month} from '~models/index';
 import {FunctionComponent} from 'react';
 
-export interface HomeStackProps {
+export interface IHomeStackProps {
   monthModel: Month;
   goToCategoryDetails: (item: Category) => void;
 }

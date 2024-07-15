@@ -1,12 +1,15 @@
 import React from 'react';
 import {FlatList} from 'react-native';
-import {BaseScreen, CategoryListItem, Button} from '@components/index';
-import {HomeStackProps} from '@types/navigation';
+import {BaseScreen, CategoryListItem, Button} from '~components/index';
+import {IHomeStackProps} from '~types/navigation';
 import * as St from './styles';
 
-const HomeScreen = ({monthModel, goToCategoryDetails}: HomeStackProps) => {
+const HomeScreen = ({monthModel, goToCategoryDetails}: IHomeStackProps) => {
   return (
-    <BaseScreen headerType={BaseScreen.headerType.MONTH} noScroll noPadding>
+    <BaseScreen
+      header={{type: 'MONTH', balance: {expected: 10, current: 50}}}
+      noScroll
+      noPadding>
       <St.Container>
         <FlatList
           data={monthModel.categories}

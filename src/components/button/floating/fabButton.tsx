@@ -2,7 +2,7 @@ import React from 'react';
 import {TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as St from './styles';
-import {Colors} from '@constants/index';
+import {Colors} from '~constants/index';
 
 type Props = {
   onPress: () => void;

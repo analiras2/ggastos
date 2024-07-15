@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text as Txt} from 'react-native';
-import {Colors} from '@constants/index';
+import {Colors} from '~constants/index';
 import type {TextStyle} from 'react-native';
 
 const STYLES = {

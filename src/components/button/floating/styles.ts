@@ -1,6 +1,6 @@
 import styled from 'styled-components/native';
-import {Colors, Layout} from '@constants/index';
-import {FadeAnimation} from '@components/index';
+import {Colors, Layout} from '~constants/index';
+import {FadeAnimation} from '~components/index';
 
 export const AnimationContainer = styled(FadeAnimation)`
   height: 54px;

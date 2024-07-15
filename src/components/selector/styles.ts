@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
-import {Colors, Layout} from '@constants/index';
+import {Colors, Layout} from '~constants/index';
 import {FlatList} from 'react-native';
-import {GroupItem} from '@models/groupItem';
+import {GroupItem} from '~models/groupItem';
 
 export const Container = styled.SafeAreaView`
   width: ${Layout.W_WIDTH}px;

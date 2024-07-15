@@ -1,7 +1,7 @@
 import React from 'react';
 import * as St from './styles';
-import Text from '@components/text';
-import {Colors, Strings} from '@constants/index';
+import Text from '~components/text';
+import {Colors, Strings} from '~constants/index';
 
 enum LAYOUT_TYPES {
   BALANCE,

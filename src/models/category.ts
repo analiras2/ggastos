@@ -1,15 +1,15 @@
-import {CategoryData, Item} from '@types/category';
+import {ICategoryData, IItem} from '~types/category';
 
 export class Category {
   id: string;
   name: string;
   color: string;
   dateId: string;
-  items: Item[];
+  items: IItem[];
   totalSpent: number;
   totalExpected: number;
 
-  constructor(data: CategoryData, dateId: string) {
+  constructor(data: ICategoryData, dateId: string) {
     this.id = data.id;
     this.name = data.name;
     this.color = data.color;
@@ -38,7 +38,7 @@ export class Category {
     );
   }
 
-  static getCategories: CategoryData[] = [
+  static getCategories: ICategoryData[] = [
     {
       id: 'income',
       name: 'Renda',

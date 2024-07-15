@@ -1,4 +1,4 @@
-interface Item {
+interface IItem {
   id: number;
   title: string;
   dateId: string;
@@ -9,7 +9,7 @@ interface Item {
   currentInstallment: number;
 }
 
-export interface CategoryData {
+export interface ICategoryData {
   id: string;
   name: string;
   color: string;
