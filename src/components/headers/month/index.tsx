@@ -82,7 +82,7 @@ const MonthHeader = ({currentBalance, expectedBalance}: Props) => {
         />
       </St.Container>
       <RoundedView
-        type={RoundedView.layoutType.BALANCE}
+        type="BALANCE"
         data={{expected: expectedBalance, current: currentBalance}}
       />
       <Selector

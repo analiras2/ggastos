@@ -2,24 +2,26 @@ import React from 'react';
 import * as St from './styles';
 import Text from '~components/text';
 import {Colors, Strings} from '~constants/index';
+import {IBalanceData} from '~types/balance';
 
-enum LAYOUT_TYPES {
-  BALANCE,
-  TITLE,
-}
+const LAYOUT_TYPES = {
+  BALANCE: 'BALANCE',
+  TITLE: 'TITLE',
+} as const;
 
-type BalanceData = {
-  expected: number;
-  current: number;
+type BalanceProps = {
+  type: typeof LAYOUT_TYPES.BALANCE;
+  data: IBalanceData;
 };
 
-type Props = {
-  type: LAYOUT_TYPES;
-  data?: BalanceData;
-  title?: string;
+type TitleProps = {
+  type: typeof LAYOUT_TYPES.TITLE;
+  title: string;
 };
 
-const BalanceView = ({data}: {data: BalanceData}) => (
+type Props = BalanceProps | TitleProps;
+
+const BalanceView = ({data}: {data: IBalanceData}) => (
   <St.Balance>
     <St.BalanceItem>
       <Text color={Colors.label} type="LABEL">
@@ -45,21 +47,24 @@ const TitleView = ({title}: {title: string}) => (
   <Text type="HEADER">{title}</Text>
 );
 
-const RoundedView = ({type, data, title = ''}: Props) => {
-  const renderByType = () => {
-    switch (type) {
-      case LAYOUT_TYPES.BALANCE:
-        return data ? <BalanceView data={data} /> : null;
-      case LAYOUT_TYPES.TITLE:
-        return <TitleView title={title} />;
-      default:
-        return null;
-    }
-  };
+const RoundedView = ({type, ...rest}: Props) => {
+  if (type === LAYOUT_TYPES.BALANCE) {
+    const {data} = rest as BalanceProps;
 
-  return <St.Container>{renderByType()}</St.Container>;
+    return (
+      <St.Container>
+        <BalanceView data={data} />
+      </St.Container>
+    );
+  } else {
+    const {title} = rest as TitleProps;
+
+    return (
+      <St.Container>
+        <TitleView title={title} />
+      </St.Container>
+    );
+  }
 };
-
-RoundedView.layoutType = LAYOUT_TYPES;
 
 export default RoundedView;

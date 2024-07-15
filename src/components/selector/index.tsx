@@ -41,7 +41,7 @@ export function Selector({
       onRequestClose={onHide}>
       <St.Container>
         <St.View>
-          <RoundedView type={RoundedView.layoutType.TITLE} title={title} />
+          <RoundedView type="TITLE" title={title} />
           <St.Body>
             <St.List
               data={options}

@@ -20,10 +20,7 @@ const NewItemModal = ({isVisible, onClose}: Props) => {
       visible={isVisible}
       onRequestClose={onClose}>
       <St.Container>
-        <RoundedView
-          type={RoundedView.layoutType.TITLE}
-          title={Strings.newItem}
-        />
+        <RoundedView type="TITLE" title={Strings.newItem} />
         <St.Form>
           <St.Row>
             <Icon name="pricetag-outline" size={16} color={Colors.iconDark} />
