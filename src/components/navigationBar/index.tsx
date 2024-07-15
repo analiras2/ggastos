@@ -5,6 +5,7 @@ import {StackRoutes} from '~navigation/stacks';
 import {SettingsScreen, HomeScreen, ChartScreen} from '~screens/index';
 import {Colors, Layout} from '~constants/index';
 import {DateProvider} from '~contexts/dateContext';
+import {RootStackScreenProps} from '~types/navigation';
 
 type TabBarIcon = {focused: boolean; color: string; size: number};
 
@@ -35,9 +36,9 @@ const getTabBarIcon =
       />
     );
 
-const HomeScreenWithProvider = () => (
+const HomeScreenWithProvider = (props: RootStackScreenProps) => (
   <DateProvider>
-    <HomeScreen />
+    <HomeScreen {...props} />
   </DateProvider>
 );
 

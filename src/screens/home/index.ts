@@ -1,11 +1,12 @@
-import {createElement} from 'react';
-import HomeView from './view';
-import {Category, Month} from '~models/index';
-import {IHomeStackProps} from '~types/navigation';
+import {createElement, useState} from 'react';
 import {useDateContext} from '~contexts/dateContext';
+import {Category, Month} from '~models/index';
+import {IHomeStackProps, RootStackScreenProps} from '~types/navigation';
+import HomeView from './view';
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation, route}: RootStackScreenProps) => {
   const {currentMonth, currentYear} = useDateContext();
+  const [isNewItemModalVisible, setIsNewItemModalVisible] = useState(false);
 
   const dateId = `${currentMonth}_${currentYear}`;
 
@@ -14,6 +15,11 @@ const HomeScreen = () => {
   };
 
   const props: IHomeStackProps = {
+    navigation,
+    route,
+    isNewItemModalVisible,
+    onShowNewItemModal: () => setIsNewItemModalVisible(true),
+    onHideNewItemModal: () => setIsNewItemModalVisible(false),
     monthModel: new Month(dateId),
     goToCategoryDetails,
   };

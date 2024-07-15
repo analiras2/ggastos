@@ -1,10 +1,15 @@
 import {Category, Month} from '~models/index';
 import {FunctionComponent} from 'react';
 
-export interface IHomeStackProps {
+export type RootStackScreenProps = NativeStackScreenProps<RootStackParamList>;
+
+export type IHomeStackProps = RootStackScreenProps & {
   monthModel: Month;
   goToCategoryDetails: (item: Category) => void;
-}
+  isNewItemModalVisible: () => boolean;
+  onShowNewItemModal: boolean;
+  onHideNewItemModal: boolean;
+};
 
 export type RootStackParamList = {
   [StackRoutes.CHART]: FunctionComponent<{}>;

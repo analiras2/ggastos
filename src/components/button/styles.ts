@@ -11,6 +11,7 @@ export const Btn = styled.TouchableOpacity`
 `;
 
 export const Link = styled.TouchableOpacity`
+  height: 40px;
   align-self: center;
   padding: ${Layout.padding.SMALL}px;
 `;
