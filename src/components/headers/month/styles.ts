@@ -5,14 +5,14 @@ import Text from '~components/text';
 export const Container = styled.View`
   height: 100px;
   background-color: ${Colors.primary};
-  padding-bottom: ${Layout.padding.SMALL}px;
-  padding-horizontal: ${Layout.padding.MEDIUM}px;
+  padding-bottom: 8px;
+  padding-horizontal: 16px;
 `;
 
 export const CurrentMonth = styled.TouchableOpacity`
   width: ${Layout.W_WIDTH / 2}px;
   align-items: center;
-  margin-top: ${Layout.margin.MEDIUM}px;
+  margin-top: 16px;
 `;
 
 export const OtherMonth = styled(Text)`

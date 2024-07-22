@@ -1,13 +1,13 @@
 import React from 'react';
-import {Text as Txt} from 'react-native';
+import {Text as Txt} from 'react-native-paper';
 import {Colors} from '~constants/index';
 import type {TextStyle} from 'react-native';
 
 const STYLES = {
-  LABEL: {fontSize: 12},
-  DEFAULT: {fontSize: 14},
-  TITLE: {fontSize: 16},
-  HEADER: {fontSize: 24},
+  LABEL: 'bodySmall',
+  DEFAULT: 'bodyLarge',
+  TITLE: 'titleMedium',
+  HEADER: 'titleLarge',
 } as const;
 
 type typeKeys = keyof typeof STYLES;
@@ -34,7 +34,6 @@ const Text = ({
   textAlign,
 }: Props) => {
   const currentStyle = [
-    STYLES[type],
     {
       color,
       marginBottom: mb,
@@ -52,12 +51,16 @@ const Text = ({
 
     return (
       <Txt style={currentStyle}>
-        <Txt style={STYLES.TITLE}>{`R$${formattedValue[0]}`}</Txt>
-        <Txt style={STYLES.LABEL}>{`,${formattedValue[1]}`}</Txt>
+        <Txt variant={STYLES.DEFAULT}>{`R$${formattedValue[0]}`}</Txt>
+        <Txt variant={STYLES.LABEL}>{`,${formattedValue[1]}`}</Txt>
       </Txt>
     );
   }
-  return <Txt style={currentStyle}>{children}</Txt>;
+  return (
+    <Txt variant={STYLES[type]} style={currentStyle}>
+      {children}
+    </Txt>
+  );
 };
 
 export default Text;

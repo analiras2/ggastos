@@ -3,8 +3,8 @@ import {FlatList} from 'react-native';
 import {
   BaseScreen,
   CategoryListItem,
-  Button,
   NewItemModal,
+  FadeAnimation,
 } from '~components/index';
 import {IHomeStackProps} from '~types/navigation';
 import * as St from './styles';
@@ -13,6 +13,7 @@ const MOCK_BALANCE = {expected: 10, current: 50};
 
 const HomeScreen = ({
   monthModel,
+  onSaveNewItem,
   goToCategoryDetails,
   isNewItemModalVisible,
   onShowNewItemModal,
@@ -23,26 +24,29 @@ const HomeScreen = ({
       header={{type: 'MONTH', balance: MOCK_BALANCE}}
       noScroll
       noPadding>
-      <St.Container>
-        <FlatList
-          data={monthModel.categories}
-          keyExtractor={({name}) => name}
-          renderItem={({item, index}) => (
-            <CategoryListItem
-              index={index}
-              data={item}
-              onPress={goToCategoryDetails}
-            />
-          )}
-        />
-        <Button type="FLOATING" onPress={onShowNewItemModal} />
-      </St.Container>
-      {isNewItemModalVisible && (
-        <NewItemModal
-          isVisible={isNewItemModalVisible}
-          onClose={onHideNewItemModal}
-        />
-      )}
+      <FadeAnimation>
+        <St.Container>
+          <FlatList
+            data={monthModel.categories}
+            keyExtractor={({name}) => name}
+            renderItem={({item, index}) => (
+              <CategoryListItem
+                index={index}
+                data={item}
+                onPress={goToCategoryDetails}
+              />
+            )}
+          />
+          <St.FAB icon="plus" onPress={onShowNewItemModal} />
+        </St.Container>
+        {isNewItemModalVisible && (
+          <NewItemModal
+            isVisible={isNewItemModalVisible}
+            onClose={onHideNewItemModal}
+            onSave={onSaveNewItem}
+          />
+        )}
+      </FadeAnimation>
     </BaseScreen>
   );
 };

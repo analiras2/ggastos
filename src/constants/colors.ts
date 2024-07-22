@@ -5,6 +5,8 @@ const gray = '#828282';
 const blackAlpha80 = '#00000080';
 const mercury = '#D5D5D5';
 const concrete = '#f2f2f2';
+const neutral = 'rgba(72, 70, 73, 1)';
+const red = '#B43F3F';
 
 export default {
   primary: mineShaft,
@@ -22,4 +24,6 @@ export default {
   icon: mercury,
   divider: mercury,
   shadow: black,
+  underline: neutral,
+  alert: red,
 };

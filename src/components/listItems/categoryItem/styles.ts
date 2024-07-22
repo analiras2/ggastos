@@ -1,7 +1,8 @@
+import {Card} from 'react-native-paper';
 import styled from 'styled-components/native';
-import {Colors, Layout} from '~constants/index';
+import {Colors} from '~constants/index';
 
-export const Container = styled.TouchableOpacity<{isFirst: boolean}>`
+export const Container = styled(Card)<{isFirst: boolean}>`
   flex: 1;
   padding: 16px;
   margin-horizontal: 8px;
@@ -9,11 +10,10 @@ export const Container = styled.TouchableOpacity<{isFirst: boolean}>`
   margin-bottom: 16px;
   background-color: ${Colors.card};
   border-radius: 8px;
-  ${Layout.shadowStyle}
 `;
 
 export const Data = styled.View`
   flex: 1px;
   flex-direction: row;
-  margin-top: ${Layout.margin.SMALL}px;
+  margin-top: 8px;
 `;
