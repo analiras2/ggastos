@@ -1,6 +1,6 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import {StackRoutes} from '~navigation/stacks';
 import {SettingsScreen, HomeScreen, ChartScreen} from '~screens/index';
 import {Colors, Layout} from '~constants/index';
@@ -14,12 +14,12 @@ const Tab = createBottomTabNavigator();
 const screenOptions = () => ({
   tabBarStyle: {
     height: Layout.IS_IOS ? 90 : 64,
-    paddingTop: Layout.padding.SMALL,
+    paddingTop: 8,
     backgroundColor: Colors.primary,
     borderTopWidth: 1,
   },
   tabBarLabelStyle: {
-    fontSize: Layout.font.LABEL,
+    fontSize: Layout.TAB_BAR_LABEL,
   },
   tabBarInactiveTintColor: Colors.icon,
   tabBarActiveTintColor: Colors.iconLight,
@@ -28,13 +28,7 @@ const screenOptions = () => ({
 const getTabBarIcon =
   (iconName: string) =>
   ({focused, color, size}: TabBarIcon) =>
-    (
-      <Icon
-        name={focused ? iconName : `${iconName}-outline`}
-        color={color}
-        size={size}
-      />
-    );
+    <Icon name={focused ? iconName : iconName} color={color} size={size} />;
 
 const HomeScreenWithProvider = (props: RootStackScreenProps) => (
   <DateProvider>

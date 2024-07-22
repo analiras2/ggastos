@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text} from '~components/index';
-import {Colors, Layout, Strings} from '~constants/index';
+import {Colors, Strings} from '~constants/index';
 import * as St from './styles';
 
 type Props = {
@@ -10,11 +10,7 @@ type Props = {
 const SimpleTitleHeader = ({title}: Props) => {
   return (
     <St.Container>
-      <Text
-        type="HEADER"
-        color={Colors.title}
-        textAlign="center"
-        mb={Layout.margin.MEDIUM}>
+      <Text type="HEADER" color={Colors.title} textAlign="center" mb={16}>
         {Strings.appName}
       </Text>
       <Text type="TITLE" color={Colors.title} bold>

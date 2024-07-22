@@ -5,6 +5,7 @@ export type RootStackScreenProps = NativeStackScreenProps<RootStackParamList>;
 
 export type IHomeStackProps = RootStackScreenProps & {
   monthModel: Month;
+  onSaveNewItem: () => void;
   goToCategoryDetails: (item: Category) => void;
   isNewItemModalVisible: () => boolean;
   onShowNewItemModal: boolean;

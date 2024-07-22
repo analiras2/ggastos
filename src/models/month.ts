@@ -1,9 +1,9 @@
 import {ICategoryData} from '~types/category';
-import {Category} from './category';
+import {CategoryModel} from './category';
 
-export class Month {
+export class MonthModel {
   id: string;
-  categories: Category[];
+  categories: CategoryModel[];
   totalBalance: number;
   currentBalance: number;
   totalExpected: number;
@@ -19,8 +19,8 @@ export class Month {
   }
 
   getCategories(): void {
-    this.categories = Category.getCategories.map(
-      (item: ICategoryData) => new Category(item, this.id),
+    this.categories = CategoryModel.getCategories.map(
+      (item: ICategoryData) => new CategoryModel(item, this.id),
     );
     this.getTotalBalance();
     this.getTotalExpected();

@@ -1,8 +1,9 @@
 import {createElement, useState} from 'react';
 import {useDateContext} from '~contexts/dateContext';
-import {Category, Month} from '~models/index';
+import {CategoryModel, ItemModel, MonthModel} from '~models/index';
 import {IHomeStackProps, RootStackScreenProps} from '~types/navigation';
 import HomeView from './view';
+import {IPurchaseItem} from '~types/item';
 
 const HomeScreen = ({navigation, route}: RootStackScreenProps) => {
   const {currentMonth, currentYear} = useDateContext();
@@ -10,17 +11,22 @@ const HomeScreen = ({navigation, route}: RootStackScreenProps) => {
 
   const dateId = `${currentMonth}_${currentYear}`;
 
-  const goToCategoryDetails = (item: Category) => {
+  const goToCategoryDetails = (item: CategoryModel) => {
     console.log('goToDetails', item);
+  };
+
+  const onSaveNewItem = async (newItem: IPurchaseItem) => {
+    await ItemModel.addItem(newItem);
   };
 
   const props: IHomeStackProps = {
     navigation,
     route,
     isNewItemModalVisible,
+    onSaveNewItem,
     onShowNewItemModal: () => setIsNewItemModalVisible(true),
     onHideNewItemModal: () => setIsNewItemModalVisible(false),
-    monthModel: new Month(dateId),
+    monthModel: new MonthModel(dateId),
     goToCategoryDetails,
   };
 

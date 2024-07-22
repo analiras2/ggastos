@@ -1,6 +1,7 @@
-import {ICategoryData, IItem} from '~types/category';
+import {ICategoryData} from '~types/category';
+import {IItem} from '~types/item';
 
-export class Category {
+export class CategoryModel {
   id: string;
   name: string;
   color: string;

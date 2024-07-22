@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 import {Colors, Layout} from '~constants/index';
 import {FlatList} from 'react-native';
-import {GroupItem} from '~models/groupItem';
+import {GroupItemModel} from '~models/groupItem';
 
 export const Container = styled.SafeAreaView`
   width: ${Layout.W_WIDTH}px;
@@ -30,6 +30,6 @@ export const Body = styled.View`
   ${Layout.shadowStyle};
 `;
 
-export const List = styled(FlatList as new () => FlatList<GroupItem>)`
+export const List = styled(FlatList as new () => FlatList<GroupItemModel>)`
   padding-bottom: 20px;
 `;

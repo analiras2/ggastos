@@ -10,6 +10,7 @@ export const StatusBar = styled.SafeAreaView<Props>`
 `;
 
 export const Container = styled.SafeAreaView<Props>`
+  position: relative;
   height: 100%;
   width: 100%;
   background-color: #fff;
@@ -24,6 +25,6 @@ export const ScrollView = styled.ScrollView.attrs(() => ({
 export const Body = styled.View<Props>`
   flex: 1;
   padding-horizontal: ${({noPadding}) =>
-    noPadding ? 0 : Layout.padding.SCREEN}px;
+    noPadding ? 0 : Layout.SCREEN_PADDING}px;
   margin-bottom: ${({noPadding}) => (noPadding ? 10 : 44)}px;
 `;

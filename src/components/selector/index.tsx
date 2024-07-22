@@ -1,14 +1,15 @@
 import React from 'react';
 import {ListRenderItem, Modal} from 'react-native';
-import {Button, ListItem, RoundedView} from '~components/index';
+import {ListItem, RoundedView} from '~components/index';
 import {Strings} from '~constants/index';
 import * as St from './styles';
-import {GroupItem} from '~models/groupItem';
+import {GroupItemModel} from '~models/groupItem';
+import {Button} from 'react-native-paper';
 
 type Props = {
   toShow: boolean;
-  options: GroupItem[];
-  onSelectListener: (item: GroupItem) => void;
+  options: GroupItemModel[];
+  onSelectListener: (item: GroupItemModel) => void;
   onHide: () => void;
   title: string;
   showColor?: boolean;
@@ -24,12 +25,12 @@ export function Selector({
   onHide,
   showColor = false,
 }: Props) {
-  const handleSelect = (item: GroupItem) => {
+  const handleSelect = (item: GroupItemModel) => {
     onHide();
     onSelectListener(item);
   };
 
-  const renderItem: ListRenderItem<GroupItem> = ({item}) => (
+  const renderItem: ListRenderItem<GroupItemModel> = ({item}) => (
     <ListItem item={item} showColor={showColor} onSelect={handleSelect} />
   );
 
@@ -45,11 +46,11 @@ export function Selector({
           <St.Body>
             <St.List
               data={options}
-              keyExtractor={(item: GroupItem) => item.id}
+              keyExtractor={(item: GroupItemModel) => item.id}
               renderItem={renderItem}
               ItemSeparatorComponent={DividerComponent}
             />
-            <Button type="LINK" onPress={onHide} text={Strings.cancel} />
+            <Button onPress={onHide}>{Strings.cancel}</Button>
           </St.Body>
         </St.View>
       </St.Container>

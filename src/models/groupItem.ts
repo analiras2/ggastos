@@ -1,4 +1,4 @@
-export class GroupItem {
+export class GroupItemModel {
   id: string;
   title: string;
   data: any;

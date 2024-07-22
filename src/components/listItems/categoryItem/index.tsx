@@ -3,18 +3,18 @@ import Text from '~components/text';
 import {Colors, Strings} from '~constants/index';
 import React from 'react';
 import * as St from './styles';
-import {Category} from '~models/category';
+import {CategoryModel} from '~models/category';
 
 type Props = {
   index: number;
-  data: Category;
-  onPress: (item: Category) => void;
+  data: CategoryModel;
+  onPress: (item: CategoryModel) => void;
 };
 
 const CategoryListItem = ({index, data, onPress}: Props) => {
   return (
     <St.Container onPress={() => onPress(data)} isFirst={index === 0}>
-      <Text type="TITLE" color={data.color} mb={4} bold>
+      <Text type="TITLE" color={data.color} bold>
         {data.name}
       </Text>
       <St.Data>
