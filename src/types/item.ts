@@ -8,6 +8,10 @@ export interface IPurchaseItem {
   note?: string;
 }
 
+export type IPurchaseSaveItem = IPurchaseItem & {
+  price: string;
+};
+
 export type IItem = IPurchaseItem & {
   id: number;
   paid: boolean;

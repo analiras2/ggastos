@@ -18,3 +18,11 @@ export const formatDate = (date: Date): string => {
 
   return `${day}/${month}/${year}`;
 };
+
+export const parseCurrency = (currencyString: string): number => {
+  const cleanedString = currencyString
+    .replace(/R\$\s*/, '')
+    .replace('.', '')
+    .replace(',', '.');
+  return parseFloat(cleanedString);
+};

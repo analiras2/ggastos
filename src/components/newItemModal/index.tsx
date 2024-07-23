@@ -6,30 +6,30 @@ import RoundedView from '~components/roundedView';
 import {CategoryModel} from '~models/category';
 import {Button} from 'react-native-paper';
 import {Modal} from 'react-native';
-import {IPurchaseItem} from '~types/item';
+import {IPurchaseSaveItem} from '~types/item';
 import DatePicker from 'react-native-date-picker';
 import {formatDate} from '~utils/index';
+import {PaymentMethod} from '~types/paymentMethod';
+import {GroupItemModel} from '~models/groupItem';
 
 type Props = {
   isVisible: boolean;
-  onSave: (formData: IPurchaseItem) => void;
+  onSave: (formData: IPurchaseSaveItem) => void;
   onClose: () => void;
 };
 
-const options = CategoryModel.getCategories.map(category => ({
-  label: category.name,
-  value: category.name,
-}));
+const paymentOptions = Object.entries(PaymentMethod).map(
+  ([key, value]) => new GroupItemModel(key, value),
+);
 
 const NewItemModal = ({isVisible, onSave, onClose}: Props) => {
   const [open, setOpen] = useState(false);
   const [isValid, setIsValid] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [formData, setFormData] = useState<IPurchaseItem>({
+  const [formData, setFormData] = useState({
     title: '',
     date: new Date(),
     category: '',
-    price: 0,
+    price: '',
     paymentMethod: '',
     installments: 1,
     note: '',
@@ -39,7 +39,7 @@ const NewItemModal = ({isVisible, onSave, onClose}: Props) => {
     const isFormValid =
       formData.title.trim() !== '' &&
       formData.category.trim() !== '' &&
-      formData.price !== 0 &&
+      formData.price.trim() !== '' &&
       formData.paymentMethod.trim() !== '';
 
     setIsValid(isFormValid);
@@ -64,14 +64,13 @@ const NewItemModal = ({isVisible, onSave, onClose}: Props) => {
           <St.Row>
             <St.Icon name="tag" size={16} color={Colors.iconDark} />
             <St.Dropdown
-              data={options}
-              labelField="label"
-              valueField="value"
+              data={CategoryModel.getCategories}
+              labelField="name"
+              valueField="id"
               placeholder={Strings.selectCategory}
-              value={selectedCategory}
+              value={formData.category}
               onChange={item => {
-                setSelectedCategory(item.value);
-                handleChange('category', item.value);
+                handleChange('category', item.id);
               }}
             />
           </St.Row>
@@ -103,17 +102,25 @@ const NewItemModal = ({isVisible, onSave, onClose}: Props) => {
             }}
           />
 
+          <St.Row>
+            <St.Icon name="wallet" size={16} color={Colors.iconDark} />
+            <St.Dropdown
+              data={paymentOptions}
+              labelField="title"
+              valueField="id"
+              placeholder={Strings.paymentType}
+              value={formData.paymentMethod}
+              onChange={item => {
+                handleChange('paymentMethod', item.id);
+              }}
+            />
+          </St.Row>
+
           <TextInput
             label={Strings.value}
             isMoney
             iconData={{name: 'wallet'}}
             onChangeText={txt => handleChange('price', txt)}
-          />
-
-          <TextInput
-            label={Strings.paymentType}
-            iconData={{name: 'note'}}
-            onChangeText={txt => handleChange('paymentMethod', txt)}
           />
 
           <TextInput

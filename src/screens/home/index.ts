@@ -3,7 +3,8 @@ import {useDateContext} from '~contexts/dateContext';
 import {CategoryModel, ItemModel, MonthModel} from '~models/index';
 import {IHomeStackProps, RootStackScreenProps} from '~types/navigation';
 import HomeView from './view';
-import {IPurchaseItem} from '~types/item';
+import {IPurchaseSaveItem} from '~types/item';
+import {parseCurrency} from '~utils/index';
 
 const HomeScreen = ({navigation, route}: RootStackScreenProps) => {
   const {currentMonth, currentYear} = useDateContext();
@@ -15,7 +16,8 @@ const HomeScreen = ({navigation, route}: RootStackScreenProps) => {
     console.log('goToDetails', item);
   };
 
-  const onSaveNewItem = async (newItem: IPurchaseItem) => {
+  const onSaveNewItem = async (item: IPurchaseSaveItem) => {
+    const newItem = {...item, price: parseCurrency(item.price)};
     await ItemModel.addItem(newItem);
   };
 
