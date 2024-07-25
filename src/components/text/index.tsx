@@ -51,8 +51,12 @@ const Text = ({
 
     return (
       <Txt style={currentStyle}>
-        <Txt variant={STYLES.DEFAULT}>{`R$${formattedValue[0]}`}</Txt>
-        <Txt variant={STYLES.LABEL}>{`,${formattedValue[1]}`}</Txt>
+        <Txt
+          variant={STYLES.DEFAULT}
+          style={currentStyle}>{`R$${formattedValue[0]}`}</Txt>
+        <Txt
+          variant={STYLES.LABEL}
+          style={currentStyle}>{`,${formattedValue[1]}`}</Txt>
       </Txt>
     );
   }

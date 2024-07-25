@@ -14,14 +14,18 @@ export class MonthModel {
     this.totalBalance = 0;
     this.currentBalance = 0;
     this.totalExpected = 0;
-
-    this.getCategories();
   }
 
-  getCategories(): void {
-    this.categories = CategoryModel.getCategories.map(
-      (item: ICategoryData) => new CategoryModel(item, this.id),
+  async getCategories(): Promise<any> {
+    const categoryPromises = CategoryModel.getCategories.map(
+      async (item: ICategoryData) => {
+        const category = new CategoryModel(item, this.id);
+        await category.getItems();
+        return category;
+      },
     );
+
+    this.categories = await Promise.all(categoryPromises);
     this.getTotalBalance();
     this.getTotalExpected();
   }

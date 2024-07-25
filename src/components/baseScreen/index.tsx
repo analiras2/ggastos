@@ -1,6 +1,6 @@
 import React from 'react';
 import * as St from './styles';
-import {MonthHeader, SimpleTitleHeader} from '~components/index';
+import {DetailsHeader, MonthHeader, SimpleTitleHeader} from '~components/index';
 import {IBalanceData} from '~types/balance';
 
 const HEADER_TYPE = {
@@ -14,32 +14,54 @@ export interface ISimpleHeaderProps {
   title: string;
 }
 
-export interface IBalanceHeaderProps {
-  type: typeof HEADER_TYPE.MONTH | typeof HEADER_TYPE.DETAILS;
+export interface IMonthHeaderProps {
+  type: typeof HEADER_TYPE.MONTH;
   balance: IBalanceData;
+}
+
+export interface IDetailsHeaderProps {
+  type: typeof HEADER_TYPE.DETAILS;
+  balance: IBalanceData;
+  title: string;
+  categoryColor: string;
+  onBack: () => void;
 }
 
 type Props = {
   children: React.ReactNode | React.ReactNode[];
-  header: ISimpleHeaderProps | IBalanceHeaderProps;
+  header: ISimpleHeaderProps | IMonthHeaderProps | IDetailsHeaderProps;
   noScroll?: boolean;
   noPadding?: boolean;
 };
 
 const getHeaderComponent = (
-  header: ISimpleHeaderProps | IBalanceHeaderProps,
+  header: ISimpleHeaderProps | IMonthHeaderProps | IDetailsHeaderProps,
 ) => {
-  if (header.type === HEADER_TYPE.SIMPLE) {
-    const {title} = header as ISimpleHeaderProps;
-    return <SimpleTitleHeader title={title} />;
-  } else {
-    const {balance} = header as IBalanceHeaderProps;
-    return (
-      <MonthHeader
-        currentBalance={balance.current}
-        expectedBalance={balance.expected}
-      />
-    );
+  switch (header.type) {
+    case HEADER_TYPE.SIMPLE: {
+      const {title} = header as ISimpleHeaderProps;
+      return <SimpleTitleHeader title={title} />;
+    }
+    case HEADER_TYPE.DETAILS: {
+      const {title, balance, categoryColor, onBack} =
+        header as IDetailsHeaderProps;
+      return (
+        <DetailsHeader
+          title={title}
+          balance={balance}
+          categoryColor={categoryColor}
+          onBack={onBack}
+        />
+      );
+    }
+    case HEADER_TYPE.MONTH:
+      const {balance} = header as IMonthHeaderProps;
+      return (
+        <MonthHeader
+          currentBalance={balance.current}
+          expectedBalance={balance.expected}
+        />
+      );
   }
 };
 

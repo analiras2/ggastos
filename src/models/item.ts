@@ -2,7 +2,7 @@ import AsyncStorageManager from '../service/asyncStorageManager';
 import {IItem, IPurchaseItem} from '~types/item';
 
 export class ItemModel {
-  private static storageKey = '@items_storage';
+  static storageKey = '@items_storage';
 
   private storageManager: AsyncStorageManager;
 

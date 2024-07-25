@@ -1,5 +1,7 @@
+import AsyncStorageManager from '../service/asyncStorageManager';
 import {ICategoryData} from '~types/category';
 import {IItem} from '~types/item';
+import {ItemModel} from '.';
 
 export class CategoryModel {
   id: string;
@@ -18,6 +20,18 @@ export class CategoryModel {
     this.items = [];
     this.totalSpent = 0;
     this.totalExpected = 0;
+  }
+
+  async getItems(): Promise<void> {
+    const storageManager = new AsyncStorageManager(ItemModel.storageKey);
+    const allItems: IItem[] = await storageManager.getItems();
+
+    this.items = allItems.filter(item => {
+      const itemDate = new Date(item.date);
+      const itemDateId = `${itemDate.getMonth() + 1}_${itemDate.getFullYear()}`;
+
+      return itemDateId === this.dateId && item.category === this.id;
+    });
 
     this.getTotalSpent();
     this.getTotalExpected();
@@ -25,7 +39,7 @@ export class CategoryModel {
 
   getTotalSpent(): void {
     this.totalSpent = this.items.reduce((prevVal, item) => {
-      if (item.paid) {
+      if (item.paid && item.category === this.id) {
         return prevVal + item.price;
       }
       return prevVal;
@@ -33,10 +47,12 @@ export class CategoryModel {
   }
 
   getTotalExpected(): void {
-    this.totalExpected = this.items.reduce(
-      (prevVal, item) => prevVal + item.price,
-      0,
-    );
+    this.totalExpected = this.items.reduce((prevVal, item) => {
+      if (item.category === this.id) {
+        return prevVal + item.installmentValue;
+      }
+      return prevVal;
+    }, 0);
   }
 
   static getCategories: ICategoryData[] = [
