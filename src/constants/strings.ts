@@ -20,4 +20,10 @@ export default {
   configuration: 'Configurações',
   selectTheYear: 'Selecione o ano',
   newItem: 'Novo Item',
+  storage: {
+    getItemsError: 'Erro ao obter itens do AsyncStorage:',
+    saveError: 'Erro ao salvar itens no AsyncStorage:',
+    clearError: 'Erro ao limpar AsyncStorage:',
+    deleteError: 'Erro ao remover item do AsyncStorage:',
+  },
 };

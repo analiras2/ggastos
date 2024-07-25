@@ -23,15 +23,15 @@ const paymentOptions = Object.entries(PaymentMethod).map(
 );
 
 const NewItemModal = ({isVisible, onSave, onClose}: Props) => {
-  const [open, setOpen] = useState(false);
+  const [openDatePicker, setOpenDatePicker] = useState(false);
   const [isValid, setIsValid] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<IPurchaseSaveItem>({
     title: '',
     date: new Date(),
     category: '',
     price: '',
     paymentMethod: '',
-    installments: 1,
+    installments: '1',
     note: '',
   });
 
@@ -46,10 +46,12 @@ const NewItemModal = ({isVisible, onSave, onClose}: Props) => {
   }, [formData]);
 
   const handleChange = (key: keyof typeof formData, value: string | Date) => {
-    setFormData(prevState => ({
-      ...prevState,
-      [key]: value,
-    }));
+    setFormData(prevState => ({...prevState, [key]: value}));
+  };
+
+  const handleSave = () => {
+    onSave(formData);
+    onClose();
   };
 
   return (
@@ -91,14 +93,14 @@ const NewItemModal = ({isVisible, onSave, onClose}: Props) => {
           <DatePicker
             modal
             mode="date"
-            open={open}
+            open={openDatePicker}
             date={formData.date}
             onConfirm={date => {
-              setOpen(false);
+              setOpenDatePicker(false);
               handleChange('date', date);
             }}
             onCancel={() => {
-              setOpen(false);
+              setOpenDatePicker(false);
             }}
           />
 
@@ -107,21 +109,40 @@ const NewItemModal = ({isVisible, onSave, onClose}: Props) => {
             <St.Dropdown
               data={paymentOptions}
               labelField="title"
-              valueField="id"
+              valueField="title"
               placeholder={Strings.paymentType}
               value={formData.paymentMethod}
               onChange={item => {
-                handleChange('paymentMethod', item.id);
+                handleChange('paymentMethod', item.title);
               }}
             />
           </St.Row>
 
-          <TextInput
-            label={Strings.value}
-            isMoney
-            iconData={{name: 'wallet'}}
-            onChangeText={txt => handleChange('price', txt)}
-          />
+          <St.Row>
+            <St.MoneyInput
+              label={Strings.value}
+              isMoney
+              iconData={{name: 'wallet'}}
+              onChangeText={txt => handleChange('price', txt)}
+            />
+            {formData.paymentMethod === PaymentMethod.CREDIT && (
+              <St.InstallmentsInput
+                label={Strings.installments}
+                keyboardType="numeric"
+                iconData={{name: 'credit-card'}}
+                value={formData.installments}
+                onChangeText={txt => {
+                  const value = txt === '0' ? '1' : txt;
+                  handleChange('installments', value);
+                }}
+                onBlur={() => {
+                  if (!formData.installments) {
+                    handleChange('installments', '1');
+                  }
+                }}
+              />
+            )}
+          </St.Row>
 
           <TextInput
             label={Strings.description}
@@ -131,10 +152,7 @@ const NewItemModal = ({isVisible, onSave, onClose}: Props) => {
 
           <St.Footer>
             <Button onPress={onClose}>{Strings.cancel}</Button>
-            <Button
-              mode="contained"
-              onPress={() => onSave(formData)}
-              disabled={!isValid}>
+            <Button mode="contained" onPress={handleSave} disabled={!isValid}>
               {Strings.save}
             </Button>
           </St.Footer>

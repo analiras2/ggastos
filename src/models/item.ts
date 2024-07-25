@@ -1,47 +1,63 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorageManager from '../service/asyncStorageManager';
 import {IItem, IPurchaseItem} from '~types/item';
 
 export class ItemModel {
   private static storageKey = '@items_storage';
 
-  static async getItems(): Promise<IItem[]> {
-    try {
-      const jsonValue = await AsyncStorage.getItem(this.storageKey);
-      return jsonValue != null ? JSON.parse(jsonValue) : [];
-    } catch (e) {
-      console.error('Error fetching items:', e);
-      return [];
-    }
+  private storageManager: AsyncStorageManager;
+
+  constructor() {
+    this.storageManager = new AsyncStorageManager(ItemModel.storageKey);
   }
 
-  static async addItem(item: IPurchaseItem): Promise<void> {
+  async getItems(): Promise<IItem[]> {
+    return await this.storageManager.getItems();
+  }
+
+  async addItem(item: IPurchaseItem): Promise<void> {
     const items = await this.getItems();
-    const id =
-      items.length > 0 ? Math.max(...items.map(item => item.id)) + 1 : 1;
-    const newItem: IItem = {
-      ...item,
-      id,
-      paid: false,
-      currentInstallment: 1,
-    };
-    const updatedItems = [...items, newItem];
-    console.log('Aqui', updatedItems);
-    // await AsyncStorage.setItem(this.storageKey, JSON.stringify(updatedItems));
+    const baseDate = new Date(item.date);
+    const updatedItems: IItem[] = [];
+
+    for (let i = 0; i < item.installments; i++) {
+      const id =
+        items.length > 0
+          ? Math.max(...items.map(existingItem => existingItem.id)) + i + 1
+          : i + 1;
+
+      const newDate = new Date(baseDate);
+      newDate.setMonth(baseDate.getMonth() + i);
+
+      const newItem: IItem = {
+        ...item,
+        id,
+        date: newDate.toISOString(),
+        paid: false,
+        currentInstallment: i + 1,
+        installmentValue: item.price / item.installments,
+      };
+
+      updatedItems.push(newItem);
+    }
+
+    const allItems = [...items, ...updatedItems];
+
+    await this.storageManager.setItems(allItems);
   }
 
-  static async updateItem(updatedItem: IItem): Promise<void> {
+  async updateItem(updatedItem: IItem): Promise<void> {
     const items = await this.getItems();
     const itemIndex = items.findIndex(item => item.id === updatedItem.id);
 
     if (itemIndex !== -1) {
       items[itemIndex] = updatedItem;
-      await AsyncStorage.setItem(this.storageKey, JSON.stringify(items));
+      await this.storageManager.setItems(items);
     }
   }
 
-  static async removeItem(itemId: number): Promise<void> {
+  async removeItem(itemId: number): Promise<void> {
     const items = await this.getItems();
     const updatedItems = items.filter(item => item.id !== itemId);
-    await AsyncStorage.setItem(this.storageKey, JSON.stringify(updatedItems));
+    await this.storageManager.setItems(updatedItems);
   }
 }

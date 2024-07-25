@@ -23,18 +23,21 @@ const Icon = ({name, size = 16, color = Colors.iconDark}: IconData) => (
 const InputComponent = ({isMoney, ...props}: Props) =>
   isMoney ? <MoneyInput {...props} /> : <St.Input {...props} />;
 
-const TextInput = ({iconData, errorMessage, ...props}: Props) => {
+const TextInput = ({iconData, errorMessage, style, ...props}: Props) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const underlineStyle = {marginBottom: isFocused ? 0 : 4};
   const inputProps = {
     onFocus: () => setIsFocused(true),
-    onBlur: () => setIsFocused(false),
+    onBlur: (e: any) => {
+      setIsFocused(false);
+      props.onBlur && props.onBlur(e);
+    },
   };
 
   return (
     <>
-      <St.Row>
+      <St.Row style={style}>
         {iconData && <Icon {...iconData} />}
         <InputComponent
           error={!!errorMessage}

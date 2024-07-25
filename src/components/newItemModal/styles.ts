@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import {Dropdown as ElementDropdown} from 'react-native-element-dropdown';
 import {DropdownProps} from 'react-native-element-dropdown/lib/typescript/components/Dropdown/model';
+import TextInput from '~components/textInput';
 
 export const Container = styled.View`
   flex: 1;
@@ -55,4 +56,12 @@ export const Footer = styled.View`
 
 export const Icon = styled(SimpleLineIcons)`
   margin-right: 10px;
+`;
+
+export const MoneyInput = styled(TextInput)`
+  flex: 1.5;
+`;
+
+export const InstallmentsInput = styled(TextInput)`
+  margin-left: 16px;
 `;

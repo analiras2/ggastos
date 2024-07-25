@@ -10,10 +10,13 @@ export interface IPurchaseItem {
 
 export type IPurchaseSaveItem = IPurchaseItem & {
   price: string;
+  installments: string;
 };
 
 export type IItem = IPurchaseItem & {
   id: number;
+  data: string;
   paid: boolean;
   currentInstallment: number;
+  installmentValue: number;
 };
