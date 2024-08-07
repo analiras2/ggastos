@@ -8,7 +8,6 @@ const HomeScreen = ({navigation, route}: RootStackScreenProps) => {
   const {name, totalExpected, totalSpent, items, color} =
     route.params as CategoryModel;
 
-  console.log('Aq', route);
   return (
     <BaseScreen
       header={{

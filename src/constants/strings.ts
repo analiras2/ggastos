@@ -4,6 +4,8 @@ export default {
   expectedBalance: 'Saldo Esperado',
   currentSpend: 'Gasto Atual',
   expectedSpend: 'Gasto Esperado',
+  currentGain: 'Ganho Atual',
+  expectedGain: 'Ganho Esperado',
   value: 'Valor',
   date: 'Data',
   installments: 'Parcelas',

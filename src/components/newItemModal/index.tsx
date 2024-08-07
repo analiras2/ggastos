@@ -6,7 +6,7 @@ import RoundedView from '~components/roundedView';
 import {CategoryModel} from '~models/category';
 import {Button} from 'react-native-paper';
 import {Modal} from 'react-native';
-import {IPurchaseSaveItem} from '~types/item';
+import {IPurchaseSaveItem} from '~types/purchase';
 import DatePicker from 'react-native-date-picker';
 import {formatDate} from '~utils/index';
 import {PaymentMethod} from '~types/paymentMethod';
@@ -34,6 +34,8 @@ const NewItemModal = ({isVisible, onSave, onClose}: Props) => {
     installments: '1',
     note: '',
   });
+
+  const categories = CategoryModel.getCategories;
 
   useEffect(() => {
     const isFormValid =
@@ -66,7 +68,7 @@ const NewItemModal = ({isVisible, onSave, onClose}: Props) => {
           <St.Row>
             <St.Icon name="tag" size={16} color={Colors.iconDark} />
             <St.Dropdown
-              data={CategoryModel.getCategories}
+              data={categories}
               labelField="name"
               valueField="id"
               placeholder={Strings.selectCategory}
@@ -86,7 +88,7 @@ const NewItemModal = ({isVisible, onSave, onClose}: Props) => {
             label={Strings.date}
             iconData={{name: 'calendar'}}
             value={formatDate(formData.date)}
-            onPress={() => setOpen(true)}
+            onPress={() => setOpenDatePicker(true)}
             editable={false}
           />
 

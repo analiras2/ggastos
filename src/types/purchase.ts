@@ -13,7 +13,7 @@ export type IPurchaseSaveItem = IPurchaseItem & {
   installments: string;
 };
 
-export type IItem = IPurchaseItem & {
+export type IPurchase = IPurchaseItem & {
   id: number;
   data: string;
   paid: boolean;

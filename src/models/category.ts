@@ -1,14 +1,14 @@
 import AsyncStorageManager from '../service/asyncStorageManager';
 import {ICategoryData} from '~types/category';
-import {IItem} from '~types/item';
-import {ItemModel} from '.';
+import {IPurchase} from '~types/purchase';
+import {PurchaseModel} from '.';
 
 export class CategoryModel {
   id: string;
   name: string;
   color: string;
   dateId: string;
-  items: IItem[];
+  items: IPurchase[];
   totalSpent: number;
   totalExpected: number;
 
@@ -23,8 +23,8 @@ export class CategoryModel {
   }
 
   async getItems(): Promise<void> {
-    const storageManager = new AsyncStorageManager(ItemModel.storageKey);
-    const allItems: IItem[] = await storageManager.getItems();
+    const storageManager = new AsyncStorageManager(PurchaseModel.storageKey);
+    const allItems: IPurchase[] = await storageManager.getItems();
 
     this.items = allItems.filter(item => {
       const itemDate = new Date(item.date);

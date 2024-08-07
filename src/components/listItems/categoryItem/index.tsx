@@ -12,19 +12,20 @@ type Props = {
 };
 
 const CategoryListItem = ({index, data, onPress}: Props) => {
+  const isFirst = index === 0;
   return (
-    <St.Container onPress={() => onPress(data)} isFirst={index === 0}>
+    <St.Container onPress={() => onPress(data)} isFirst={isFirst}>
       <Text type="TITLE" color={data.color} bold>
         {data.name}
       </Text>
       <St.Data>
         <LabeledValue
-          title={Strings.expectedSpend}
+          title={isFirst ? Strings.expectedGain : Strings.expectedSpend}
           value={data.totalExpected}
           color={Colors.label}
         />
         <LabeledValue
-          title={Strings.currentSpend}
+          title={isFirst ? Strings.currentGain : Strings.currentSpend}
           value={data.totalSpent}
           color={Colors.label}
         />
