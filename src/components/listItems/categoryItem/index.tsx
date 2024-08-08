@@ -1,9 +1,9 @@
+import React from 'react';
 import LabeledValue from '~components/labeledValue';
 import Text from '~components/text';
-import {Colors, Strings} from '~constants/index';
-import React from 'react';
-import * as St from './styles';
+import {Strings} from '~constants/index';
 import {CategoryModel} from '~models/category';
+import * as St from './styles';
 
 type Props = {
   index: number;
@@ -20,14 +20,14 @@ const CategoryListItem = ({index, data, onPress}: Props) => {
       </Text>
       <St.Data>
         <LabeledValue
-          title={isFirst ? Strings.expectedGain : Strings.expectedSpend}
+          valueIsMoney
+          label={isFirst ? Strings.expectedGain : Strings.expectedSpend}
           value={data.totalExpected}
-          color={Colors.label}
         />
         <LabeledValue
-          title={isFirst ? Strings.currentGain : Strings.currentSpend}
+          valueIsMoney
+          label={isFirst ? Strings.currentGain : Strings.currentSpend}
           value={data.totalSpent}
-          color={Colors.label}
         />
       </St.Data>
     </St.Container>

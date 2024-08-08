@@ -1,8 +1,9 @@
 import React from 'react';
-import * as St from './styles';
 import Text from '~components/text';
-import {Colors, Strings} from '~constants/index';
+import {Strings} from '~constants/index';
 import {IBalanceData} from '~types/balance';
+import LabeledValue from '~components/labeledValue';
+import * as St from './styles';
 
 const LAYOUT_TYPES = {
   BALANCE: 'BALANCE',
@@ -23,23 +24,17 @@ type Props = BalanceProps | TitleProps;
 
 const BalanceView = ({data}: {data: IBalanceData}) => (
   <St.Balance>
-    <St.BalanceItem>
-      <Text color={Colors.label} type="LABEL">
-        {Strings.expectedBalance}
-      </Text>
-      <Text type="TITLE" money>
-        {data.expected}
-      </Text>
-    </St.BalanceItem>
+    <LabeledValue
+      label={Strings.expectedBalance}
+      value={data.expected}
+      valueIsMoney
+    />
     <St.Divider />
-    <St.BalanceItem>
-      <Text color={Colors.label} type="LABEL">
-        {Strings.currentBalance}
-      </Text>
-      <Text type="HEADER" money>
-        {data.current}
-      </Text>
-    </St.BalanceItem>
+    <LabeledValue
+      label={Strings.currentBalance}
+      value={data.current}
+      valueIsMoney
+    />
   </St.Balance>
 );
 

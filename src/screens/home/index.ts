@@ -30,15 +30,13 @@ const HomeScreen = ({navigation, route}: RootStackScreenProps) => {
   };
 
   const onSaveNewItem = async (item: IPurchaseSaveItem) => {
-    const Model = new PurchaseModel();
-
     const newItem = {
       ...item,
       price: parseCurrency(item.price),
       installments: Number(item.installments),
     };
 
-    await Model.addPurchase(newItem);
+    await PurchaseModel.addPurchase(newItem);
   };
 
   const props: IHomeStackProps = {

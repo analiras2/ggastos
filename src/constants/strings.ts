@@ -11,7 +11,6 @@ export default {
   installments: 'Parcelas',
   selectCategory: 'Categoria',
   title: 'Título',
-  repeatTimes: 'Parcelas',
   description: 'Descrição',
   paymentType: 'Tipo de pagamento',
   yearConsolidated: 'Ano Consolidado',
@@ -22,6 +21,8 @@ export default {
   configuration: 'Configurações',
   selectTheYear: 'Selecione o ano',
   newItem: 'Novo Item',
+  installment: 'Parcela',
+  payment: 'Pagamento',
   storage: {
     getItemsError: 'Erro ao obter itens do AsyncStorage:',
     saveError: 'Erro ao salvar itens no AsyncStorage:',

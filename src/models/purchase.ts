@@ -3,19 +3,14 @@ import {IPurchase, IPurchaseItem} from '~types/purchase';
 
 export class PurchaseModel {
   static storageKey = '@items_storage';
+  static storageManager = new AsyncStorageManager(PurchaseModel.storageKey);
 
-  private storageManager: AsyncStorageManager;
-
-  constructor() {
-    this.storageManager = new AsyncStorageManager(PurchaseModel.storageKey);
+  static async getPurchases(): Promise<IPurchase[]> {
+    return await PurchaseModel.storageManager.getItems();
   }
 
-  async getPurchases(): Promise<IPurchase[]> {
-    return await this.storageManager.getItems();
-  }
-
-  async addPurchase(item: IPurchaseItem): Promise<void> {
-    const items = await this.getPurchases();
+  static async addPurchase(item: IPurchaseItem): Promise<void> {
+    const items = await PurchaseModel.getPurchases();
     const baseDate = new Date(item.date);
     const updatedPurchases: IPurchase[] = [];
 
@@ -44,22 +39,27 @@ export class PurchaseModel {
 
     const allPurchases = [...items, ...updatedPurchases];
 
-    await this.storageManager.setItems(allPurchases);
+    await PurchaseModel.storageManager.setItems(allPurchases);
   }
 
-  async updatePurchase(updatedPurchase: IPurchase): Promise<void> {
-    const items = await this.getPurchases();
+  static async payPurchase(purchase: IPurchase): Promise<void> {
+    const newPurchase: IPurchase = {...purchase, paid: !purchase.paid};
+    await this.updatePurchase(newPurchase);
+  }
+
+  static async updatePurchase(updatedPurchase: IPurchase): Promise<void> {
+    const items = await PurchaseModel.getPurchases();
     const itemIndex = items.findIndex(item => item.id === updatedPurchase.id);
 
     if (itemIndex !== -1) {
       items[itemIndex] = updatedPurchase;
-      await this.storageManager.setItems(items);
+      await PurchaseModel.storageManager.setItems(items);
     }
   }
 
   async removePurchase(itemId: number): Promise<void> {
-    const items = await this.getPurchases();
+    const items = await PurchaseModel.getPurchases();
     const updatedPurchases = items.filter(item => item.id !== itemId);
-    await this.storageManager.setItems(updatedPurchases);
+    await PurchaseModel.storageManager.setItems(updatedPurchases);
   }
 }

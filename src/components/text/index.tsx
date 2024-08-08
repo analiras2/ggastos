@@ -18,6 +18,7 @@ type Props = {
   color?: string;
   money?: boolean;
   mb?: number;
+  ph?: number;
   textAlign?: 'left' | 'center' | 'right' | 'justify';
   bold?: boolean;
   style?: TextStyle;
@@ -30,6 +31,7 @@ const Text = ({
   color = Colors.text,
   style,
   mb,
+  ph,
   bold,
   textAlign,
 }: Props) => {
@@ -37,6 +39,7 @@ const Text = ({
     {
       color,
       marginBottom: mb,
+      paddingHorizontal: ph,
       textAlign,
       fontWeight: bold ? 'bold' : 'normal',
     },
@@ -52,7 +55,7 @@ const Text = ({
     return (
       <Txt style={currentStyle}>
         <Txt
-          variant={STYLES.DEFAULT}
+          variant={STYLES[type]}
           style={currentStyle}>{`R$${formattedValue[0]}`}</Txt>
         <Txt
           variant={STYLES.LABEL}

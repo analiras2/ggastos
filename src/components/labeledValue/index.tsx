@@ -1,23 +1,37 @@
 import React from 'react';
 import Text from '~components/text';
 import {Colors} from '~constants/index';
-import {FlexAlignType} from 'react-native';
 import * as St from './styles';
 
 type Props = {
-  title: string;
-  value: number;
-  align?: FlexAlignType;
-  color?: string;
+  label: string;
+  value: number | string;
+  align?: 'left' | 'center' | 'right' | 'justify';
   light?: boolean;
+  valueIsMoney?: boolean;
+  flex?: number;
 };
 
-const LabeledValue = ({title, value, light, color}: Props) => (
-  <St.Container>
-    <Text type="LABEL" color={light ? Colors.textLight : color}>
-      {title}
+const LabeledValue = ({
+  label,
+  value,
+  align = 'center',
+  light,
+  valueIsMoney,
+  flex = 1,
+}: Props) => (
+  <St.Container flex={flex}>
+    <Text
+      color={light ? Colors.textLight : Colors.label}
+      type="LABEL"
+      textAlign={align}>
+      {label}
     </Text>
-    <Text color={light ? Colors.textLight : Colors.text} money>
+    <Text
+      type="TITLE"
+      color={light ? Colors.textLight : Colors.text}
+      textAlign={align}
+      money={valueIsMoney}>
       {value}
     </Text>
   </St.Container>

@@ -1,8 +1,26 @@
 import {createElement} from 'react';
-import {RootStackScreenProps} from '~types/navigation';
+import {
+  ICategoryDetailsStackProps,
+  RootStackScreenProps,
+} from '~types/navigation';
 import CategoryDetailsView from './view';
+import {IPurchase} from '~types/purchase';
+import {PurchaseModel} from '~models/purchase';
 
-const CategoryDetailsScreen = (props: RootStackScreenProps) => {
+const CategoryDetailsScreen = ({navigation, route}: RootStackScreenProps) => {
+  const onCheck = (item: IPurchase) => PurchaseModel.payPurchase(item);
+
+  const onEdit = () => {
+    // TODO
+  };
+
+  const props: ICategoryDetailsStackProps = {
+    navigation,
+    route,
+    onCheck,
+    onEdit,
+  };
+
   return createElement(CategoryDetailsView, props);
 };
 

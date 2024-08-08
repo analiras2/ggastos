@@ -2,7 +2,7 @@ import styled from 'styled-components/native';
 import {Colors, Layout} from '~constants/index';
 
 export const Container = styled.View`
-  height: 44px;
+  height: 48px;
   width: ${Layout.W_WIDTH - 40}px;
   border-radius: 50px;
   background-color: ${Colors.backgroundLight};
@@ -27,6 +27,6 @@ export const BalanceItem = styled.View`
 
 export const Divider = styled.View`
   background-color: ${Colors.divider};
-  height: 44px;
+  height: 40px;
   width: 1px;
 `;

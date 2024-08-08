@@ -1,5 +1,6 @@
 import {FunctionComponent} from 'react';
 import {CategoryModel, MonthModel} from '~models/index';
+import {IPurchase} from './purchase';
 
 export type RootStackScreenProps = NativeStackScreenProps<RootStackParamList>;
 
@@ -10,6 +11,11 @@ export type IHomeStackProps = RootStackScreenProps & {
   isNewItemModalVisible: () => boolean;
   onShowNewItemModal: boolean;
   onHideNewItemModal: boolean;
+};
+
+export type ICategoryDetailsStackProps = RootStackScreenProps & {
+  onCheck: (item: IPurchase) => void;
+  onEdit: (item: IPurchase) => void;
 };
 
 export type RootStackParamList = {

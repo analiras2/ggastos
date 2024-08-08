@@ -5,6 +5,7 @@ export {default as MonthHeader} from './headers/month';
 export {default as SimpleTitleHeader} from './headers/simpleTitle';
 export {default as LabeledValue} from './labeledValue';
 export {default as CategoryListItem} from './listItems/categoryItem';
+export {default as CategoryDetailListItem} from './listItems/categoryDetailItem';
 export {default as ListItem} from './listItems/simpleItem';
 export {default as Loading} from './loading';
 export {default as NavigationBar} from './navigationBar';
