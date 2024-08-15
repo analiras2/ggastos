@@ -2,7 +2,7 @@ import React from 'react';
 import LabeledValue from '~components/labeledValue';
 import Text from '~components/text';
 import {Strings} from '~constants/index';
-import {IPurchase} from '~types/purchase';
+import {IPurchase} from '~models/types/purchase';
 import * as St from './styles';
 
 type FooterProps = {

@@ -2,7 +2,7 @@ import React from 'react';
 import * as St from './styles';
 import Text from '~components/text';
 import {Colors, Strings} from '~constants/index';
-import {IBalanceData} from 'src/types/balance';
+import {IBalanceData} from '~components/headers/types/header';
 
 type Props = {
   data: IBalanceData;

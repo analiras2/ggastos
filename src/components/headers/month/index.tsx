@@ -4,7 +4,7 @@ import {FlatList, TouchableOpacity} from 'react-native';
 import * as St from './styles';
 import {RoundedView, Selector, Text} from '~components/index';
 import {GroupItemModel} from '~models/groupItem';
-import {useDateContext} from '~contexts/dateContext';
+import {useMonthContext} from '~contexts/monthContext';
 
 type MonthItem = {
   id: number;
@@ -24,7 +24,7 @@ const options = getYears(2020).map(item => new GroupItemModel(item.toString()));
 const MonthHeader = ({currentBalance, expectedBalance}: Props) => {
   const listRef = useRef<FlatList<MonthItem>>(null);
   const {currentMonth, setCurrentMonth, currentYear, setCurrentYear} =
-    useDateContext();
+    useMonthContext();
 
   const [showYearSelector, setShowYearSelector] = useState(false);
 

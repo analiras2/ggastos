@@ -1,32 +1,20 @@
-import {createElement, useState, useEffect} from 'react';
-import {useDateContext} from '~contexts/dateContext';
-import {CategoryModel, PurchaseModel, MonthModel} from '~models/index';
-import {IHomeStackProps, RootStackScreenProps} from '~types/navigation';
-import HomeView from './view';
-import {IPurchaseSaveItem} from '~types/purchase';
-import {parseCurrency} from '~utils/index';
+import {createElement, useState} from 'react';
+import {useMonthContext} from '~contexts/monthContext';
+import {CategoryModel, PurchaseModel} from '~models/index';
 import {StackRoutes} from '~navigation/stacks';
-import Loading from '~components/loading';
+import {RootStackScreenProps} from '~navigation/types';
+import {IPurchaseSaveItem} from '~models/types/purchase';
+import {parseCurrency} from '~utils/index';
+import HomeView from './view';
+import {HeaderType} from '~components/headers/types/header';
+import {THomeProps} from './types';
 
-const HomeScreen = ({navigation, route}: RootStackScreenProps) => {
-  const {currentMonth, currentYear} = useDateContext();
+const HomeScreen = ({navigation}: RootStackScreenProps<StackRoutes.HOME>) => {
+  const {monthModel, updateCategories} = useMonthContext();
   const [isNewItemModalVisible, setIsNewItemModalVisible] = useState(false);
 
-  const dateId = `${currentMonth + 1}_${currentYear}`;
-
-  const [monthModel, setMonthModel] = useState<MonthModel | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const model = new MonthModel(dateId);
-      await model.getCategories();
-      setMonthModel(model);
-    };
-    fetchData();
-  }, [dateId]);
-
-  const goToCategoryDetails = (item: CategoryModel) => {
-    navigation.navigate(StackRoutes.CATEGORY_DETAILS, item);
+  const goToCategoryDetails = (category: CategoryModel) => {
+    navigation.navigate(StackRoutes.CATEGORY_DETAILS, {category});
   };
 
   const onSaveNewItem = async (item: IPurchaseSaveItem) => {
@@ -37,20 +25,26 @@ const HomeScreen = ({navigation, route}: RootStackScreenProps) => {
     };
 
     await PurchaseModel.addPurchase(newItem);
+    updateCategories();
   };
 
-  const props: IHomeStackProps = {
-    navigation,
-    route,
+  const HomeViewProps: THomeProps = {
+    headerData: {
+      type: HeaderType.MONTH,
+      balance: {
+        expected: monthModel.totalExpected,
+        current: monthModel.currentBalance,
+      },
+    },
     isNewItemModalVisible,
     onSaveNewItem,
     onShowNewItemModal: () => setIsNewItemModalVisible(true),
     onHideNewItemModal: () => setIsNewItemModalVisible(false),
-    monthModel,
+    categories: monthModel.categories,
     goToCategoryDetails,
   };
 
-  return monthModel ? createElement(HomeView, props) : createElement(Loading);
+  return createElement(HomeView, HomeViewProps);
 };
 
 export default HomeScreen;

@@ -1,9 +1,9 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {IBalanceData} from '~types/balance';
 import * as St from './styles';
 import {Colors, Strings} from '~constants/index';
 import {Text} from '~components/index';
+import {IBalanceData} from '../types/header';
 interface Props {
   title: string;
   balance: IBalanceData;

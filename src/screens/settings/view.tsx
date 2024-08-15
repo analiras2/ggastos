@@ -1,13 +1,15 @@
 import React from 'react';
+import {TSimpleHeader} from '~components/headers/types/header';
 import {BaseScreen, Text} from '~components/index';
-import {Strings} from '~constants/index';
 
-const SettingsScreen = () => {
-  return (
-    <BaseScreen header={{type: 'SIMPLE', title: Strings.configuration}}>
-      <Text>Settings</Text>
-    </BaseScreen>
-  );
+type SettingsScreenProps = {
+  headerData: TSimpleHeader;
 };
+
+const SettingsScreen = ({headerData}: SettingsScreenProps) => (
+  <BaseScreen header={headerData}>
+    <Text>Screen</Text>
+  </BaseScreen>
+);
 
 export default SettingsScreen;

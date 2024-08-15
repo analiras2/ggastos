@@ -6,11 +6,11 @@ import RoundedView from '~components/roundedView';
 import {CategoryModel} from '~models/category';
 import {Button} from 'react-native-paper';
 import {Modal} from 'react-native';
-import {IPurchaseSaveItem} from '~types/purchase';
+import {IPurchaseSaveItem} from '~models/types/purchase';
 import DatePicker from 'react-native-date-picker';
 import {formatDate} from '~utils/index';
-import {PaymentMethod} from '~types/paymentMethod';
 import {GroupItemModel} from '~models/groupItem';
+import {PaymentMethod} from '~screens/home/categoryDetails/types';
 
 type Props = {
   isVisible: boolean;

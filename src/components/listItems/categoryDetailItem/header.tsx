@@ -2,7 +2,7 @@ import React from 'react';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import Text from '~components/text';
 import {Colors} from '~constants/index';
-import {IPurchase} from '~types/purchase';
+import {IPurchase} from '~models/types/purchase';
 import * as St from './styles';
 
 type HeaderProps = {

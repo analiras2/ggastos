@@ -4,8 +4,6 @@ import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import {StackRoutes} from '~navigation/stacks';
 import {SettingsScreen, HomeScreen, ChartScreen} from '~screens/index';
 import {Colors, Layout} from '~constants/index';
-import {DateProvider} from '~contexts/dateContext';
-import {RootStackScreenProps} from '~types/navigation';
 
 type TabBarIcon = {focused: boolean; color: string; size: number};
 
@@ -30,12 +28,6 @@ const getTabBarIcon =
   ({focused, color, size}: TabBarIcon) =>
     <Icon name={focused ? iconName : iconName} color={color} size={size} />;
 
-const HomeScreenWithProvider = (props: RootStackScreenProps) => (
-  <DateProvider>
-    <HomeScreen {...props} />
-  </DateProvider>
-);
-
 const NavigationBar = () => (
   <Tab.Navigator
     initialRouteName={StackRoutes.HOME}
@@ -51,7 +43,7 @@ const NavigationBar = () => (
     />
     <Tab.Screen
       name={StackRoutes.HOME}
-      component={HomeScreenWithProvider}
+      component={HomeScreen}
       options={{
         headerShown: false,
         title: 'Home',

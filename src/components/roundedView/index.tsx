@@ -1,9 +1,9 @@
 import React from 'react';
 import Text from '~components/text';
 import {Strings} from '~constants/index';
-import {IBalanceData} from '~types/balance';
 import LabeledValue from '~components/labeledValue';
 import * as St from './styles';
+import {IBalanceData} from '~components/headers/types/header';
 
 const LAYOUT_TYPES = {
   BALANCE: 'BALANCE',

@@ -6,31 +6,23 @@ import {
   NewItemModal,
   FadeAnimation,
 } from '~components/index';
-import {IHomeStackProps} from '~types/navigation';
 import * as St from './styles';
+import {THomeProps} from './types';
 
-const HomeScreen = ({
-  monthModel,
+const HomeView = ({
+  headerData,
+  categories,
   onSaveNewItem,
   goToCategoryDetails,
   isNewItemModalVisible,
   onShowNewItemModal,
   onHideNewItemModal,
-}: IHomeStackProps) => (
-  <BaseScreen
-    header={{
-      type: 'MONTH',
-      balance: {
-        expected: monthModel.totalExpected,
-        current: monthModel.currentBalance,
-      },
-    }}
-    noScroll
-    noPadding>
+}: THomeProps) => (
+  <BaseScreen header={headerData} noScroll noPadding>
     <FadeAnimation>
       <St.Container>
         <FlatList
-          data={monthModel.categories}
+          data={categories}
           keyExtractor={({name}) => name}
           renderItem={({item, index}) => (
             <CategoryListItem
@@ -53,4 +45,4 @@ const HomeScreen = ({
   </BaseScreen>
 );
 
-export default HomeScreen;
+export default HomeView;

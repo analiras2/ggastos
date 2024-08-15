@@ -1,16 +1,13 @@
-import AsyncStorageManager from '../service/asyncStorageManager';
-import {IPurchase, IPurchaseItem} from '~types/purchase';
+import {PurchaseStorageService} from '~service/purchaseStorage';
+import {IPurchase, IPurchaseItem} from '~models/types/purchase';
 
 export class PurchaseModel {
-  static storageKey = '@items_storage';
-  static storageManager = new AsyncStorageManager(PurchaseModel.storageKey);
-
   static async getPurchases(): Promise<IPurchase[]> {
-    return await PurchaseModel.storageManager.getItems();
+    return await PurchaseStorageService.getItems();
   }
 
   static async addPurchase(item: IPurchaseItem): Promise<void> {
-    const items = await PurchaseModel.getPurchases();
+    const items = await this.getPurchases();
     const baseDate = new Date(item.date);
     const updatedPurchases: IPurchase[] = [];
 
@@ -39,7 +36,7 @@ export class PurchaseModel {
 
     const allPurchases = [...items, ...updatedPurchases];
 
-    await PurchaseModel.storageManager.setItems(allPurchases);
+    await PurchaseStorageService.setItems(allPurchases);
   }
 
   static async payPurchase(purchase: IPurchase): Promise<void> {
@@ -48,18 +45,18 @@ export class PurchaseModel {
   }
 
   static async updatePurchase(updatedPurchase: IPurchase): Promise<void> {
-    const items = await PurchaseModel.getPurchases();
+    const items = await this.getPurchases();
     const itemIndex = items.findIndex(item => item.id === updatedPurchase.id);
 
     if (itemIndex !== -1) {
       items[itemIndex] = updatedPurchase;
-      await PurchaseModel.storageManager.setItems(items);
+      await PurchaseStorageService.setItems(items);
     }
   }
 
   async removePurchase(itemId: number): Promise<void> {
     const items = await PurchaseModel.getPurchases();
     const updatedPurchases = items.filter(item => item.id !== itemId);
-    await PurchaseModel.storageManager.setItems(updatedPurchases);
+    await PurchaseStorageService.setItems(updatedPurchases);
   }
 }

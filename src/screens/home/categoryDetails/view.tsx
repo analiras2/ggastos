@@ -1,30 +1,20 @@
 import React from 'react';
 import {FlatList} from 'react-native';
 import {BaseScreen, CategoryDetailListItem} from '~components/index';
-import {CategoryModel} from '~models/index';
-import {ICategoryDetailsStackProps} from '~types/navigation';
+import {TCategoryDetailsProps} from './types';
 
-const HomeScreen = ({
-  navigation,
-  route,
+const CategoryDetailsView = ({
+  headerData,
+  extraData,
+  items,
+  color,
   onCheck,
-}: ICategoryDetailsStackProps) => {
-  const {name, totalExpected, totalSpent, items, color} =
-    route.params as CategoryModel;
-
+}: TCategoryDetailsProps) => {
   return (
-    <BaseScreen
-      header={{
-        type: 'DETAILS',
-        title: name,
-        balance: {expected: totalExpected, current: totalSpent},
-        categoryColor: color,
-        onBack: () => navigation.goBack(),
-      }}
-      noScroll
-      noPadding>
+    <BaseScreen header={headerData} noScroll noPadding>
       <FlatList
         data={items}
+        extraData={extraData}
         keyExtractor={item => item.id.toString()}
         renderItem={({item}) => (
           <CategoryDetailListItem
@@ -38,4 +28,4 @@ const HomeScreen = ({
   );
 };
 
-export default HomeScreen;
+export default CategoryDetailsView;

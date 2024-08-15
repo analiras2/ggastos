@@ -1,4 +1,4 @@
-import {ICategoryData} from '~types/category';
+import {ICategoryData} from '~models/types/category';
 import {CategoryModel} from './category';
 
 export class MonthModel {

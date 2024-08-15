@@ -1,9 +1,13 @@
 import React from 'react';
+import {TSimpleHeader} from '~components/headers/types/header';
 import {BaseScreen, Text} from '~components/index';
-import {Strings} from '~constants/index';
 
-const ChartScreen = () => (
-  <BaseScreen header={{type: 'SIMPLE', title: Strings.yearConsolidated}}>
+type ChartScreenProps = {
+  headerData: TSimpleHeader;
+};
+
+const ChartScreen = ({headerData}: ChartScreenProps) => (
+  <BaseScreen header={headerData}>
     <Text>Screen</Text>
   </BaseScreen>
 );

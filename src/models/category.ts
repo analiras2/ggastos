@@ -1,6 +1,5 @@
-import AsyncStorageManager from '../service/asyncStorageManager';
-import {ICategoryData} from '~types/category';
-import {IPurchase} from '~types/purchase';
+import {ICategoryData} from '~models/types/category';
+import {IPurchase} from '~models/types/purchase';
 import {PurchaseModel} from '.';
 
 export class CategoryModel {
@@ -23,8 +22,7 @@ export class CategoryModel {
   }
 
   async getItems(): Promise<void> {
-    const storageManager = new AsyncStorageManager(PurchaseModel.storageKey);
-    const allItems: IPurchase[] = await storageManager.getItems();
+    const allItems: IPurchase[] = await PurchaseModel.getPurchases();
 
     this.items = allItems.filter(item => {
       const itemDate = new Date(item.date);
@@ -35,6 +33,10 @@ export class CategoryModel {
 
     this.getTotalSpent();
     this.getTotalExpected();
+  }
+
+  async getById(categoryId: string): Promise<IPurchase | undefined> {
+    return this.getItems().find(category => category.id === categoryId);
   }
 
   getTotalSpent(): void {

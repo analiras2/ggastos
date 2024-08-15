@@ -1,35 +1,17 @@
 import React from 'react';
 import * as St from './styles';
 import {DetailsHeader, MonthHeader, SimpleTitleHeader} from '~components/index';
-import {IBalanceData} from '~types/balance';
-
-const HEADER_TYPE = {
-  SIMPLE: 'SIMPLE',
-  MONTH: 'MONTH',
-  DETAILS: 'DETAILS',
-} as const;
-
-export interface ISimpleHeaderProps {
-  type: typeof HEADER_TYPE.SIMPLE;
-  title: string;
-}
-
-export interface IMonthHeaderProps {
-  type: typeof HEADER_TYPE.MONTH;
-  balance: IBalanceData;
-}
-
-export interface IDetailsHeaderProps {
-  type: typeof HEADER_TYPE.DETAILS;
-  balance: IBalanceData;
-  title: string;
-  categoryColor: string;
-  onBack: () => void;
-}
+import {
+  HeaderType,
+  IDetailsHeaderProps,
+  IMonthHeaderProps,
+  ISimpleHeaderProps,
+  THeader,
+} from '~components/headers/types/header';
 
 type Props = {
   children: React.ReactNode | React.ReactNode[];
-  header: ISimpleHeaderProps | IMonthHeaderProps | IDetailsHeaderProps;
+  header: THeader;
   noScroll?: boolean;
   noPadding?: boolean;
 };
@@ -38,11 +20,11 @@ const getHeaderComponent = (
   header: ISimpleHeaderProps | IMonthHeaderProps | IDetailsHeaderProps,
 ) => {
   switch (header.type) {
-    case HEADER_TYPE.SIMPLE: {
+    case HeaderType.SIMPLE: {
       const {title} = header as ISimpleHeaderProps;
       return <SimpleTitleHeader title={title} />;
     }
-    case HEADER_TYPE.DETAILS: {
+    case HeaderType.DETAILS: {
       const {title, balance, categoryColor, onBack} =
         header as IDetailsHeaderProps;
       return (
@@ -54,7 +36,7 @@ const getHeaderComponent = (
         />
       );
     }
-    case HEADER_TYPE.MONTH:
+    case HeaderType.MONTH:
       const {balance} = header as IMonthHeaderProps;
       return (
         <MonthHeader
