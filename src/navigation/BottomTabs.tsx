@@ -2,9 +2,9 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useAppTheme } from '@theme/hooks/useAppTheme';
 import { Theme } from '@theme/index';
-import HomeScreen from '@screens/home';
-import ChartScreen from '@screens/chart';
-import SettingsScreen from '@screens/settings';
+import HomeScreen from '@screens/Home';
+import ChartScreen from '@screens/Charts';
+import SettingsScreen from '@screens/Settings';
 import { ROUTES } from './routes';
 
 

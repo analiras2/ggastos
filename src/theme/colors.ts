@@ -8,7 +8,7 @@ const concrete = '#f2f2f2';
 const neutral = 'rgba(72, 70, 73, 1)';
 const red = '#B43F3F';
 
-export const colors = {
+export const Colors = {
   primary: mineShaft,
   secondary: '#757575',
   text: black,

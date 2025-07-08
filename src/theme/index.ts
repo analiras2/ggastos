@@ -1,13 +1,12 @@
 import { DefaultTheme } from '@react-navigation/native';
-import { Platform } from 'react-native';
-import { colors } from './colors';
-import { metrics } from './metrics';
+import { Colors } from './Colors';
+import { Metrics } from './Metrics';
 
 export const theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    ...colors,
+    ...Colors,
   },
   spacing: {
     xs: 4,
@@ -17,7 +16,7 @@ export const theme = {
     xl: 32,
     xxl: 40,
   },
-  metrics: metrics,
+  metrics: Metrics,
   typography: {
     sizes: {
       xs: 12,

@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { Theme } from '@styles/index';
+import { Theme } from '@theme/index';
 
-export const SettingsScreen = () => {
+const SettingsScreen = () => {
   const theme = useTheme() as unknown as Theme;
 
   return (

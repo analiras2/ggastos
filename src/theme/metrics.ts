@@ -2,7 +2,7 @@ import { Dimensions, Platform } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
-export const metrics = {
+export const Metrics = {
   width,
   height,
   bottomTabHeight: Platform.OS === 'ios' ? 90 : 64,

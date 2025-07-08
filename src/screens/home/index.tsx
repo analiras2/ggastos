@@ -1,28 +1,28 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from '@react-navigation/native';
-import { Theme } from '@theme/index';
+import { View, Button } from 'react-native';
+import { BaseScreen } from '@components/BaseScreen';
+import { useSnackbar } from '@contexts/SnackbarContext';
 
-export const HomeScreen = () => {
-  const theme = useTheme() as unknown as Theme;
+const HomeScreen = () => {
+  const { showSnackbar } = useSnackbar();
+
+  const handleSuccess = () => {
+    showSnackbar('Operação realizada com sucesso!', 'success');
+  };
 
   return (
-    <View style={[styles.container]}>
-      <Text style={[styles.text, { color: theme.colors.text }]}>Home Screen</Text>
-    </View>
+    <BaseScreen
+      scrollable
+      safeArea
+    >
+      <View>
+        <Button 
+          title="Testar Snackbar" 
+          onPress={handleSuccess} 
+        />
+      </View>
+    </BaseScreen>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-});
 
 export default HomeScreen;
