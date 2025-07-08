@@ -1,80 +1,97 @@
-# GGastos
+This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
-GGastos é um aplicativo de finanças desenvolvido em React Native para estudo e prática.
+# Getting Started
 
-## Design do Aplicativo
-O design do GGastos pode ser visualizado no Figma. Clique [aqui](https://www.figma.com/design/GV0rvlUIqLzdh1nfII7lEh7L/GGastos?node-id=0-1) para acessar o layout no Figma.
+> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
 
-## Getting Started
+## Step 1: Start Metro
 
-Antes de iniciar, certifique-se de ter seguido as instruções de configuração do ambiente do React Native. Você pode encontrar mais informações em [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup).
+First, you will need to run **Metro**, the JavaScript build tool for React Native.
 
-### Passo 1: Iniciar o Servidor Metro
+To start the Metro dev server, run the following command from the root of your React Native project:
 
-Para iniciar o servidor Metro, que é o _bundler_ JavaScript que acompanha o React Native, execute o seguinte comando a partir da raiz do seu projeto:
-
-```bash
-# usando npm
+```sh
+# Using npm
 npm start
 
-# ou usando Yarn
+# OR using Yarn
 yarn start
 ```
 
-### Passo 2: Iniciar o Aplicativo
+## Step 2: Build and run your app
 
-Com o Metro Bundler em execução, abra um novo terminal a partir da raiz do seu projeto React Native e execute o seguinte comando para iniciar o aplicativo no Android ou iOS:
+With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
 
-#### Para Android
+### Android
 
-```bash
-# usando npm
+```sh
+# Using npm
 npm run android
 
-# ou usando Yarn
+# OR using Yarn
 yarn android
 ```
 
-#### Para iOS
+### iOS
 
-```bash
-# usando npm
+For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+
+The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+
+```sh
+bundle install
+```
+
+Then, and every time you update your native dependencies, run:
+
+```sh
+bundle exec pod install
+```
+
+For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+
+```sh
+# Using npm
 npm run ios
 
-# ou usando Yarn
+# OR using Yarn
 yarn ios
 ```
 
-Se tudo estiver configurado corretamente, você verá o novo aplicativo sendo executado em seu Emulador Android ou Simulador iOS em breve.
+If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
 
-### Passo 3: Modificando seu Aplicativo
+This is one way to run your app — you can also build it directly from Android Studio or Xcode.
 
-Agora que você executou com sucesso o aplicativo, vamos modificá-lo.
+## Step 3: Modify your app
 
-1. Abra `App.tsx` em seu editor de texto e faça algumas alterações.
-2. Para **Android**: Pressione a tecla <kbd>R</kbd> duas vezes ou selecione **"Reload"** no **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> no Windows e Linux ou <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> no macOS) para ver suas alterações!
+Now that you have successfully run the app, let's make changes!
 
-   Para **iOS**: Pressione <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> no seu Simulador iOS para recarregar o aplicativo e ver suas alterações!
+Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
 
-## Parabéns! 🎉
+When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
 
-Você executou e modificou com sucesso seu aplicativo React Native. 🥳
+- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
+- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
 
-### E agora?
+## Congratulations! :tada:
 
-- Se deseja adicionar este novo código React Native a um aplicativo existente, consulte o [guia de integração](https://reactnative.dev/docs/integration-with-existing-apps).
-- Se deseja aprender mais sobre o React Native, confira a [Introdução ao React Native](https://reactnative.dev/docs/getting-started).
+You've successfully run and modified your React Native App. :partying_face:
 
-## Solução de Problemas
+### Now what?
 
-Se encontrar dificuldades, consulte a página de [Solução de Problemas](https://reactnative.dev/docs/troubleshooting).
+- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
+- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
 
-## Saiba Mais
+# Troubleshooting
 
-Para aprender mais sobre o React Native, confira os seguintes recursos:
+If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
 
-- [Site do React Native](https://reactnative.dev) - saiba mais sobre o React Native.
-- [Começando](https://reactnative.dev/docs/environment-setup) - uma **visão geral** do React Native e como configurar seu ambiente.
-- [Aprenda o Básico](https://reactnative.dev/docs/getting-started) - um **tour guiado** dos **conceitos básicos** do React Native.
-- [Blog](https://reactnative.dev/blog) - leia as últimas postagens oficiais do **Blog** do React Native.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - o repositório **Open Source**; GitHub para o React Native.
+# Learn More
+
+To learn more about React Native, take a look at the following resources:
+
+- [React Native Website](https://reactnative.dev) - learn more about React Native.
+- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
+- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
+- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
+- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.

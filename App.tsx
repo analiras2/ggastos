@@ -1,32 +1,23 @@
+import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import Stacks from './src/navigation/stacks';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {RootStackParamList} from '~navigation/types';
-import {PaperProvider} from 'react-native-paper';
-import Theme from '~constants/theme';
-import {MonthProvider} from '~contexts/monthContext';
+import { StatusBar, useColorScheme } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { BottomTabs } from '@navigation/BottomTabs';
+import { theme } from '@theme/index';
 
 const App = () => {
-  const RootStack = createNativeStackNavigator<RootStackParamList>();
+  const isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <PaperProvider theme={Theme}>
-      <MonthProvider>
-        <NavigationContainer>
-          <RootStack.Navigator>
-            {Stacks().map(stack => (
-              <RootStack.Screen
-                key={stack.name}
-                name={stack.name}
-                component={stack.component}
-                options={stack.options || {}}
-              />
-            ))}
-          </RootStack.Navigator>
-        </NavigationContainer>
-      </MonthProvider>
-    </PaperProvider>
+    <SafeAreaProvider>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor="#FFFFFF"
+      />
+      <NavigationContainer theme={theme as any}>
+        <BottomTabs />
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 };
 
