@@ -5,6 +5,6 @@ import React from 'react'
 describe('HomeScreen', () => {
   it('Should render correcting', () => {
     const { getByText } = render(<HomeScreen />)
-    expect(getByText('Home Screen')).toBeTruthy()
+    expect(getByText('G-Gastos')).toBeTruthy()
   })
 })
