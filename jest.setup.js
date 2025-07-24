@@ -34,8 +34,8 @@ jest.mock('@react-navigation/native', () => {
           success: '#4CAF50',
           error: '#F44336',
           info: '#2196F3',
-          warning: '#FF9800'
-        }
+          warning: '#FF9800',
+        },
       },
       spacing: {
         xs: 4,

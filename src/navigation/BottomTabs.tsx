@@ -8,8 +8,14 @@ import { Theme } from '@theme/types'
 import React from 'react'
 import { ROUTES } from './routes'
 
-type IconName = 'grid-outline' | 'grid' | 'pie-chart-outline' | 'pie-chart' | 'settings-outline' | 'settings';
-type IconNameBase = 'grid-outline' | 'pie-chart-outline' | 'settings-outline';
+type IconName =
+  | 'grid-outline'
+  | 'grid'
+  | 'pie-chart-outline'
+  | 'pie-chart'
+  | 'settings-outline'
+  | 'settings'
+type IconNameBase = 'grid-outline' | 'pie-chart-outline' | 'settings-outline'
 
 interface TabBarIconProps {
   focused: boolean
@@ -25,9 +31,10 @@ type TabScreenConfig = {
 
 const Tab = createBottomTabNavigator()
 
-const createTabBarIcon = (iconName: IconNameBase) => (props: TabBarIconProps) => (
-  <TabBarIcon {...props} iconName={iconName} />
-)
+const createTabBarIcon =
+  (iconName: IconNameBase) => (props: TabBarIconProps) => (
+    <TabBarIcon {...props} iconName={iconName} />
+  )
 
 const TAB_SCREENS: TabScreenConfig[] = [
   {

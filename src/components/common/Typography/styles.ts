@@ -1,5 +1,5 @@
-import {StyleSheet} from 'react-native';
-import { TypographyVariant } from './types';
+import { StyleSheet } from 'react-native'
+import { TypographyVariant } from './types'
 
 export const styles = StyleSheet.create({
   [TypographyVariant.LABEL]: {
@@ -18,6 +18,7 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 28,
   },
-});
+})
 
-export const getTypographyStyle = (variant: TypographyVariant) => styles[variant] || styles.body;
+export const getTypographyStyle = (variant: TypographyVariant) =>
+  styles[variant] || styles.body

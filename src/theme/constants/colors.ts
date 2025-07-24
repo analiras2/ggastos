@@ -35,6 +35,6 @@ export const colors = {
     success: green,
     error: red,
     info: blue,
-    warning: orange
-  }
+    warning: orange,
+  },
 } as const

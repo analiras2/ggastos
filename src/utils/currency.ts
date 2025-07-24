@@ -4,13 +4,13 @@ export const formatCurrency = (value: number): string => {
     currency: 'BRL',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(value);
-};
+  }).format(value)
+}
 
 export const parseCurrency = (currencyString: string): number => {
   const cleanedString = currencyString
     .replace(/R\$\s*/, '')
     .replace('.', '')
-    .replace(',', '.');
-  return parseFloat(cleanedString);
-};
+    .replace(',', '.')
+  return parseFloat(cleanedString)
+}

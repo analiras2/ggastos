@@ -1,19 +1,19 @@
-import React, { useEffect, useCallback, useRef } from 'react';
-import { 
-  TouchableOpacity, 
-  Text, 
-  LayoutAnimation, 
-  UIManager,
+import Icon from '@react-native-vector-icons/ionicons'
+import { theme } from '@theme/index'
+import {
   Animated,
-} from 'react-native';
-import Icon from '@react-native-vector-icons/ionicons';
-import { styles } from './styles';
-import { SnackbarProps, SNACKBAR_CONFIGS } from './types';
-import { theme } from '@theme/index';
+  LayoutAnimation,
+  Text,
+  TouchableOpacity,
+  UIManager,
+} from 'react-native'
+import React, { useCallback, useEffect, useRef } from 'react'
+import { styles } from './styles'
+import { SNACKBAR_CONFIGS, SnackbarProps } from './types'
 
 if (theme.platform.isAndroid) {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
+    UIManager.setLayoutAnimationEnabledExperimental(true)
   }
 }
 
@@ -27,16 +27,16 @@ export const SnackBar: React.FC<SnackbarProps> = ({
   style,
   textStyle,
 }) => {
-  const translateYAnim = useRef(new Animated.Value(100)).current;
-  const opacityAnim = useRef(new Animated.Value(0)).current;
+  const translateYAnim = useRef(new Animated.Value(100)).current
+  const opacityAnim = useRef(new Animated.Value(0)).current
 
-  const config = SNACKBAR_CONFIGS[type];
-  const actualDuration = duration || config.duration;
+  const config = SNACKBAR_CONFIGS[type]
+  const actualDuration = duration || config.duration
 
   const dismiss = useCallback(() => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    onDismiss?.();
-  }, [onDismiss]);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    onDismiss?.()
+  }, [onDismiss])
 
   const animateIn = useCallback(() => {
     Animated.parallel([
@@ -50,8 +50,8 @@ export const SnackBar: React.FC<SnackbarProps> = ({
         toValue: 1,
         useNativeDriver: true,
       }),
-    ]).start();
-  }, [translateYAnim, opacityAnim]);
+    ]).start()
+  }, [translateYAnim, opacityAnim])
 
   const animateOut = useCallback(() => {
     Animated.parallel([
@@ -65,31 +65,31 @@ export const SnackBar: React.FC<SnackbarProps> = ({
         duration: 300,
         useNativeDriver: true,
       }),
-    ]).start(() => dismiss());
-  }, [translateYAnim, opacityAnim, dismiss]);
+    ]).start(() => dismiss())
+  }, [translateYAnim, opacityAnim, dismiss])
 
   useEffect(() => {
     if (visible) {
-      animateIn();
+      animateIn()
       const timer = setTimeout(() => {
-        animateOut();
-      }, actualDuration);
+        animateOut()
+      }, actualDuration)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     } else {
-      translateYAnim.setValue(100);
-      opacityAnim.setValue(0);
+      translateYAnim.setValue(100)
+      opacityAnim.setValue(0)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, actualDuration, animateIn, animateOut]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, actualDuration, animateIn, animateOut])
 
   const animatedStyle = {
     transform: [{ translateY: translateYAnim }],
     opacity: opacityAnim,
     [position]: 16,
-  };
+  }
 
-  if (!visible) return null;
+  if (!visible) return null
 
   return (
     <Animated.View
@@ -108,13 +108,9 @@ export const SnackBar: React.FC<SnackbarProps> = ({
         color={config.textColor}
         style={styles.icon}
       />
-      
+
       <Text
-        style={[
-          styles.message,
-          { color: config.textColor },
-          textStyle,
-        ]}
+        style={[styles.message, { color: config.textColor }, textStyle]}
         numberOfLines={2}
       >
         {message}
@@ -125,12 +121,8 @@ export const SnackBar: React.FC<SnackbarProps> = ({
         style={styles.dismissButton}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
-        <Icon
-          name="close-outline"
-          size={20}
-          color={config.textColor}
-        />
+        <Icon name="close-outline" size={20} color={config.textColor} />
       </TouchableOpacity>
     </Animated.View>
-  );
-};
+  )
+}

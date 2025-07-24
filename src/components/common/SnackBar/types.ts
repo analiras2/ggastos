@@ -1,27 +1,28 @@
-import { theme } from '@theme/index';
-import { ViewStyle, TextStyle } from 'react-native';
+import { theme } from '@theme/index'
+import { TextStyle, ViewStyle } from 'react-native'
 
-export type SnackbarType = 'success' | 'error' | 'info' | 'warning';
+export type SnackbarType = 'success' | 'error' | 'info' | 'warning'
 
 export interface SnackbarConfig {
-  backgroundColor: string;
-  textColor: string;
-  icon: 'checkmark-circle-outline' |
-  'alert-circle-outline' |
-  'information-circle-outline' |
-  'warning-outline';
-  duration: number;
+  backgroundColor: string
+  textColor: string
+  icon:
+    | 'checkmark-circle-outline'
+    | 'alert-circle-outline'
+    | 'information-circle-outline'
+    | 'warning-outline'
+  duration: number
 }
 
 export interface SnackbarProps {
-  visible: boolean;
-  message: string;
-  type?: SnackbarType;
-  duration?: number;
-  onDismiss?: () => void;
-  position?: 'top' | 'bottom';
-  style?: ViewStyle;
-  textStyle?: TextStyle;
+  visible: boolean
+  message: string
+  type?: SnackbarType
+  duration?: number
+  onDismiss?: () => void
+  position?: 'top' | 'bottom'
+  style?: ViewStyle
+  textStyle?: TextStyle
 }
 
 export const SNACKBAR_CONFIGS: Record<SnackbarType, SnackbarConfig> = {
@@ -49,4 +50,4 @@ export const SNACKBAR_CONFIGS: Record<SnackbarType, SnackbarConfig> = {
     icon: 'warning-outline',
     duration: 3500,
   },
-};
+}
