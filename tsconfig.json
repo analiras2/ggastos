@@ -6,7 +6,8 @@
       "@theme/*": ["src/theme/*"],
       "@components/*": ["src/components/*"],
       "@screens/*": ["src/screens/*"],
-      "@navigation/*": ["src/navigation/*"]
+      "@navigation/*": ["src/navigation/*"],
+      "@utils/*": ["src/utils/*"]
     }
   }
 }

@@ -8,7 +8,8 @@ import { Theme } from '@theme/types'
 import React from 'react'
 import { ROUTES } from './routes'
 
-type IconNames = 'grid-outline' | 'pie-chart-outline' | 'settings-outline'
+type IconName = 'grid-outline' | 'grid' | 'pie-chart-outline' | 'pie-chart' | 'settings-outline' | 'settings';
+type IconNameBase = 'grid-outline' | 'pie-chart-outline' | 'settings-outline';
 
 interface TabBarIconProps {
   focused: boolean
@@ -19,12 +20,12 @@ interface TabBarIconProps {
 type TabScreenConfig = {
   name: string
   component: React.ComponentType<any>
-  iconName: IconNames
+  iconName: IconNameBase
 }
 
 const Tab = createBottomTabNavigator()
 
-const createTabBarIcon = (iconName: IconNames) => (props: TabBarIconProps) => (
+const createTabBarIcon = (iconName: IconNameBase) => (props: TabBarIconProps) => (
   <TabBarIcon {...props} iconName={iconName} />
 )
 
@@ -60,9 +61,9 @@ const createScreenOptions = (theme: Theme) => ({
   tabBarActiveTintColor: theme.colors.iconLight,
 })
 
-const getIconName = (iconName: IconNames, focused: boolean): string => {
+const getIconName = (iconName: IconNameBase, focused: boolean): IconName => {
   if (!focused) return iconName
-  return iconName.replace('-outline', '')
+  return iconName.replace('-outline', '') as IconName
 }
 
 const TabBarIcon = ({
@@ -70,7 +71,7 @@ const TabBarIcon = ({
   focused,
   color,
   size,
-}: TabBarIconProps & { iconName: IconNames }) => (
+}: TabBarIconProps & { iconName: IconNameBase }) => (
   <Icon
     name={getIconName(iconName, focused)}
     color={color}

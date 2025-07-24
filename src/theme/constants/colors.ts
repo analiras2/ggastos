@@ -6,7 +6,11 @@ const blackAlpha80 = '#00000080'
 const mercury = '#D5D5D5'
 const concrete = '#f2f2f2'
 const neutral = 'rgba(72, 70, 73, 1)'
-const red = '#B43F3F'
+const crimsonRed = '#B43F3F'
+const green = '#4CAF50'
+const red = '#F44336'
+const blue = '#2196F3'
+const orange = '#FF9800'
 
 export const colors = {
   primary: mineShaft,
@@ -26,6 +30,11 @@ export const colors = {
   divider: mercury,
   shadow: black,
   underline: neutral,
-  alert: red,
-  notification: red,
+  alert: crimsonRed,
+  snackbar: {
+    success: green,
+    error: red,
+    info: blue,
+    warning: orange
+  }
 } as const

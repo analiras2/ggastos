@@ -15,6 +15,12 @@ export interface CustomTheme extends NavigationTheme {
     shadow: string
     underline: string
     alert: string
+    snackbar: {
+      success: string
+      error: string
+      info: string
+      warning: string
+    }
   }
   borderRadius: {
     sm: number

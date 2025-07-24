@@ -30,7 +30,12 @@ jest.mock('@react-navigation/native', () => {
         shadow: '#000000',
         underline: 'rgba(72, 70, 73, 1)',
         alert: '#B43F3F',
-        notification: '#B43F3F',
+        snackbar: {
+          success: '#4CAF50',
+          error: '#F44336',
+          info: '#2196F3',
+          warning: '#FF9800'
+        }
       },
       spacing: {
         xs: 4,
