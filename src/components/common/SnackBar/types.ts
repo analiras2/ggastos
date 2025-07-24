@@ -1,7 +1,12 @@
 import { theme } from '@theme/index'
 import { TextStyle, ViewStyle } from 'react-native'
 
-export type SnackbarType = 'success' | 'error' | 'info' | 'warning'
+export enum SnackbarType {
+  SUCCESS = 'success',
+  ERROR = 'error',
+  INFO = 'info',
+  WARNING = 'warning',
+}
 
 export interface SnackbarConfig {
   backgroundColor: string
@@ -15,11 +20,12 @@ export interface SnackbarConfig {
 }
 
 export interface SnackbarProps {
+  testID?: string
   visible: boolean
   message: string
   type?: SnackbarType
   duration?: number
-  onDismiss?: () => void
+  onDismiss: () => void
   position?: 'top' | 'bottom'
   style?: ViewStyle
   textStyle?: TextStyle

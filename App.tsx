@@ -1,3 +1,4 @@
+import { SnackbarProvider } from '@contexts/SnackbarContext'
 import { BottomTabs } from '@navigation/BottomTabs'
 import { NavigationContainer } from '@react-navigation/native'
 import { theme } from '@theme/index'
@@ -8,7 +9,9 @@ const App = () => {
   return (
     <SafeAreaProvider>
       <NavigationContainer theme={theme as any}>
-        <BottomTabs />
+        <SnackbarProvider>
+          <BottomTabs />
+        </SnackbarProvider>
       </NavigationContainer>
     </SafeAreaProvider>
   )

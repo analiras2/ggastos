@@ -1,18 +1,28 @@
+import { SnackbarType } from '@components/common/SnackBar/types'
+import { BaseScreen } from '@components/layout'
 import { Strings } from '@constants/strings'
+import { useSnackbar } from '@contexts/SnackbarContext'
 import { useTheme } from '@theme/hooks/useTheme'
-import { StyleSheet, Text, View } from 'react-native'
+import { Button, StyleSheet, Text } from 'react-native'
 
 const HomeScreen = () => {
   const theme = useTheme()
+  const { showSnackbar } = useSnackbar()
+
+  const handleSuccess = () => {
+    showSnackbar({
+      message: 'Operação realizada com sucesso!',
+      type: SnackbarType.SUCCESS,
+    })
+  }
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-    >
+    <BaseScreen scrollable safeArea>
       <Text style={[styles.text, { color: theme.colors.text }]}>
         {Strings.appName}
       </Text>
-    </View>
+      <Button title="Testar Snackbar" onPress={handleSuccess} />
+    </BaseScreen>
   )
 }
 
