@@ -1,5 +1,5 @@
-import { useTheme } from '@theme/hooks/useTheme'
-import { formatCurrency } from '@utils/currency'
+import { formatCurrency } from '@common/utils/currencyUtils'
+import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { Text, TextStyle } from 'react-native'
 import React, { memo } from 'react'
 import { getTypographyStyle } from './styles'
@@ -18,7 +18,7 @@ export const Typography: React.FC<TypographyProps> = memo(
     align,
     testID,
   }) => {
-    const theme = useTheme()
+    const theme = useAppTheme()
 
     const fontWeight: TextStyle['fontWeight'] = bold ? 'bold' : 'normal'
 

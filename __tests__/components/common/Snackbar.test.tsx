@@ -1,4 +1,4 @@
-import { SnackBar } from '@components/common'
+import { SnackBar } from '@components/ui'
 import { act, render } from '@testing-library/react-native'
 import { Animated, StyleSheet } from 'react-native'
 import React from 'react'

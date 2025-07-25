@@ -8,7 +8,7 @@ import React from 'react'
 const App = () => {
   return (
     <SafeAreaProvider>
-      <NavigationContainer theme={theme as any}>
+      <NavigationContainer theme={theme}>
         <SnackbarProvider>
           <BottomTabs />
         </SnackbarProvider>

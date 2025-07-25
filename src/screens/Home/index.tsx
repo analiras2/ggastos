@@ -1,12 +1,13 @@
-import { SnackbarType } from '@components/common/SnackBar/types'
+import { MonthHeader } from '@components/headers'
 import { BaseScreen } from '@components/layout'
+import { SnackbarType } from '@components/ui/SnackBar/types'
 import { Strings } from '@constants/strings'
 import { useSnackbar } from '@contexts/SnackbarContext'
-import { useTheme } from '@theme/hooks/useTheme'
+import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { Button, StyleSheet, Text } from 'react-native'
 
 const HomeScreen = () => {
-  const theme = useTheme()
+  const theme = useAppTheme()
   const { showSnackbar } = useSnackbar()
 
   const handleSuccess = () => {
@@ -17,7 +18,7 @@ const HomeScreen = () => {
   }
 
   return (
-    <BaseScreen scrollable safeArea>
+    <BaseScreen paddingHorizontal={40} headerComponent={<MonthHeader />}>
       <Text style={[styles.text, { color: theme.colors.text }]}>
         {Strings.appName}
       </Text>

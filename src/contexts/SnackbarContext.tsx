@@ -1,5 +1,5 @@
-import { SnackBar } from '@components/common'
-import { SnackbarType } from '@components/common/SnackBar/types'
+import { SnackBar } from '@components/ui'
+import { SnackbarType } from '@components/ui/SnackBar/types'
 import React, { createContext, useCallback, useContext, useState } from 'react'
 
 interface SnackbarState {

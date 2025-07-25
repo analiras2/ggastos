@@ -1,9 +1,10 @@
+import { DateProvider } from '@contexts/DateContext'
 import Icon from '@react-native-vector-icons/ionicons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import ChartScreen from '@screens/Charts'
 import HomeScreen from '@screens/Home'
 import SettingsScreen from '@screens/Settings'
-import { useTheme } from '@theme/hooks/useTheme'
+import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { Theme } from '@theme/types'
 import React from 'react'
 import { ROUTES } from './routes'
@@ -36,6 +37,12 @@ const createTabBarIcon =
     <TabBarIcon {...props} iconName={iconName} />
   )
 
+const HomeWithProvider = () => (
+  <DateProvider>
+    <HomeScreen />
+  </DateProvider>
+)
+
 const TAB_SCREENS: TabScreenConfig[] = [
   {
     name: ROUTES.CHARTS,
@@ -44,7 +51,7 @@ const TAB_SCREENS: TabScreenConfig[] = [
   },
   {
     name: ROUTES.HOME,
-    component: HomeScreen,
+    component: HomeWithProvider,
     iconName: 'grid-outline',
   },
   {
@@ -58,7 +65,7 @@ const createScreenOptions = (theme: Theme) => ({
   headerShown: false,
   tabBarStyle: {
     height: theme.bottomTabHeight,
-    paddingTop: theme.spacing.sm,
+    paddingTop: 8,
     backgroundColor: theme.colors.primary,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
@@ -87,7 +94,7 @@ const TabBarIcon = ({
 )
 
 export const BottomTabs = () => {
-  const theme = useTheme()
+  const theme = useAppTheme()
 
   return (
     <Tab.Navigator

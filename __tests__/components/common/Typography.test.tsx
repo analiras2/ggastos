@@ -1,14 +1,11 @@
-import { Typography } from '@components/common'
-import { styles } from '@components/common/Typography/styles'
-import {
-  TypographyVariant,
-  ValueFormat,
-} from '@components/common/Typography/types'
+import { formatCurrency } from '@common/utils/currencyUtils'
+import { Typography } from '@components/ui'
+import { styles } from '@components/ui/Typography/styles'
+import { TypographyVariant, ValueFormat } from '@components/ui/Typography/types'
 import { render } from '@testing-library/react-native'
-import { formatCurrency } from '@utils/currency'
 import React from 'react'
 
-jest.mock('@utils/currency', () => ({
+jest.mock('@common/utils/currencyUtils', () => ({
   formatCurrency: jest.fn((value) => `R$ ${value},00`),
 }))
 

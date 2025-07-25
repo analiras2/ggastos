@@ -1,9 +1,9 @@
-import { useTheme } from '@theme/hooks/useTheme'
+import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
 const SettingsScreen = () => {
-  const theme = useTheme()
+  const theme = useAppTheme()
   return (
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}

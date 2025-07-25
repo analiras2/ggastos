@@ -1,4 +1,4 @@
-import { useTheme } from '@theme/hooks/useTheme'
+import { useAppTheme } from '@theme/hooks/useAppTheme'
 import {
   SafeAreaView,
   ScrollView,
@@ -27,25 +27,18 @@ export const BaseScreen: React.FC<BaseScreenProps> = ({
   paddingHorizontal,
   paddingVertical,
   style,
-  backgroundColor,
   safeArea = true,
 }) => {
-  const theme = useTheme()
+  const theme = useAppTheme()
 
   const Container = safeArea ? SafeAreaView : View
   const Content = scrollable ? ScrollView : View
 
   return (
     <Container
-      style={[
-        styles.container,
-        { backgroundColor: backgroundColor || theme.colors.background },
-      ]}
+      style={[styles.container, { backgroundColor: theme.colors.primary }]}
     >
-      <StatusBar
-        barStyle={'dark-content'}
-        backgroundColor={backgroundColor || theme.colors.primary}
-      />
+      <StatusBar barStyle={'light-content'} />
 
       {headerComponent}
 
@@ -53,8 +46,9 @@ export const BaseScreen: React.FC<BaseScreenProps> = ({
         style={[
           styles.content,
           {
-            paddingHorizontal: paddingHorizontal ?? theme.spacing.md,
-            paddingVertical: paddingVertical ?? theme.spacing.md,
+            backgroundColor: theme.colors.background,
+            paddingHorizontal: paddingHorizontal ?? 16,
+            paddingVertical: paddingVertical ?? 16,
           },
           style,
         ]}

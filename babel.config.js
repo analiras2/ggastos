@@ -6,13 +6,13 @@ module.exports = {
       {
         root: ['./src'],
         alias: {
+          '@common': './src/common',
           '@components': './src/components',
           '@constants': './src/constants',
           '@contexts': './src/contexts',
           '@navigation': './src/navigation',
           '@screens': './src/screens',
           '@theme': './src/theme',
-          '@utils': './src/utils',
         },
       },
     ],

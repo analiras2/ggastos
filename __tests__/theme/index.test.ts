@@ -4,10 +4,7 @@ describe('Theme', () => {
   it('Should have all props needed', () => {
     expect(theme).toBeDefined()
     expect(theme.colors).toBeDefined()
-    expect(theme.spacing).toBeDefined()
-    expect(theme.typography).toBeDefined()
     expect(theme.platform).toBeDefined()
-    expect(theme.borderRadius).toBeDefined()
   })
 
   it('Should include corrects colors', () => {
