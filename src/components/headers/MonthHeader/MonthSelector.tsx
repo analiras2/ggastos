@@ -3,8 +3,8 @@ import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { Theme } from '@theme/types'
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useRef } from 'react'
-import { Typography } from '../Typography'
-import { TypographyVariant } from '../Typography/types'
+import { Typography } from '../../ui/Typography'
+import { TypographyVariant } from '../../ui/Typography/types'
 
 interface MonthSelectorProps {
   months: Month[]

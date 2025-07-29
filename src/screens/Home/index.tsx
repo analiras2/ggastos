@@ -1,4 +1,4 @@
-import { MonthHeader } from '@components/headers'
+import { MonthHeader } from '@components/headers/MonthHeader'
 import { BaseScreen } from '@components/layout'
 import { Button } from '@components/ui'
 import { useAppTheme } from '@theme/hooks/useAppTheme'

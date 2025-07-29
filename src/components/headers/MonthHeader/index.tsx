@@ -1,11 +1,12 @@
 import { DateUtils } from '@common/utils/dateUtils'
-import { MonthSelector, YearSelector } from '@components/ui'
 import { Months } from '@constants/index'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { Theme } from '@theme/types'
 import { StyleSheet, View } from 'react-native'
 import React from 'react'
 import { useDateContext } from '../../../contexts/DateContext'
+import { MonthSelector } from './MonthSelector'
+import { YearSelector } from './YearSelector'
 
 export const MonthHeader: React.FC = () => {
   const theme = useAppTheme()

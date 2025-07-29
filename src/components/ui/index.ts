@@ -1,7 +1,5 @@
 export * from './Button'
 export * from './Button/constants'
 export * from './Button/types'
-export * from './Selectors/MonthSelector'
-export * from './Selectors/YearSelector'
 export * from './SnackBar'
 export * from './Typography'
