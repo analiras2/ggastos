@@ -5,11 +5,11 @@ import React from 'react'
 
 describe('HomeScreen', () => {
   it('Should render correcting', () => {
-    const { getByText } = render(
+    const { getByTestId } = render(
       <DateProvider>
         <HomeScreen />
       </DateProvider>
     )
-    expect(getByText('G-Gastos')).toBeTruthy()
+    expect(getByTestId('button')).toBeTruthy()
   })
 })
