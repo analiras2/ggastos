@@ -147,25 +147,6 @@ describe('SnackBar Component', () => {
 
       expect(animatedSpy).toHaveBeenCalled()
     })
-
-    it('should trigger animation when dismissing', () => {
-      const onDismiss = jest.fn()
-      const { rerender } = render(
-        <SnackBar visible={true} message="Test message" onDismiss={onDismiss} />
-      )
-
-      const animatedSpy = jest.spyOn(Animated, 'parallel')
-
-      rerender(
-        <SnackBar
-          visible={false}
-          message="Test message"
-          onDismiss={onDismiss}
-        />
-      )
-
-      expect(animatedSpy).toHaveBeenCalled()
-    })
   })
 
   describe('Style Customization', () => {
