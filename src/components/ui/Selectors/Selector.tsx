@@ -10,7 +10,6 @@ import {
 } from 'react-native'
 import React, { useCallback, useEffect } from 'react'
 import { Typography } from '../Typography'
-import { TypographyVariant } from '../Typography/types'
 
 export interface SelectorItem {
   id: string | number
@@ -63,7 +62,7 @@ export function Selector<T extends SelectorItem>({
       <View style={styles.container}>
         <View style={styles.content}>
           <RoundedView>
-            <Typography variant={TypographyVariant.HEADER}>{title}</Typography>
+            <Typography variant="header">{title}</Typography>
           </RoundedView>
           <View style={styles.body}>
             <FlatList

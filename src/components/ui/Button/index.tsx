@@ -3,7 +3,6 @@ import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { ActivityIndicator, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Typography } from '../Typography'
-import { TypographyVariant } from '../Typography/types'
 import { getButtonStyles } from './styles'
 import { ButtonProps } from './types'
 
@@ -45,7 +44,7 @@ export const Button: React.FC<ButtonProps> = (props) => {
       <>
         {iconPosition === 'left' && renderIcon()}
         {text && (
-          <Typography variant={TypographyVariant.TITLE} color={textColor}>
+          <Typography variant="title" color={textColor}>
             {text.toUpperCase()}
           </Typography>
         )}

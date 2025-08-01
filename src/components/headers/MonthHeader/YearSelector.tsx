@@ -5,7 +5,6 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useState } from 'react'
 import { Selector } from '../../ui/Selectors/Selector'
 import { Typography } from '../../ui/Typography'
-import { TypographyVariant } from '../../ui/Typography/types'
 
 interface YearSelectorProps {
   years: number[]
@@ -38,7 +37,7 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
   return (
     <View style={st.container}>
       <TouchableOpacity onPress={toggleModal}>
-        <Typography variant={TypographyVariant.TITLE} color={colors.textLight}>
+        <Typography variant="title" color={colors.textLight}>
           {selectedYear}
         </Typography>
       </TouchableOpacity>
@@ -48,7 +47,7 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
         items={years.map((year) => ({ id: year, title: year }))}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleYearSelect(item.id)}>
-            <Typography variant={TypographyVariant.TITLE} style={st.item}>
+            <Typography variant="title" style={st.item}>
               {item.title}
             </Typography>
           </TouchableOpacity>

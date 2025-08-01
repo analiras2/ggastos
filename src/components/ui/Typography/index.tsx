@@ -1,13 +1,12 @@
-import { formatCurrency } from '@common/utils/currencyUtils'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { Text, TextStyle } from 'react-native'
 import React, { memo } from 'react'
 import { getTypographyStyle } from './styles'
-import { TypographyProps, TypographyVariant, ValueFormat } from './types'
+import { TypographyProps, ValueFormat } from './types'
 
 export const Typography: React.FC<TypographyProps> = memo(
   ({
-    variant = TypographyVariant.BODY,
+    variant = 'body',
     children,
     format = ValueFormat.TEXT,
     color,
@@ -38,7 +37,14 @@ export const Typography: React.FC<TypographyProps> = memo(
       content: React.ReactNode | number
     ): React.ReactNode => {
       if (format === ValueFormat.CURRENCY && typeof content === 'number') {
-        return formatCurrency(content)
+        const value = content.toFixed(2).split('.')
+
+        return (
+          <>
+            <Typography variant="body">R${value[0]}</Typography>
+            <Typography variant="label">,{value[1]}</Typography>
+          </>
+        )
       }
       return content
     }

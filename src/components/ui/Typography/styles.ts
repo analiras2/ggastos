@@ -2,19 +2,21 @@ import { StyleSheet } from 'react-native'
 import { TypographyVariant } from './types'
 
 export const styles = StyleSheet.create({
-  [TypographyVariant.LABEL]: {
-    fontSize: 12,
-    lineHeight: 16,
+  tiny: {
+    fontSize: 8,
   },
-  [TypographyVariant.BODY]: {
+  label: {
+    fontSize: 10,
+  },
+  body: {
     fontSize: 14,
     lineHeight: 20,
   },
-  [TypographyVariant.TITLE]: {
+  title: {
     fontSize: 16,
     lineHeight: 24,
   },
-  [TypographyVariant.HEADER]: {
+  header: {
     fontSize: 20,
     lineHeight: 28,
   },

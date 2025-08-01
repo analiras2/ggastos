@@ -1,11 +1,6 @@
 import { StyleProp, TextStyle } from 'react-native'
 
-export enum TypographyVariant {
-  LABEL = 'label',
-  BODY = 'body',
-  TITLE = 'title',
-  HEADER = 'header',
-}
+export type TypographyVariant = 'tiny' | 'label' | 'body' | 'title' | 'header'
 
 export enum ValueFormat {
   TEXT = 'text',

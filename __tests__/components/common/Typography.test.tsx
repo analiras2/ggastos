@@ -1,4 +1,3 @@
-import { formatCurrency } from '@common/utils/currencyUtils'
 import { Typography } from '@components/ui'
 import { styles } from '@components/ui/Typography/styles'
 import { TypographyVariant, ValueFormat } from '@components/ui/Typography/types'
@@ -18,7 +17,7 @@ describe('Typography Component', () => {
       expect(textElement).toBeTruthy()
       expect(textElement.props.style).toEqual(
         expect.arrayContaining([
-          styles[TypographyVariant.BODY],
+          styles.body,
           expect.objectContaining({
             color: '#000000',
             fontWeight: 'normal',
@@ -37,7 +36,7 @@ describe('Typography Component', () => {
   })
 
   describe('Variants', () => {
-    const variants = Object.values(TypographyVariant)
+    const variants: TypographyVariant[] = ['label', 'body', 'title', 'header']
 
     variants.forEach((variant) => {
       it(`should apply correct style for ${variant} variant`, () => {
@@ -60,8 +59,7 @@ describe('Typography Component', () => {
         <Typography format={ValueFormat.CURRENCY}>{value}</Typography>
       )
 
-      expect(formatCurrency).toHaveBeenCalledWith(value)
-      expect(getByText('R$ 1000,00')).toBeTruthy()
+      expect(getByText('R$1000,00')).toBeTruthy()
     })
 
     it('should not format text when format is TEXT', () => {

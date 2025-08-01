@@ -4,7 +4,6 @@ import { Theme } from '@theme/types'
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useRef } from 'react'
 import { Typography } from '../../ui/Typography'
-import { TypographyVariant } from '../../ui/Typography/types'
 
 interface MonthSelectorProps {
   months: Month[]
@@ -40,9 +39,7 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
           onPress={() => onSelectMonth(item)}
         >
           <Typography
-            variant={
-              isSelected ? TypographyVariant.HEADER : TypographyVariant.BODY
-            }
+            variant={isSelected ? 'header' : 'body'}
             bold={isSelected}
             color={theme.colors.textLight}
           >
