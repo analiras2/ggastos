@@ -1,13 +1,13 @@
-import { ROUTES } from './routes'
-
-export type RootBottomTabParamList = {
-  [ROUTES.HOME]: undefined
-  [ROUTES.CHARTS]: undefined
-  [ROUTES.SETTINGS]: undefined
+export type RootStackParamList = {
+  MainTabs: undefined
+  CategoryDetails: {
+    categoryId: string
+    categoryName: string
+  }
 }
 
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootBottomTabParamList {}
+    interface RootParamList extends RootStackParamList {}
   }
 }

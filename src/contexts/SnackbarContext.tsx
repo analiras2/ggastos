@@ -24,7 +24,7 @@ const SnackbarContext = createContext<SnackbarContextData>(
 const INITIAL_STATE: SnackbarState = {
   visible: false,
   message: '',
-  type: SnackbarType.INFO,
+  type: 'info',
 }
 
 export const SnackbarProvider: React.FC<{ children: React.ReactNode }> = ({

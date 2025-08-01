@@ -1,12 +1,7 @@
 import { theme } from '@theme/index'
 import { TextStyle, ViewStyle } from 'react-native'
 
-export enum SnackbarType {
-  SUCCESS = 'success',
-  ERROR = 'error',
-  INFO = 'info',
-  WARNING = 'warning',
-}
+export type SnackbarType = 'success' | 'error' | 'info' | 'warning'
 
 export interface SnackbarConfig {
   backgroundColor: string

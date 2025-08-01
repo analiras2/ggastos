@@ -1,7 +1,8 @@
 import { SnackbarProvider } from '@contexts/SnackbarContext'
-import { BottomTabs } from '@navigation/BottomTabs'
+import { RootStack } from '@navigation/RootStack'
 import { NavigationContainer } from '@react-navigation/native'
 import { theme } from '@theme/index'
+import 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import React from 'react'
 
@@ -10,7 +11,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer theme={theme}>
         <SnackbarProvider>
-          <BottomTabs />
+          <RootStack />
         </SnackbarProvider>
       </NavigationContainer>
     </SafeAreaProvider>

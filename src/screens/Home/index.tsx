@@ -2,7 +2,9 @@ import { MonthHeader } from '@components/headers'
 import { CategoryItem } from '@components/index'
 import { BaseScreen } from '@components/layout'
 import { Button } from '@components/ui'
-import { Category } from '@models/index'
+import { Category, TCategory } from '@models/category'
+import { useAppNavigation } from '@navigation/hooks/useAppNavigation'
+import { ROUTES } from '@navigation/routes'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { FlatList, StyleSheet } from 'react-native'
 
@@ -13,7 +15,9 @@ const getRandomNumber = (): number => {
 }
 
 const HomeScreen = () => {
+  const navigation = useAppNavigation()
   const { colors } = useAppTheme()
+
   const categories = Category.getCategories.map((item) => {
     return {
       ...item,
@@ -21,6 +25,13 @@ const HomeScreen = () => {
       totalSpent: getRandomNumber(),
     }
   })
+
+  const handleCategoryPress = (category: TCategory) => {
+    navigation.navigate(ROUTES.CATEGORY_DETAILS, {
+      categoryId: category.id,
+      categoryName: category.name,
+    })
+  }
 
   return (
     <BaseScreen
@@ -37,7 +48,7 @@ const HomeScreen = () => {
             key={item.id}
             data={item}
             index={index}
-            onPress={() => {}}
+            onPress={() => handleCategoryPress(item)}
           />
         )}
         columnWrapperStyle={styles.columnWrapper}
