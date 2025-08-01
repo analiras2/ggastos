@@ -1,13 +1,47 @@
-import { MonthHeader } from '@components/headers/MonthHeader'
+import { MonthHeader } from '@components/headers'
+import { CategoryItem } from '@components/index'
 import { BaseScreen } from '@components/layout'
 import { Button } from '@components/ui'
+import { Category } from '@models/index'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
+import { FlatList, StyleSheet } from 'react-native'
+
+const getRandomNumber = (): number => {
+  const min = 10
+  const max = 599
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
 
 const HomeScreen = () => {
   const { colors } = useAppTheme()
+  const categories = Category.getCategories.map((item) => {
+    return {
+      ...item,
+      totalExpected: getRandomNumber(),
+      totalSpent: getRandomNumber(),
+    }
+  })
 
   return (
-    <BaseScreen paddingHorizontal={40} headerComponent={<MonthHeader />}>
+    <BaseScreen
+      paddingHorizontal={16}
+      headerComponent={<MonthHeader />}
+      style={styles.container}
+    >
+      <FlatList
+        data={categories}
+        numColumns={2}
+        keyExtractor={({ name }) => name}
+        renderItem={({ item, index }) => (
+          <CategoryItem
+            key={item.id}
+            data={item}
+            index={index}
+            onPress={() => {}}
+          />
+        )}
+        columnWrapperStyle={styles.columnWrapper}
+      />
       <Button
         onPress={() => {}}
         icon="add"
@@ -19,3 +53,13 @@ const HomeScreen = () => {
 }
 
 export default HomeScreen
+
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 40,
+  },
+  columnWrapper: {
+    gap: 12,
+    marginBottom: 12,
+  },
+})
