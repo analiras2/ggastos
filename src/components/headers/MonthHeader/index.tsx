@@ -5,6 +5,7 @@ import { Theme } from '@theme/types'
 import { StyleSheet, View } from 'react-native'
 import React from 'react'
 import { useDateContext } from '../../../contexts/DateContext'
+import { Balance } from './Balance'
 import { MonthSelector } from './MonthSelector'
 import { YearSelector } from './YearSelector'
 
@@ -26,6 +27,7 @@ export const MonthHeader: React.FC = () => {
         selectedYear={dateSelection.selectedYear}
         onSelectYear={updateYear}
       />
+      <Balance current={100} expected={2000} />
     </View>
   )
 }
@@ -33,6 +35,7 @@ export const MonthHeader: React.FC = () => {
 const styles = (theme: Theme) =>
   StyleSheet.create({
     container: {
+      position: 'relative',
       height: 100,
       backgroundColor: theme.colors.primary,
     },

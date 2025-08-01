@@ -75,7 +75,7 @@ const styles = (theme: Theme, isSelected?: boolean) =>
       paddingLeft: 8,
     },
     item: {
-      paddingVertical: 8,
+      paddingVertical: 4,
       marginTop: 0,
       marginHorizontal: 4,
       borderRadius: 20,
