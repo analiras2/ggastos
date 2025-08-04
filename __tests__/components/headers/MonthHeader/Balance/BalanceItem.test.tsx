@@ -1,4 +1,4 @@
-import { BalanceItem } from '@components/headers/MonthHeader/Balance/BalanceItem'
+import { LabeledItem } from '@components/LabeledItem'
 import { render } from '@testing-library/react-native'
 import React from 'react'
 
@@ -10,14 +10,14 @@ describe('BalanceItem', () => {
   }
 
   it('renders label and formatted value', () => {
-    const { getByText } = render(<BalanceItem {...mockProps} />)
+    const { getByText } = render(<LabeledItem {...mockProps} />)
     expect(getByText('Test Label')).toBeTruthy()
     expect(getByText('R$1234,56')).toBeTruthy()
   })
 
   it('applies different variants correctly', () => {
     const { rerender, getByText } = render(
-      <BalanceItem {...mockProps} variant="header" />
+      <LabeledItem {...mockProps} variant="header" />
     )
 
     const headerValue = getByText('R$1234,56')
@@ -25,7 +25,7 @@ describe('BalanceItem', () => {
       expect.objectContaining({ fontSize: expect.any(Number) })
     )
 
-    rerender(<BalanceItem {...mockProps} variant="title" />)
+    rerender(<LabeledItem {...mockProps} variant="title" />)
 
     const titleValue = getByText('R$1234,56')
     expect(titleValue.props.style).toContainEqual(

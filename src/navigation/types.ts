@@ -1,8 +1,9 @@
+import { TCategory } from '@models/category'
+
 export type RootStackParamList = {
   MainTabs: undefined
   CategoryDetails: {
-    categoryId: string
-    categoryName: string
+    category: TCategory
   }
 }
 

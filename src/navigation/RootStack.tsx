@@ -18,9 +18,6 @@ export const RootStack = () => {
       <Stack.Screen
         name={ROUTES.CATEGORY_DETAILS}
         component={CategoryDetails}
-        options={({ route }) => ({
-          headerTitle: route.params.categoryName,
-        })}
       />
     </Stack.Navigator>
   )

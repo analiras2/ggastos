@@ -1,6 +1,7 @@
 export * from './Animation'
 export * from './CategoryItem'
 export * from './FieldView'
+export * from './PurchaseItem'
 export * from './RoundedView'
 export * from './headers'
 export * from './layout'

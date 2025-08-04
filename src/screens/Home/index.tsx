@@ -27,10 +27,7 @@ const HomeScreen = () => {
   })
 
   const handleCategoryPress = (category: TCategory) => {
-    navigation.navigate(ROUTES.CATEGORY_DETAILS, {
-      categoryId: category.id,
-      categoryName: category.name,
-    })
+    navigation.navigate(ROUTES.CATEGORY_DETAILS, { category })
   }
 
   return (

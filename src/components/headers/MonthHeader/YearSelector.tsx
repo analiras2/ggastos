@@ -3,7 +3,7 @@ import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { Colors } from '@theme/types'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useState } from 'react'
-import { Selector } from '../../ui/Selectors/Selector'
+import { Selector } from '../../ui'
 import { Typography } from '../../ui/Typography'
 
 interface YearSelectorProps {

@@ -1,4 +1,6 @@
 export * from './Button'
 export * from './Button/types'
+export * from './Checkbox'
+export * from './Selectors'
 export * from './SnackBar'
 export * from './Typography'
