@@ -16,16 +16,16 @@ export const CheckBox: React.FC<CheckBoxProps> = ({
   const theme = useAppTheme()
   const backgroundColor = checked ? accentColor : 'transparent'
   const borderColor = checked ? accentColor : theme.colors.border
-  const st = styles(backgroundColor, borderColor)
+  const styles = createStyles(backgroundColor, borderColor)
 
   return (
-    <View style={st.border}>
-      <TouchableOpacity style={st.container} onPress={onPress} />
+    <View style={styles.border}>
+      <TouchableOpacity style={styles.container} onPress={onPress} />
     </View>
   )
 }
 
-export const styles = (backgroundColor: string, borderColor: string) =>
+const createStyles = (backgroundColor: string, borderColor: string) =>
   StyleSheet.create({
     border: {
       height: 20,

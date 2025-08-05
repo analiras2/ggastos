@@ -1,11 +1,12 @@
-import { Typography } from '@components/ui'
-import { TypographyVariant, ValueFormat } from '@components/ui/Typography/types'
+import { Typography, TypographyVariant, ValueFormat } from '@components/ui'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { View } from 'react-native'
 import React from 'react'
 
 interface LabeledItemProps {
+  testID?: string
   label: string
+  textColor?: string
   value: number | string
   align?: 'left' | 'center' | 'right'
   variant?: TypographyVariant
@@ -13,7 +14,9 @@ interface LabeledItemProps {
 }
 
 export const LabeledItem: React.FC<LabeledItemProps> = ({
+  testID = 'labeled-item',
   label,
+  textColor,
   value,
   align = 'center',
   variant = 'title',
@@ -23,16 +26,21 @@ export const LabeledItem: React.FC<LabeledItemProps> = ({
 
   return (
     // eslint-disable-next-line react-native/no-inline-styles
-    <View style={{ flex, justifyContent: 'center' }}>
+    <View testID={testID} style={{ flex, justifyContent: 'center' }}>
       <Typography
-        color={colors.label}
+        color={textColor || colors.label}
         marginBottom={2}
         variant="label"
         align={align}
       >
         {label}
       </Typography>
-      <Typography variant={variant} format={ValueFormat.CURRENCY} align={align}>
+      <Typography
+        variant={variant}
+        format={ValueFormat.CURRENCY}
+        align={align}
+        color={textColor}
+      >
         {value}
       </Typography>
     </View>

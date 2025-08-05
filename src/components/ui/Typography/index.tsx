@@ -41,8 +41,12 @@ export const Typography: React.FC<TypographyProps> = memo(
 
         return (
           <>
-            <Typography variant="body">R${value[0]}</Typography>
-            <Typography variant="label">,{value[1]}</Typography>
+            <Typography color={color || theme.colors.text} variant="body">
+              R${value[0]}
+            </Typography>
+            <Typography color={color || theme.colors.text} variant="label">
+              ,{value[1]}
+            </Typography>
           </>
         )
       }

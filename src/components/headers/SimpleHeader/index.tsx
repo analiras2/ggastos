@@ -5,16 +5,20 @@ import { Colors } from '@theme/types'
 import { StyleSheet, View } from 'react-native'
 import React from 'react'
 
-type Props = {
+interface SimpleHeaderProps {
   title: string
+  testID?: string
 }
 
-const SimpleHeader = ({ title }: Props) => {
+const SimpleHeader = ({
+  title,
+  testID = 'simple-header',
+}: SimpleHeaderProps) => {
   const { colors } = useAppTheme()
-  const st = styles(colors)
+  const styles = createStyles(colors)
 
   return (
-    <View style={st.container}>
+    <View style={styles.container} testID={`${testID}-container`}>
       <Typography
         variant="header"
         bold
@@ -33,7 +37,7 @@ const SimpleHeader = ({ title }: Props) => {
 
 export default SimpleHeader
 
-const styles = (colors: Colors) =>
+const createStyles = (colors: Colors) =>
   StyleSheet.create({
     container: {
       height: 100,

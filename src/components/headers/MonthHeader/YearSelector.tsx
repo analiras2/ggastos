@@ -32,10 +32,10 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
     [onSelectYear]
   )
 
-  const st = styles(colors)
+  const styles = createStyles(colors)
 
   return (
-    <View style={st.container}>
+    <View style={styles.container}>
       <TouchableOpacity onPress={toggleModal}>
         <Typography variant="title" color={colors.textLight}>
           {selectedYear}
@@ -47,7 +47,7 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
         items={years.map((year) => ({ id: year, title: year }))}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleYearSelect(item.id)}>
-            <Typography variant="title" style={st.item}>
+            <Typography variant="title" style={styles.item}>
               {item.title}
             </Typography>
           </TouchableOpacity>
@@ -58,7 +58,7 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
   )
 }
 
-const styles = (colors: Colors) =>
+const createStyles = (colors: Colors) =>
   StyleSheet.create({
     container: {
       justifyContent: 'center',

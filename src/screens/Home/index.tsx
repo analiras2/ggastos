@@ -2,7 +2,7 @@ import { MonthHeader } from '@components/headers'
 import { CategoryItem } from '@components/index'
 import { BaseScreen } from '@components/layout'
 import { Button } from '@components/ui'
-import { Category, TCategory } from '@models/category'
+import { Category, ICategory } from '@models/category'
 import { useAppNavigation } from '@navigation/hooks/useAppNavigation'
 import { ROUTES } from '@navigation/routes'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
@@ -26,7 +26,7 @@ const HomeScreen = () => {
     }
   })
 
-  const handleCategoryPress = (category: TCategory) => {
+  const handleCategoryPress = (category: ICategory) => {
     navigation.navigate(ROUTES.CATEGORY_DETAILS, { category })
   }
 

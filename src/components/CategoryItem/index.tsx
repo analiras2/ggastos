@@ -1,9 +1,10 @@
 import { Typography } from '@components/ui'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
+import { Theme } from '@theme/types'
 import { TouchableOpacity, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import React from 'react'
 import { FieldView } from '../FieldView'
-import { styles } from './styles'
 import { CategoryItemProps } from './types'
 
 export const CategoryItem: React.FC<CategoryItemProps> = ({
@@ -11,18 +12,18 @@ export const CategoryItem: React.FC<CategoryItemProps> = ({
   onPress,
 }) => {
   const theme = useAppTheme()
-  const st = styles(theme)
+  const styles = createStyles(theme)
 
   return (
     <TouchableOpacity
-      style={st.container}
+      style={styles.container}
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <Typography variant="title" bold color={data.color} style={st.title}>
+      <Typography variant="title" bold color={data.color} style={styles.title}>
         {data.name}
       </Typography>
-      <View style={st.data}>
+      <View style={styles.data}>
         <FieldView
           title="Gasto Previsto"
           value={data.totalExpected}
@@ -37,3 +38,22 @@ export const CategoryItem: React.FC<CategoryItemProps> = ({
     </TouchableOpacity>
   )
 }
+
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 8,
+      backgroundColor: theme.colors.card,
+      borderRadius: 8,
+      ...theme.shadowStyle,
+    },
+    data: {
+      flex: 1,
+      flexDirection: 'row',
+      marginTop: 4,
+    },
+    title: {
+      marginBottom: 4,
+    },
+  })

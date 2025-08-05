@@ -3,7 +3,7 @@ import { IPurchase } from '@models/purchase/type'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { Theme } from '@theme/types'
 import { StyleSheet, View } from 'react-native'
-import React, { useCallback } from 'react'
+import React, { memo, useCallback } from 'react'
 import { Typography } from '../ui'
 import { Footer } from './Footer'
 import { Header } from './Header'
@@ -14,21 +14,21 @@ interface PurchaseItemProps {
   onTogglePaid?: (id: number) => void
 }
 
-export const PurchaseItem: React.FC<PurchaseItemProps> = ({
+export const PurchaseItemComponent: React.FC<PurchaseItemProps> = ({
   data,
   color,
   onTogglePaid,
 }) => {
   const theme = useAppTheme()
-  const st = styles(theme)
+  const styles = createStyles(theme)
 
   const handleTogglePaid = useCallback(() => {
     onTogglePaid?.(data.id)
   }, [data.id, onTogglePaid])
 
   return (
-    <View style={st.container}>
-      <View style={st.date}>
+    <View style={styles.container}>
+      <View style={styles.date}>
         <Typography variant="label">
           {formatDate(new Date(data.date))}
         </Typography>
@@ -41,7 +41,7 @@ export const PurchaseItem: React.FC<PurchaseItemProps> = ({
   )
 }
 
-const styles = (theme: Theme) =>
+const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       position: 'relative',
@@ -55,3 +55,16 @@ const styles = (theme: Theme) =>
       right: 20,
     },
   })
+
+export const PurchaseItem = memo(PurchaseItemComponent, (prev, next) => {
+  return (
+    prev.data.date === next.data.date &&
+    prev.data.paid === next.data.paid &&
+    prev.data.title === next.data.title &&
+    prev.data.note === next.data.note &&
+    prev.data.paymentMethod === next.data.paymentMethod &&
+    prev.data.currentInstallment === next.data.currentInstallment &&
+    prev.data.installments === next.data.installments &&
+    prev.data.installmentValue === next.data.installmentValue
+  )
+})

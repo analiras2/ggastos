@@ -18,18 +18,18 @@ export const Balance: React.FC<BalanceProps> = ({
   testID,
 }) => {
   const { colors } = useAppTheme()
-  const st = styles(colors)
+  const styles = createStyles(colors)
 
   return (
-    <View style={st.container}>
+    <View style={styles.container}>
       <RoundedView testID={testID}>
-        <View style={st.content}>
+        <View style={styles.content}>
           <LabeledItem
             label={Strings.expectedBalance}
             value={expected}
             variant="title"
           />
-          <View style={st.divider} />
+          <View style={styles.divider} />
           <LabeledItem
             label={Strings.currentBalance}
             value={current}
@@ -41,7 +41,7 @@ export const Balance: React.FC<BalanceProps> = ({
   )
 }
 
-const styles = (colors: Colors) =>
+const createStyles = (colors: Colors) =>
   StyleSheet.create({
     container: {
       position: 'absolute',
