@@ -18,7 +18,7 @@ export const Strings = {
   save: 'Salvar',
   cancel: 'Cancelar',
   loading: 'Carregando...',
-  configuration: 'Configurações',
+  settings: 'Configurações',
   selectTheYear: 'Selecione o ano',
   newItem: 'Novo Item',
   installment: 'Parcela',
