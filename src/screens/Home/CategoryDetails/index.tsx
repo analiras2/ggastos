@@ -3,9 +3,9 @@ import { CategoryDetailsHeader } from '@components/headers'
 import { BaseScreen } from '@components/layout'
 import { PaymentMethod } from '@models/purchase/type'
 import { RootStackParamList } from '@navigation/types'
-import { RouteProp, useRoute } from '@react-navigation/native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { FlatList } from 'react-native'
-import React from 'react'
+import React, { useCallback } from 'react'
 
 const MOCK = [
   {
@@ -80,8 +80,12 @@ type CategoryDetailsRouteProp = RouteProp<RootStackParamList, 'CategoryDetails'>
 
 export const CategoryDetails: React.FC = () => {
   const route = useRoute<CategoryDetailsRouteProp>()
-
+  const navigation = useNavigation()
   const { category } = route.params
+
+  const handleBackPress = useCallback(() => {
+    navigation.goBack()
+  }, [navigation])
 
   return (
     <BaseScreen
@@ -92,7 +96,7 @@ export const CategoryDetails: React.FC = () => {
           title={category.name}
           balance={{ current: 100, expected: 180 }}
           color={category.color}
-          onBackPress={() => {}}
+          onBackPress={handleBackPress}
         />
       }
     >
