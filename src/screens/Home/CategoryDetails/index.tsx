@@ -1,4 +1,5 @@
 import { PurchaseItem } from '@components/PurchaseItem'
+import { CategoryDetailsHeader } from '@components/headers'
 import { BaseScreen } from '@components/layout'
 import { PaymentMethod } from '@models/purchase/type'
 import { RootStackParamList } from '@navigation/types'
@@ -79,10 +80,22 @@ type CategoryDetailsRouteProp = RouteProp<RootStackParamList, 'CategoryDetails'>
 
 export const CategoryDetails: React.FC = () => {
   const route = useRoute<CategoryDetailsRouteProp>()
+
   const { category } = route.params
 
   return (
-    <BaseScreen paddingHorizontal={0}>
+    <BaseScreen
+      paddingHorizontal={0}
+      paddingVertical={0}
+      headerComponent={
+        <CategoryDetailsHeader
+          title={category.name}
+          balance={{ current: 100, expected: 180 }}
+          color={category.color}
+          onBackPress={() => {}}
+        />
+      }
+    >
       <FlatList
         data={MOCK}
         keyExtractor={({ title }) => title}
