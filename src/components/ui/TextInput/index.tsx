@@ -4,20 +4,22 @@ import {
   TextInput as RNTextInput,
   TextInputProps as RNTextInputProps,
   Text,
+  TextStyle,
   TouchableWithoutFeedback,
   View,
 } from 'react-native'
-import CurrencyInput from 'react-native-currency-input';
+import CurrencyInput from 'react-native-currency-input'
 import React, { useEffect, useRef, useState } from 'react'
 import { createStyles } from './styles'
 
-interface TextInputProps extends Omit<RNTextInputProps, 'value' | 'onChangeText'> {
+interface TextInputProps
+  extends Omit<RNTextInputProps, 'value' | 'onChangeText'> {
   label: string
   error?: string
   isCurrency?: boolean
   containerStyle?: any
-  value: string | number;
-  onChangeText: (value: string | number) => void;
+  value: string | number
+  onChangeText: (value: string | number) => void
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -67,10 +69,10 @@ export const TextInput: React.FC<TextInputProps> = ({
     if (value && !isFocused) {
       animateLabelToTop()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
-  const labelStyle = {
+  const labelStyle: Animated.AnimatedProps<TextStyle> = {
     position: 'absolute',
     left: 0,
     top: animatedValue.interpolate({
@@ -89,15 +91,17 @@ export const TextInput: React.FC<TextInputProps> = ({
 
   const InputComponent = isCurrency ? CurrencyInput : RNTextInput
 
-  const currencyProps = isCurrency ? {
-    prefix: 'R$ ',
-    delimiter: '.',
-    separator: ',',
-    precision: 2,
-    onChangeValue: onChangeText,
-  } : {
-    onChangeText: onChangeText,
-  };
+  const currencyProps = isCurrency
+    ? {
+        prefix: 'R$ ',
+        delimiter: '.',
+        separator: ',',
+        precision: 2,
+        onChangeValue: onChangeText,
+      }
+    : {
+        onChangeText: onChangeText,
+      }
 
   return (
     <TouchableWithoutFeedback onPress={() => inputRef.current?.focus()}>

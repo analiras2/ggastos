@@ -1,6 +1,6 @@
 export interface CategoryData {
   id: string
-  name: string
+  title: string
   color: string
   totalExpected: number
   totalSpent: number

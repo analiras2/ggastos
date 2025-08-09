@@ -7,7 +7,7 @@ module.exports = {
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-gesture-handler|react-native-safe-area-context|@react-native-vector-icons|@react-native-community)/)',
+    'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-gesture-handler|react-native-safe-area-context|@react-native-vector-icons|@react-native-community|react-native-element-dropdown)/)',
   ],
   moduleNameMapper: {
     '^@common/(.*)$': '<rootDir>/src/common/$1',

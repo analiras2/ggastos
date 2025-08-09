@@ -21,7 +21,7 @@ export const CategoryItem: React.FC<CategoryItemProps> = ({
       activeOpacity={0.7}
     >
       <Typography variant="title" bold color={data.color} style={styles.title}>
-        {data.name}
+        {data.title}
       </Typography>
       <View style={styles.data}>
         <FieldView

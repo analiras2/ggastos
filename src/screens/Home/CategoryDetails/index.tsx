@@ -93,7 +93,7 @@ export const CategoryDetails: React.FC = () => {
       paddingVertical={0}
       headerComponent={
         <CategoryDetailsHeader
-          title={category.name}
+          title={category.title}
           balance={{ current: 100, expected: 180 }}
           color={category.color}
           onBackPress={handleBackPress}

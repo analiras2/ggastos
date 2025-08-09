@@ -12,7 +12,7 @@ export interface IPurchaseItem {
   price: number
   paymentMethod: PaymentMethod
   installments: number
-  note?: string
+  note: string
 }
 
 export type IPurchase = IPurchaseItem & {

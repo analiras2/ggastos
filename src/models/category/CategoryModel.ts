@@ -1,56 +1,56 @@
-import { ICategory } from "./type";
+import { ICategory } from './type'
 
 export class Category {
-  static getCategories = (): ICategory[] => ([
+  static getCategories = (): ICategory[] => [
     {
       id: 'income',
-      name: 'Renda',
+      title: 'Renda',
       color: '#60af50',
     },
     {
       id: 'investiment',
-      name: 'Investimento',
+      title: 'Investimento',
       color: '#e8c140',
     },
     {
       id: 'food',
-      name: 'Alimentação',
+      title: 'Alimentação',
       color: '#7c4baf',
     },
     {
       id: 'expenses',
-      name: 'Desp. Pessoais',
+      title: 'Desp. Pessoais',
       color: '#EF5350',
     },
     {
       id: 'transport',
-      name: 'Transporte',
+      title: 'Transporte',
       color: '#329ed1',
     },
     {
       id: 'recreation',
-      name: 'Lazer',
+      title: 'Lazer',
       color: '#e84c78',
     },
     {
       id: 'education',
-      name: 'Educação',
+      title: 'Educação',
       color: '#f76d47',
     },
     {
       id: 'health',
-      name: 'Saúde',
+      title: 'Saúde',
       color: '#22b5c9',
     },
     {
       id: 'home',
-      name: 'Moradia',
+      title: 'Moradia',
       color: '#5e5dba',
     },
     {
       id: 'bussines',
-      name: 'Negócios',
+      title: 'Negócios',
       color: '#69c3acff',
     },
-  ])
+  ]
 }
