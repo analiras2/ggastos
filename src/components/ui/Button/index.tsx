@@ -44,7 +44,7 @@ export const Button: React.FC<ButtonProps> = (props) => {
       <>
         {iconPosition === 'left' && renderIcon()}
         {text && (
-          <Typography variant="title" color={textColor}>
+          <Typography color={textColor}>
             {text.toUpperCase()}
           </Typography>
         )}

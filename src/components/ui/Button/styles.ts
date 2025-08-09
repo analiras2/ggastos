@@ -10,9 +10,9 @@ export const getButtonStyles = ({
   const baseStyles = {
     contained: {
       container: {
-        height: 40,
         backgroundColor: color,
         borderRadius: 8,
+        padding: 8,
         ...theme.shadowStyle,
       },
     },

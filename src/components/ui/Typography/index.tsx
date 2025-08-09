@@ -11,6 +11,7 @@ export const Typography: React.FC<TypographyProps> = memo(
     format = ValueFormat.TEXT,
     color,
     style,
+    marginTop,
     marginBottom,
     paddingHorizontal,
     bold,
@@ -25,6 +26,7 @@ export const Typography: React.FC<TypographyProps> = memo(
       getTypographyStyle(variant),
       {
         color: color || theme.colors.text,
+        marginTop,
         marginBottom,
         paddingHorizontal,
         textAlign: align,

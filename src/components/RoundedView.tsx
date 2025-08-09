@@ -1,13 +1,14 @@
 import { useAppTheme } from '@theme/hooks/useAppTheme'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, View, ViewStyle } from 'react-native'
 import React, { ReactNode } from 'react'
 
 interface RoundedViewProps {
   testID?: string
-  children: ReactNode
+  children: ReactNode,
+  style?: ViewStyle
 }
 
-export const RoundedView = ({ testID, children }: RoundedViewProps) => {
+export const RoundedView = ({ testID, children, style }: RoundedViewProps) => {
   const { colors, width, shadowStyle } = useAppTheme()
 
   return (
@@ -17,6 +18,7 @@ export const RoundedView = ({ testID, children }: RoundedViewProps) => {
         styles.container,
         { width: width - 40, backgroundColor: colors.backgroundLight },
         shadowStyle,
+        style
       ]}
     >
       {children}

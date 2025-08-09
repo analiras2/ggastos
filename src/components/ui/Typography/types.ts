@@ -12,6 +12,7 @@ export interface TypographyProps {
   children: React.ReactNode | number
   color?: string
   format?: ValueFormat
+  marginTop?: number
   marginBottom?: number
   paddingHorizontal?: number
   align?: 'left' | 'center' | 'right'

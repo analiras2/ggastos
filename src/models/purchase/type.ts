@@ -15,11 +15,6 @@ export interface IPurchaseItem {
   note?: string
 }
 
-export type IPurchaseSaveItem = IPurchaseItem & {
-  price: string
-  installments: string
-}
-
 export type IPurchase = IPurchaseItem & {
   id: number
   data: string

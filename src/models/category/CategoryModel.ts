@@ -1,5 +1,7 @@
+import { ICategory } from "./type";
+
 export class Category {
-  static getCategories = [
+  static getCategories = (): ICategory[] => ([
     {
       id: 'income',
       name: 'Renda',
@@ -50,5 +52,5 @@ export class Category {
       name: 'Negócios',
       color: '#69c3acff',
     },
-  ]
+  ])
 }
