@@ -1,5 +1,5 @@
-import { Animated } from 'react-native'
 import React, { useEffect, useRef } from 'react'
+import { Animated } from 'react-native'
 import { AnimationProps } from './types'
 import { DEFAULT_DELAY, DEFAULT_DURATION, getAnimationStyle } from './utils'
 

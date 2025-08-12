@@ -1,13 +1,7 @@
-import { StyleProp, ViewStyle } from 'react-native'
 import { ReactNode } from 'react'
+import { StyleProp, ViewStyle } from 'react-native'
 
-export type AnimationType =
-  | 'fade'
-  | 'scale'
-  | 'slideUp'
-  | 'slideDown'
-  | 'slideLeft'
-  | 'slideRight'
+export type AnimationType = 'fade' | 'scale' | 'slideUp' | 'slideDown' | 'slideLeft' | 'slideRight'
 
 export interface AnimationConfig {
   duration?: number

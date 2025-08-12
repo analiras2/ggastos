@@ -1,8 +1,7 @@
-import { useAppTheme } from '@theme/hooks/useAppTheme'
-import { StyleSheet, View } from 'react-native'
 import React from 'react'
-import { Typography } from './ui'
-import { ValueFormat } from './ui/Typography/types'
+import { StyleSheet, View } from 'react-native'
+import { useAppTheme } from '@theme/hooks/useAppTheme'
+import { Typography, ValueFormat } from './common'
 
 interface FieldViewProps {
   title: string
@@ -12,15 +11,9 @@ interface FieldViewProps {
   light?: boolean
 }
 
-export const FieldView: React.FC<FieldViewProps> = (props) => {
+export const FieldView: React.FC<FieldViewProps> = props => {
   const { colors } = useAppTheme()
-  const {
-    title,
-    value,
-    align = 'flex-start',
-    light = false,
-    color = colors.text,
-  } = props
+  const { title, value, align = 'flex-start', light = false, color = colors.text } = props
   return (
     <View style={[styles.container, { alignItems: align }]}>
       <Typography variant="tiny" color={light ? colors.textLight : color}>
@@ -29,9 +22,7 @@ export const FieldView: React.FC<FieldViewProps> = (props) => {
       <Typography
         variant="body"
         color={light ? colors.textLight : colors.text}
-        format={
-          typeof value === 'number' ? ValueFormat.CURRENCY : ValueFormat.TEXT
-        }
+        format={typeof value === 'number' ? ValueFormat.CURRENCY : ValueFormat.TEXT}
       >
         {value}
       </Typography>

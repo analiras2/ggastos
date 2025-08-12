@@ -1,7 +1,7 @@
-import { Typography, TypographyVariant, ValueFormat } from '@components/ui'
-import { useAppTheme } from '@theme/hooks/useAppTheme'
-import { View } from 'react-native'
 import React from 'react'
+import { View } from 'react-native'
+import { Typography, TypographyVariant, ValueFormat } from '@components/common'
+import { useAppTheme } from '@theme/hooks/useAppTheme'
 
 interface LabeledItemProps {
   testID?: string
@@ -27,20 +27,10 @@ export const LabeledItem: React.FC<LabeledItemProps> = ({
   return (
     // eslint-disable-next-line react-native/no-inline-styles
     <View testID={testID} style={{ flex, justifyContent: 'center' }}>
-      <Typography
-        color={textColor || colors.label}
-        marginBottom={2}
-        variant="label"
-        align={align}
-      >
+      <Typography color={textColor || colors.label} marginBottom={2} variant="label" align={align}>
         {label}
       </Typography>
-      <Typography
-        variant={variant}
-        format={ValueFormat.CURRENCY}
-        align={align}
-        color={textColor}
-      >
+      <Typography variant={variant} format={ValueFormat.CURRENCY} align={align} color={textColor}>
         {value}
       </Typography>
     </View>

@@ -1,10 +1,10 @@
+import React from 'react'
+import { StyleSheet, View } from 'react-native'
 import { LabeledItem } from '@components/LabeledItem'
 import { RoundedView } from '@components/RoundedView'
 import { Strings } from '@constants/strings'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { Colors } from '@theme/types'
-import { StyleSheet, View } from 'react-native'
-import React from 'react'
 
 interface BalanceProps {
   expected: number
@@ -12,11 +12,7 @@ interface BalanceProps {
   testID?: string
 }
 
-export const Balance: React.FC<BalanceProps> = ({
-  expected,
-  current,
-  testID,
-}) => {
+export const Balance: React.FC<BalanceProps> = ({ expected, current, testID }) => {
   const { colors } = useAppTheme()
   const styles = createStyles(colors)
 
@@ -24,17 +20,9 @@ export const Balance: React.FC<BalanceProps> = ({
     <View style={styles.container}>
       <RoundedView testID={testID}>
         <View style={styles.content}>
-          <LabeledItem
-            label={Strings.expectedBalance}
-            value={expected}
-            variant="title"
-          />
+          <LabeledItem label={Strings.expectedBalance} value={expected} variant="title" />
           <View style={styles.divider} />
-          <LabeledItem
-            label={Strings.currentBalance}
-            value={current}
-            variant="header"
-          />
+          <LabeledItem label={Strings.currentBalance} value={current} variant="header" />
         </View>
       </RoundedView>
     </View>

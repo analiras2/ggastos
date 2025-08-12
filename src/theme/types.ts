@@ -1,5 +1,5 @@
-import { Theme as NavigationTheme } from '@react-navigation/native'
 import { ViewStyle } from 'react-native'
+import { Theme as NavigationTheme } from '@react-navigation/native'
 
 export type Colors = NavigationTheme['colors'] & {
   secondary: string

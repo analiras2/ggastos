@@ -1,13 +1,6 @@
-import { useAppTheme } from '@theme/hooks/useAppTheme'
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native'
 import React from 'react'
+import { SafeAreaView, ScrollView, StatusBar, StyleSheet, View, ViewStyle } from 'react-native'
+import { useAppTheme } from '@theme/hooks/useAppTheme'
 
 interface BaseScreenProps {
   children: React.ReactNode
@@ -35,9 +28,7 @@ export const BaseScreen: React.FC<BaseScreenProps> = ({
   const Content = scrollable ? ScrollView : View
 
   return (
-    <Container
-      style={[styles.container, { backgroundColor: theme.colors.primary }]}
-    >
+    <Container style={[styles.container, { backgroundColor: theme.colors.primary }]}>
       <StatusBar barStyle={'light-content'} />
 
       {headerComponent}

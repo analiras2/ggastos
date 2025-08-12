@@ -3,7 +3,7 @@ const mockGestureHandler = {
   TapGestureHandler: 'TapGestureHandler',
   State: {},
   Directions: {},
-  createNativeWrapper: (component: any) => component,
+  createNativeWrapper: (component: unknown) => component,
   NativeViewGestureHandler: 'NativeViewGestureHandler',
 }
 

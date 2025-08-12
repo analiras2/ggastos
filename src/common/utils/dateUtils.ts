@@ -17,10 +17,7 @@ export class DateUtils {
       return [endYear]
     }
 
-    return Array.from(
-      { length: endYear - startYear + 1 },
-      (_, index) => startYear + index
-    )
+    return Array.from({ length: endYear - startYear + 1 }, (_, index) => startYear + index)
   }
 }
 

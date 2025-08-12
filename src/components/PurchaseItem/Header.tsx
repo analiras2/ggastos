@@ -1,9 +1,9 @@
+import React from 'react'
+import { StyleSheet, View } from 'react-native'
 import { IPurchase } from '@models/purchase/type'
 import Icon from '@react-native-vector-icons/ionicons'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
-import { StyleSheet, View } from 'react-native'
-import React from 'react'
-import { CheckBox, Typography } from '../ui'
+import { CheckBox, Typography } from '../common'
 
 interface HeaderProps {
   data: IPurchase

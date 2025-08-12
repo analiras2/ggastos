@@ -4,10 +4,7 @@ import { AnimationType } from './types'
 export const DEFAULT_DURATION = 500
 export const DEFAULT_DELAY = 0
 
-export const getAnimationStyle = (
-  animationValue: Animated.Value,
-  animationType: AnimationType
-) => {
+export const getAnimationStyle = (animationValue: Animated.Value, animationType: AnimationType) => {
   const baseStyles = {
     fade: {
       opacity: animationValue.interpolate({

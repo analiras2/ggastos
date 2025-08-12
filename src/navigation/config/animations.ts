@@ -1,5 +1,5 @@
-import { CardStyleInterpolators } from '@react-navigation/stack'
 import { Platform } from 'react-native'
+import { CardStyleInterpolators } from '@react-navigation/stack'
 
 const animationDuration = 500
 

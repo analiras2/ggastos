@@ -18,14 +18,9 @@ module.exports = {
     '^@navigation/(.*)$': '<rootDir>/src/navigation/$1',
     '^@screens/(.*)$': '<rootDir>/src/screens/$1',
     '^@theme/(.*)$': '<rootDir>/src/theme/$1',
+    '^@utils/(.*)$': '<rootDir>/src/utils/$1',
   },
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/android/',
-    '/ios/',
-    '/dist/',
-    '/.bundle/',
-  ],
+  testPathIgnorePatterns: ['/node_modules/', '/android/', '/ios/', '/dist/', '/.bundle/'],
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',

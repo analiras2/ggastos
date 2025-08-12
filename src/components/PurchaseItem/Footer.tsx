@@ -1,10 +1,10 @@
+import React from 'react'
+import { StyleSheet, View } from 'react-native'
+import { ValueFormat } from '@components/common/Typography/types'
 import { LabeledItem } from '@components/LabeledItem'
-import { ValueFormat } from '@components/ui/Typography/types'
 import { Strings } from '@constants/strings'
 import { IPurchase, PaymentMethod } from '@models/purchase/type'
-import { StyleSheet, View } from 'react-native'
-import React from 'react'
-import { Typography } from '../ui'
+import { Typography } from '../common'
 
 interface HeaderProps {
   data: IPurchase
@@ -13,12 +13,7 @@ interface HeaderProps {
 export const Footer: React.FC<HeaderProps> = ({ data }) => {
   return (
     <View style={styles.container}>
-      <LabeledItem
-        label={Strings.payment}
-        value={data.paymentMethod}
-        variant="body"
-        align="left"
-      />
+      <LabeledItem label={Strings.payment} value={data.paymentMethod} variant="body" align="left" />
       {data.paymentMethod === PaymentMethod.CREDIT && (
         <LabeledItem
           label={Strings.installment}
@@ -27,11 +22,7 @@ export const Footer: React.FC<HeaderProps> = ({ data }) => {
           flex={2}
         />
       )}
-      <Typography
-        format={ValueFormat.CURRENCY}
-        style={styles.value}
-        align="right"
-      >
+      <Typography format={ValueFormat.CURRENCY} style={styles.value} align="right">
         {data.installmentValue}
       </Typography>
     </View>

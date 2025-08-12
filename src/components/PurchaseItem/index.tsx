@@ -1,10 +1,10 @@
+import React, { memo, useCallback } from 'react'
+import { StyleSheet, View } from 'react-native'
 import { formatDate } from '@common/utils/dateUtils'
 import { IPurchase } from '@models/purchase/type'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { Theme } from '@theme/types'
-import { StyleSheet, View } from 'react-native'
-import React, { memo, useCallback } from 'react'
-import { Typography } from '../ui'
+import { Typography } from '../common'
 import { Footer } from './Footer'
 import { Header } from './Header'
 
@@ -29,9 +29,7 @@ export const PurchaseItemComponent: React.FC<PurchaseItemProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.date}>
-        <Typography variant="label">
-          {formatDate(new Date(data.date))}
-        </Typography>
+        <Typography variant="label">{formatDate(new Date(data.date))}</Typography>
       </View>
 
       <Header data={data} color={color} onPress={handleTogglePaid} />

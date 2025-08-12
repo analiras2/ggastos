@@ -1,6 +1,6 @@
+import React, { createContext, useCallback, useContext, useState } from 'react'
 import { DateSelection, Month } from '@common/index'
 import { DateUtils } from '@common/utils/dateUtils'
-import React, { createContext, useCallback, useContext, useState } from 'react'
 
 interface DateContextData {
   dateSelection: DateSelection
@@ -10,23 +10,21 @@ interface DateContextData {
 
 const DateContext = createContext<DateContextData | undefined>(undefined)
 
-export const DateProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const DateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [dateSelection, setDateSelection] = useState<DateSelection>({
     selectedMonth: DateUtils.getCurrentMonth(),
     selectedYear: DateUtils.getCurrentYear(),
   })
 
   const updateMonth = useCallback((month: Month) => {
-    setDateSelection((prev) => ({
+    setDateSelection(prev => ({
       ...prev,
       selectedMonth: month,
     }))
   }, [])
 
   const updateYear = useCallback((year: number) => {
-    setDateSelection((prev) => ({
+    setDateSelection(prev => ({
       ...prev,
       selectedYear: year,
     }))

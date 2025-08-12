@@ -1,11 +1,17 @@
+import { ReactNode } from 'react'
+
+interface Props {
+  children: ReactNode
+}
+
 jest.mock('@react-navigation/stack', () => {
   const actualStack = jest.requireActual('@react-navigation/stack')
 
   return {
     ...actualStack,
     createStackNavigator: () => ({
-      Navigator: ({ children }: any) => children,
-      Screen: ({ children }: any) => children,
+      Navigator: ({ children }: Props) => children,
+      Screen: ({ children }: Props) => children,
     }),
     CardStyleInterpolators: {
       forHorizontalIOS: jest.fn(),

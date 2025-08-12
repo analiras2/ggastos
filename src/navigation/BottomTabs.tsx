@@ -1,3 +1,4 @@
+import React from 'react'
 import { DateProvider } from '@contexts/DateContext'
 import Icon from '@react-native-vector-icons/ionicons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -6,7 +7,6 @@ import HomeScreen from '@screens/Home'
 import SettingsScreen from '@screens/Settings'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { Theme } from '@theme/types'
-import React from 'react'
 import { ROUTES } from './routes'
 
 type IconName =
@@ -26,16 +26,19 @@ interface TabBarIconProps {
 
 type TabScreenConfig = {
   name: string
-  component: React.ComponentType<any>
+  component: React.ComponentType<React.JSX.Element>
   iconName: IconNameBase
 }
 
 const Tab = createBottomTabNavigator()
 
-const createTabBarIcon =
-  (iconName: IconNameBase) => (props: TabBarIconProps) => (
-    <TabBarIcon {...props} iconName={iconName} />
-  )
+const createTabBarIcon = (iconName: IconNameBase) => {
+  const TabIcon = (props: TabBarIconProps) => <TabBarIcon {...props} iconName={iconName} />
+
+  TabIcon.displayName = `TabBarIcon(${iconName})`
+
+  return TabIcon
+}
 
 const HomeWithProvider = () => (
   <DateProvider>
@@ -86,21 +89,14 @@ const TabBarIcon = ({
   color,
   size,
 }: TabBarIconProps & { iconName: IconNameBase }) => (
-  <Icon
-    name={getIconName(iconName, focused)}
-    color={color}
-    size={focused ? size : size - 4}
-  />
+  <Icon name={getIconName(iconName, focused)} color={color} size={focused ? size : size - 4} />
 )
 
 export const BottomTabs = () => {
   const theme = useAppTheme()
 
   return (
-    <Tab.Navigator
-      initialRouteName={ROUTES.HOME}
-      screenOptions={createScreenOptions(theme)}
-    >
+    <Tab.Navigator initialRouteName={ROUTES.HOME} screenOptions={createScreenOptions(theme)}>
       {TAB_SCREENS.map(({ name, component, iconName }) => (
         <Tab.Screen
           key={name}

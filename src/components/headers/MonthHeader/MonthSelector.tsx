@@ -1,9 +1,9 @@
+import React, { useCallback, useEffect, useRef } from 'react'
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Typography } from '@/components'
 import { Month } from '@common/index'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { Theme } from '@theme/types'
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
-import React, { useCallback, useEffect, useRef } from 'react'
-import { Typography } from '../../ui/Typography'
 
 interface MonthSelectorProps {
   months: Month[]
@@ -23,8 +23,7 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
     listRef.current &&
       setTimeout(() => {
         listRef.current?.scrollToIndex({
-          index:
-            selectedMonth.id === 0 ? selectedMonth.id : selectedMonth.id - 1,
+          index: selectedMonth.id === 0 ? selectedMonth.id : selectedMonth.id - 1,
         })
       }, 500)
   })

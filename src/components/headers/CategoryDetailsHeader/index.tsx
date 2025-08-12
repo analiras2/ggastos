@@ -1,12 +1,12 @@
+import React, { memo } from 'react'
+import { TouchableOpacity, View } from 'react-native'
+import { Typography } from '@components/common'
 import { LabeledItem } from '@components/LabeledItem'
-import { Typography } from '@components/ui'
 import { Strings } from '@constants/strings'
 import { ICategoryBalance } from '@models/category'
 import Icon from '@react-native-vector-icons/ionicons'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
-import { Colors } from '@theme/types'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
-import React, { memo } from 'react'
+import { createStyles } from './styles'
 
 interface CategoryDetailsHeaderProps {
   title: string
@@ -18,14 +18,8 @@ interface CategoryDetailsHeaderProps {
 
 const ICON_SIZE = 24
 
-export const CategoryDetailsHeader: React.FC<CategoryDetailsHeaderProps> = memo(
-  ({
-    title,
-    balance,
-    color,
-    onBackPress,
-    testID = 'category-details-header',
-  }) => {
+export const CategoryDetailsHeader = memo<CategoryDetailsHeaderProps>(
+  ({ title, balance, color, onBackPress, testID = 'category-details-header' }) => {
     const { colors } = useAppTheme()
     const styles = createStyles(colors, color)
 
@@ -81,24 +75,4 @@ export const CategoryDetailsHeader: React.FC<CategoryDetailsHeaderProps> = memo(
   }
 )
 
-const createStyles = (colors: Colors, accentColor: string) =>
-  StyleSheet.create({
-    container: {
-      backgroundColor: colors.primary,
-      paddingHorizontal: 20,
-      paddingVertical: 12,
-      borderBottomColor: accentColor,
-      borderBottomWidth: 4,
-    },
-    title: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    balance: {
-      flexDirection: 'row',
-    },
-    hiddenButton: {
-      opacity: 0,
-    },
-  })
+CategoryDetailsHeader.displayName = 'CategoryDetailsHeader'

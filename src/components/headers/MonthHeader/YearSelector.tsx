@@ -1,10 +1,9 @@
+import React, { useCallback, useState } from 'react'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Selector, Typography } from '@/components'
 import { Strings } from '@constants/strings'
 import { useAppTheme } from '@theme/hooks/useAppTheme'
 import { Colors } from '@theme/types'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
-import React, { useCallback, useState } from 'react'
-import { Selector } from '../../ui'
-import { Typography } from '../../ui/Typography'
 
 interface YearSelectorProps {
   years: number[]
@@ -21,7 +20,7 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   const toggleModal = useCallback(() => {
-    setIsModalVisible((prev) => !prev)
+    setIsModalVisible(prev => !prev)
   }, [])
 
   const handleYearSelect = useCallback(
@@ -44,7 +43,7 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
       <Selector
         visible={isModalVisible}
         title={Strings.selectTheYear}
-        items={years.map((year) => ({ id: year, title: year }))}
+        items={years.map(year => ({ id: year, title: year }))}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleYearSelect(item.id)}>
             <Typography variant="title" style={styles.item}>

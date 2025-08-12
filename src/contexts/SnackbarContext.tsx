@@ -1,6 +1,6 @@
-import { SnackBar } from '@components/ui'
-import { SnackbarType } from '@components/ui/SnackBar/types'
 import React, { createContext, useCallback, useContext, useState } from 'react'
+import { SnackBar } from '@components/common'
+import { SnackbarType } from '@components/common/SnackBar/types'
 
 interface SnackbarState {
   visible: boolean
@@ -17,9 +17,7 @@ interface SnackbarContextData {
   showSnackbar: ({ message, type }: ShowSnackbarParams) => void
 }
 
-const SnackbarContext = createContext<SnackbarContextData>(
-  {} as SnackbarContextData
-)
+const SnackbarContext = createContext<SnackbarContextData>({} as SnackbarContextData)
 
 const INITIAL_STATE: SnackbarState = {
   visible: false,
@@ -27,9 +25,7 @@ const INITIAL_STATE: SnackbarState = {
   type: 'info',
 }
 
-export const SnackbarProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const SnackbarProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<SnackbarState>(INITIAL_STATE)
 
   const showSnackbar = useCallback(({ message, type }: ShowSnackbarParams) => {
@@ -41,7 +37,7 @@ export const SnackbarProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [])
 
   const hideSnackbar = useCallback(() => {
-    setState((prevState) => ({
+    setState(prevState => ({
       ...prevState,
       visible: false,
     }))
