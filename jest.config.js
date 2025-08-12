@@ -37,5 +37,8 @@ module.exports = {
       lines: 80,
     },
   },
+  forceExit: true,
+  detectOpenHandles: true,
+  testEnvironment: 'node',
   setupFiles: ['./node_modules/react-native-gesture-handler/jestSetup.js'],
 }

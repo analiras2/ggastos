@@ -14,6 +14,13 @@ jest.mock('@models/category', () => ({
   },
 }))
 
+jest.mock('@contexts/DateContext', () => ({
+  useDateContext: jest.fn().mockReturnValue({
+    currentDate: new Date('2023-01-01'),
+    setCurrentDate: jest.fn(),
+  }),
+}))
+
 describe('useHomeScreen', () => {
   const mockCategories = [
     { id: '1', title: 'Category 1', icon: 'cart', color: '#FF0000' },
@@ -28,6 +35,14 @@ describe('useHomeScreen', () => {
       navigate: mockNavigate,
     })
     ;(Category.getCategories as jest.Mock).mockReturnValue(mockCategories)
+  })
+
+  afterEach(() => {
+    jest.clearAllTimers()
+  })
+
+  afterAll(() => {
+    jest.restoreAllMocks()
   })
 
   it('should return categories with expected and spent values', () => {
