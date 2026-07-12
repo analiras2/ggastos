@@ -1,0 +1,17 @@
+current directory: /Users/analirascalabrini/Projects/ascal/ggastos/vendor/bundle/ruby/3.4.0/gems/nkf-0.2.0/ext/nkf
+/opt/homebrew/opt/ruby/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /Users/analirascalabrini/Projects/ascal/ggastos/vendor/bundle/ruby/3.4.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20250717-56100-mnamux sitelibdir\=./.gem.20250717-56100-mnamux clean
+
+current directory: /Users/analirascalabrini/Projects/ascal/ggastos/vendor/bundle/ruby/3.4.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20250717-56100-mnamux sitelibdir\=./.gem.20250717-56100-mnamux
+compiling nkf.c
+linking shared-object nkf.bundle
+ld: warning: -undefined dynamic_lookup is deprecated on iOS-simulator
+ld: building for 'iOS-simulator', but linking in dylib (/opt/homebrew/Cellar/ruby/3.4.4/lib/libruby.3.4.dylib) built for 'macOS'
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+make: *** [nkf.bundle] Error 1
+
+make failed, exit code 2
