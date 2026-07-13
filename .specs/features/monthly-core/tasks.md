@@ -37,9 +37,9 @@
 
 **Done when**:
 
-- [ ] Inputs de planejamento têm validação de valor, mês, categoria e impacto.
-- [ ] Tipos de resposta do dashboard estão definidos.
-- [ ] Testes de schema cobrem valores inválidos.
+- [x] Inputs de planejamento têm validação de valor, mês, categoria e impacto.
+- [x] Tipos de resposta do dashboard estão definidos.
+- [x] Testes de schema cobrem valores inválidos.
 
 **Verify**: `npm test` no workspace mobile quando existir.
 
@@ -55,10 +55,10 @@
 
 **Done when**:
 
-- [ ] RPC/view retorna payload zerado para mês vazio.
-- [ ] Previsto ignora planejamentos cancelados.
-- [ ] Realizado ignora transações ocultas do orçamento.
-- [ ] Transferências internas são neutras por padrão.
+- [x] RPC/view retorna payload zerado para mês vazio.
+- [x] Previsto ignora planejamentos cancelados.
+- [x] Realizado ignora transações ocultas do orçamento.
+- [x] Transferências internas são neutras por padrão.
 
 **Verify**: Rodar consulta SQL com fixtures de um usuário.
 
@@ -74,8 +74,8 @@
 
 **Done when**:
 
-- [ ] Existe chave/índice para evitar duplicidade por template, mês e parcela.
-- [ ] Inserts repetidos não geram duplicatas.
+- [x] Existe chave/índice para evitar duplicidade por template, mês e parcela.
+- [x] Inserts repetidos não geram duplicatas.
 
 **Verify**: Executar insert duplicado e confirmar conflito controlado.
 
@@ -91,9 +91,9 @@
 
 **Done when**:
 
-- [ ] Criação de avulso persiste dados válidos.
-- [ ] Cancelamento muda status sem apagar registro.
-- [ ] Query lista entradas por mês.
+- [x] Criação de avulso persiste dados válidos.
+- [x] Cancelamento muda status sem apagar registro.
+- [x] Query lista entradas por mês.
 
 **Verify**: Teste de integração com Supabase local quando disponível.
 
@@ -109,9 +109,9 @@
 
 **Done when**:
 
-- [ ] Template mensal/anual é criado.
-- [ ] Template parcelado aceita total e valor da parcela.
-- [ ] Validações impedem combinações inválidas.
+- [x] Template mensal/anual é criado.
+- [x] Template parcelado aceita total e valor da parcela.
+- [x] Validações impedem combinações inválidas.
 
 **Verify**: Testes de schema e criação.
 
@@ -127,10 +127,10 @@
 
 **Done when**:
 
-- [ ] Gera recorrência mensal.
-- [ ] Gera recorrência anual apenas no mês correto.
-- [ ] Gera parcelas com índice/total.
-- [ ] Reexecução é idempotente.
+- [x] Gera recorrência mensal.
+- [x] Gera recorrência anual apenas no mês correto.
+- [x] Gera parcelas com índice/total.
+- [x] Reexecução é idempotente.
 
 **Verify**: Testes SQL/Edge Function com fixtures.
 
@@ -146,9 +146,9 @@
 
 **Done when**:
 
-- [ ] Hook busca por mês.
-- [ ] Cache key inclui mês.
-- [ ] Estado vazio e erro são diferenciados.
+- [x] Hook busca por mês.
+- [x] Cache key inclui mês.
+- [x] Estado vazio e erro são diferenciados.
 
 **Verify**: Teste de hook ou integração.
 
@@ -164,9 +164,9 @@
 
 **Done when**:
 
-- [ ] Exibe saldo previsto, saldo atual e comprometido restante.
-- [ ] Exibe totais por categoria.
-- [ ] Exibe estado vazio.
+- [x] Exibe saldo previsto, saldo atual e comprometido restante.
+- [x] Exibe totais por categoria.
+- [x] Exibe estado vazio.
 
 **Verify**: Rodar app e conferir com fixtures locais.
 
@@ -182,9 +182,9 @@
 
 **Done when**:
 
-- [ ] Lista itens planejados.
-- [ ] Lista itens realizados quando existirem.
-- [ ] Estado vazio funciona.
+- [x] Lista itens planejados.
+- [x] Lista itens realizados quando existirem.
+- [x] Estado vazio funciona.
 
 **Verify**: Teste com categoria populada e vazia.
 
@@ -200,10 +200,10 @@
 
 **Done when**:
 
-- [ ] Dois usuários não acessam dados um do outro.
-- [ ] Recorrência mensal gera ocorrência correta.
-- [ ] Parcela futura aparece no mês correto.
-- [ ] Dashboard reflete os dados esperados.
+- [x] Dois usuários não acessam dados um do outro.
+- [x] Recorrência mensal gera ocorrência correta.
+- [x] Parcela futura aparece no mês correto.
+- [x] Dashboard reflete os dados esperados.
 
 **Verify**: Suite de integração local + teste manual no app.
 

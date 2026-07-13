@@ -118,11 +118,11 @@ Depois da fundação, o GGastos precisa entregar o primeiro loop de valor sem de
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| MON-01 | P1: Criar lançamento planejado avulso | Tasks | In Tasks |
-| MON-02 | P1: Criar recorrência mensal/anual simples | Tasks | In Tasks |
-| MON-03 | P1: Criar parcelas futuras conhecidas | Tasks | In Tasks |
-| MON-04 | P1: Ver dashboard mensal | Tasks | In Tasks |
-| MON-05 | P2: Detalhar categoria mensal | Tasks | In Tasks |
+| MON-01 | P1: Criar lançamento planejado avulso | Validation | ✅ Verified |
+| MON-02 | P1: Criar recorrência mensal/anual simples | Validation | ✅ Verified |
+| MON-03 | P1: Criar parcelas futuras conhecidas | Validation | ✅ Verified |
+| MON-04 | P1: Ver dashboard mensal | Validation | ✅ Verified |
+| MON-05 | P2: Detalhar categoria mensal | Validation | ✅ Verified |
 
 **Coverage:** 5 total, 5 mapped to tasks, 0 unmapped
 
@@ -130,7 +130,7 @@ Depois da fundação, o GGastos precisa entregar o primeiro loop de valor sem de
 
 ## Success Criteria
 
-- [ ] Usuário consegue planejar um mês sem Pluggy.
-- [ ] Dashboard mensal responde com previsto, realizado e comprometido restante.
-- [ ] Recorrências e parcelas geram ocorrências verificáveis.
-- [ ] RLS impede vazamento entre usuários.
+- [x] Usuário consegue planejar um mês sem Pluggy.
+- [x] Dashboard mensal responde com previsto, realizado e comprometido restante.
+- [x] Recorrências e parcelas geram ocorrências verificáveis.
+- [x] RLS impede vazamento entre usuários.

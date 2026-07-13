@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-07-12T04:15:00Z
-**Current Work:** Milestone 1 concluída (T8 validado) / próximo passo é iniciar a Milestone 2 (Núcleo mensal)
+**Last Updated:** 2026-07-13T15:00:00Z
+**Current Work:** Milestone 2 (Núcleo mensal) concluída e validada (T1-T10) / próximo passo é iniciar a Milestone 3 (Sync e conciliação)
 
 ---
 
@@ -140,6 +140,20 @@
 **Trade-off:** Nenhum — os arquivos removidos não eram usados em nenhuma tela real (`src/app/index.tsx` + `src/app/_layout.tsx` + `src/features/`).
 **Impact:** Segunda rodada de validação de `T8` (re-execução completa: migrations do zero, seed idempotente, isolamento RLS em `planned_entries`/`financial_connections`/`sync_events`, bloqueio de acesso não autenticado, rejeição de escrita cross-user, Edge Function com `manual`/`scheduled`/erros de validação, e fluxo completo via UI no browser) passou 100% após as correções de AD-018 e AD-019.
 
+### AD-020: Dashboard e geração de ocorrências calculados 100% no Postgres (2026-07-13)
+
+**Decision:** `get_month_dashboard(p_month)` e `generate_planned_entries(p_month)` foram implementados como funções `plpgsql` que derivam o usuário via `auth.uid()` (sem receber `user_id` como parâmetro), em vez de expor esse valor ao cliente.
+**Reason:** Evita qualquer possibilidade de um cliente passar o `user_id` de outra pessoa; a combinação de `auth.uid()` interno + RLS nas tabelas subjacentes torna as duas funções seguras por padrão, mesmo com `security invoker`.
+**Trade-off:** O contrato ficou levemente diferente do desenho original em `design.md` (que sugeria `generate_planned_entries(user_id, month)`), mas é estritamente mais seguro.
+**Impact:** `T2`, `T3` e `T6` reusam o mesmo padrão; qualquer nova RPC de escrita/leitura por usuário deve seguir essa convenção.
+
+### AD-021: Categoria inativa bloqueada por trigger, não só por validação client-side (2026-07-13)
+
+**Decision:** Criado trigger `ensure_active_category()` em `planned_entries` e `planning_templates` (migration `20260713003000`) que rejeita INSERT/UPDATE de `category_id` apontando para uma categoria com `is_active = false`.
+**Reason:** A validação `T10` ponta a ponta encontrou que o edge case "categoria inativa não pode receber novos lançamentos" (já documentado em `spec.md`) não era enforced em lugar nenhum — nem Zod nem o schema do banco bloqueavam. Como `categoryId` só é validado como UUID no client, a única forma confiável de garantir a regra é no banco.
+**Trade-off:** Nenhum — é uma correção de gap, não uma nova capacidade de produto.
+**Impact:** Testado com sucesso rejeitando tanto `planned_entries` quanto `planning_templates` apontando para categoria inativa; geração de ocorrências e dashboard continuam funcionando normalmente para categorias ativas.
+
 ---
 
 ## Active Blockers
@@ -179,6 +193,16 @@ None.
 | 014 | Criar stub inicial de `sync-pluggy` (`T6`)          | 2026-07-12 | -      | ✅ Done |
 | 015 | Integrar mobile com Supabase (`T7`)                 | 2026-07-12 | -      | ✅ Done |
 | 016 | Validar fundação ponta a ponta (`T8`)               | 2026-07-12 | -      | ✅ Done |
+| 017 | Implementar schemas Zod do núcleo mensal (`T1`)     | 2026-07-13 | -      | ✅ Done |
+| 018 | Criar `get_month_dashboard` (`T2`)                  | 2026-07-13 | -      | ✅ Done |
+| 019 | Criar constraints de idempotência (`T3`)            | 2026-07-13 | -      | ✅ Done |
+| 020 | Implementar serviço de planejamentos avulsos (`T4`) | 2026-07-13 | -      | ✅ Done |
+| 021 | Implementar templates recorrentes/parcelados (`T5`) | 2026-07-13 | -      | ✅ Done |
+| 022 | Criar `generate_planned_entries` (`T6`)             | 2026-07-13 | -      | ✅ Done |
+| 023 | Criar hook de dashboard real (`T7`)                 | 2026-07-13 | -      | ✅ Done |
+| 024 | Conectar dashboard aos dados reais (`T8`)           | 2026-07-13 | -      | ✅ Done |
+| 025 | Criar detalhe de categoria mensal (`T9`)            | 2026-07-13 | -      | ✅ Done |
+| 026 | Validar núcleo mensal ponta a ponta (`T10`)         | 2026-07-13 | -      | ✅ Done |
 
 ---
 

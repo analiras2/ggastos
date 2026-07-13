@@ -1,6 +1,6 @@
 # Roadmap
 
-**Current Milestone:** Milestone 2 - Núcleo mensal do produto
+**Current Milestone:** Milestone 3 - Sync e conciliação
 **Status:** In Progress
 
 ---
@@ -34,19 +34,21 @@
 
 ### Features
 
-**Planejamento mensal** - PLANNED
+**Planejamento mensal** - DONE
 
 - Lançamentos planejados avulsos.
 - Recorrências mensais/anuais simples.
 - Parcelas futuras conhecidas.
 - Spec: `.specs/features/monthly-core/spec.md`
+  Progress: `T1` a `T10` concluídos e validados localmente (dois usuários isolados, recorrência mensal/anual, parcelas, geração idempotente, categoria inativa bloqueada).
 
-**Dashboard mensal** - PLANNED
+**Dashboard mensal** - DONE
 
 - Saldo previsto.
 - Saldo atual.
 - Comprometido restante.
 - Totais por categoria.
+- Detalhe de categoria (planejado + realizado).
 - Spec: `.specs/features/monthly-core/spec.md`
 
 ---
