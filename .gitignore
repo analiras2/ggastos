@@ -16,3 +16,7 @@ vendor/bundle/
 *.pbxuser
 *.jsbundle
 .metro-health-check*
+
+# Claude Code local/runtime artifacts (personal settings, agent worktrees)
+**/.claude/settings.local.json
+**/.claude/worktrees/
