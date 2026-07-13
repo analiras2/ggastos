@@ -88,11 +88,11 @@ Bringing it all together.
 
 **Done when**:
 
-- [ ] Categorias globais iniciais inseridas
-- [ ] Seed reflete o catálogo aprovado com `code`, `name`, `impact_type`, `color` e `parent_id`
-- [ ] `categories` não possui `user_id`
-- [ ] Personalização fica representada por `user_category_rules`
-- [ ] Seed pode ser reaplicada sem duplicar categorias
+- [x] Categorias globais iniciais inseridas
+- [x] Seed reflete o catálogo aprovado com `code`, `name`, `impact_type`, `color` e `parent_id`
+- [x] `categories` não possui `user_id`
+- [x] Personalização fica representada por `user_category_rules`
+- [x] Seed pode ser reaplicada sem duplicar categorias
 
 ---
 
@@ -111,12 +111,12 @@ Bringing it all together.
 
 **Done when**:
 
-- [ ] RLS habilitado nas tabelas expostas
-- [ ] Policies de leitura/escrita por usuário criadas
-- [ ] `categories` é leitura global autenticada
-- [ ] `sync_events` permite leitura apenas de eventos com `user_id = auth.uid()`
-- [ ] Eventos sem `user_id` ficam restritos a backend/service role
-- [ ] Sem dependência de `service_role` no cliente
+- [x] RLS habilitado nas tabelas expostas
+- [x] Policies de leitura/escrita por usuário criadas
+- [x] `categories` é leitura global autenticada
+- [x] `sync_events` permite leitura apenas de eventos com `user_id = auth.uid()`
+- [x] Eventos sem `user_id` ficam restritos a backend/service role
+- [x] Sem dependência de `service_role` no cliente
 
 ---
 
@@ -135,9 +135,9 @@ Bringing it all together.
 
 **Done when**:
 
-- [ ] Estrutura de pastas por feature criada
-- [ ] App inicia com shell mínimo
-- [ ] Dependências-base definidas
+- [x] Estrutura de pastas por feature criada
+- [x] App inicia com shell mínimo
+- [x] Dependências-base definidas
 
 ---
 
@@ -156,9 +156,9 @@ Bringing it all together.
 
 **Done when**:
 
-- [ ] Cadastro funciona
-- [ ] Login funciona
-- [ ] Sessão é restaurada no app
+- [x] Cadastro funciona
+- [x] Login funciona
+- [x] Sessão é restaurada no app
 
 ---
 
@@ -177,10 +177,10 @@ Bringing it all together.
 
 **Done when**:
 
-- [ ] Endpoint autenticado criado
-- [ ] Função lê secrets server-side
-- [ ] Inserção inicial em `sync_events` funciona com `user_id` quando acionada por usuário
-- [ ] Eventos técnicos sem `user_id` não são expostos ao cliente
+- [x] Endpoint autenticado criado
+- [x] Função lê secrets server-side
+- [x] Inserção inicial em `sync_events` funciona com `user_id` quando acionada por usuário
+- [x] Eventos técnicos sem `user_id` não são expostos ao cliente
 
 ---
 
@@ -199,9 +199,9 @@ Bringing it all together.
 
 **Done when**:
 
-- [ ] Cliente Supabase configurado
-- [ ] Auth navegando corretamente
-- [ ] Chamada de sync disponível no app
+- [x] Cliente Supabase configurado
+- [x] Auth navegando corretamente
+- [x] Chamada de sync disponível no app
 
 ---
 
@@ -220,13 +220,13 @@ Bringing it all together.
 
 **Done when**:
 
-- [ ] Usuário autentica e mantém sessão
-- [ ] Dados ficam isolados por usuário em teste com pelo menos dois usuários
-- [ ] Sync stub registra evento técnico
-- [ ] Chamada autenticada da Edge Function retorna resposta válida
-- [ ] Seed de categorias é aplicada e consultável
-- [ ] App compila/inicia no shell mínimo
-- [ ] Base está pronta para próximas features
+- [x] Usuário autentica e mantém sessão
+- [x] Dados ficam isolados por usuário em teste com pelo menos dois usuários
+- [x] Sync stub registra evento técnico
+- [x] Chamada autenticada da Edge Function retorna resposta válida
+- [x] Seed de categorias é aplicada e consultável
+- [x] App compila/inicia no shell mínimo
+- [x] Base está pronta para próximas features
 
 ---
 

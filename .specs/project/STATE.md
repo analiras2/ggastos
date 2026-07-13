@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-07-12T00:56:55Z
-**Current Work:** Milestone 1 - Fundação Supabase + Mobile / T2.1 pendente após T1 e T2 concluídos e T2 validado localmente
+**Last Updated:** 2026-07-12T04:15:00Z
+**Current Work:** Milestone 1 concluída (T8 validado) / próximo passo é iniciar a Milestone 2 (Núcleo mensal)
 
 ---
 
@@ -91,6 +91,55 @@
 **Trade-off:** Parte do progresso fica inicialmente confirmada só no ambiente local; aplicação remota continua como passo separado.
 **Impact:** `T1` e `T2` foram confirmados localmente e o próximo passo segue para `T2.1`.
 
+### AD-013: Seed de categorias executada como arquivo reaplicável (2026-07-11)
+
+**Decision:** Implementar o catálogo global em `supabase/seed.sql`, com `ON CONFLICT (code)` e resolução de `parent_id` por `code`.
+**Reason:** Garante reexecução segura em `db reset`, evita dependência de UUID fixo e mantém a hierarquia legível.
+**Trade-off:** O seed depende da unicidade de `categories.code` permanecer contrato estável do catálogo.
+**Impact:** `T2.1` foi validado localmente com 17 categorias sem duplicidade e `T3` pode seguir sobre esse catálogo.
+
+### AD-014: RLS inicial inclui grants explícitos para `authenticated` (2026-07-11)
+
+**Decision:** A migration de `T3` passou a combinar `ENABLE ROW LEVEL SECURITY`, policies por tabela e `GRANT` explícito por operação ao papel `authenticated`.
+**Reason:** Policy sem privilégio SQL não libera acesso no Supabase; o cliente precisa dos dois níveis para operar corretamente.
+**Trade-off:** A migration fica mais verbosa e obriga manutenção conjunta de grants e policies.
+**Impact:** `categories` ficou como leitura autenticada, `sync_events` como leitura do próprio usuário, e as tabelas com `user_id` passaram a aceitar CRUD isolado por dono.
+
+### AD-015: Shell mobile inicial segue Expo Router em `src/app` (2026-07-12)
+
+**Decision:** O bootstrap do app móvel foi criado com `create-expo-app` oficial, preservando Expo Router em `mobile/src/app` e organizando a lógica de produto em `src/features/` e `src/lib/`.
+**Reason:** Mantém o shell alinhado ao template suportado do Expo, reduz atrito de setup e permite evoluir a navegação sem abandonar a separação por feature.
+**Trade-off:** O projeto herda alguns arquivos utilitários do template do Expo, mesmo usando apenas uma rota mínima nesta fase.
+**Impact:** `T4` e `T5` ficaram com shell compilável, rota raiz única e sessão persistida via Supabase Auth + AsyncStorage.
+
+### AD-016: Design system e dashboard visual foram antecipados no mobile (2026-07-12)
+
+**Decision:** O repositório agora já contém um design system GGastos (`mobile/src/components/ggastos/`, `mobile/src/constants/ggastos-theme.ts`), `AppShell` autenticado e uma tela de dashboard com dados mockados.
+**Reason:** Antecipar a linguagem visual reduz retrabalho de UI e acelera a Milestone 2.
+**Trade-off:** Parte da implementação visual do núcleo mensal existe antes das integrações reais, então as próximas tasks devem evoluir scaffolds existentes em vez de recriá-los.
+**Impact:** As specs de `monthly-core` foram ajustadas para reutilizar esse material em `T7`, `T8` e `T9`.
+
+### AD-017: Integração móvel inicial usa React Query + Edge Function real de sync (2026-07-12)
+
+**Decision:** `T7` conectou o shell autenticado a um `QueryClientProvider`, ao client Supabase configurado no padrão oficial para React Native e à chamada real da Edge Function `sync-pluggy`.
+**Reason:** Permite validar o loop auth → app shell → comando sensível sem esperar o read model mensal real da Milestone 2.
+**Trade-off:** O dashboard ainda combina UI mockada com uma integração real apenas para sync/status, criando uma fase híbrida temporária.
+**Impact:** O app já consegue autenticar, entrar no shell e disparar sync manual; `T8` passa a focar validação ponta a ponta local em vez de wiring básico.
+
+### AD-018: `service_role` precisa de GRANT SQL explícito além do bypass de RLS (2026-07-12)
+
+**Decision:** A migration de `T3` concedia privilégios apenas a `authenticated`; `service_role` ficou sem `SELECT/INSERT/UPDATE/DELETE` em nenhuma tabela, quebrando a Edge Function `sync-pluggy` com `permission denied for table profiles`. Criada a migration `20260712020000_grant_service_role_table_privileges.sql` concedendo os privilégios a `service_role` em todas as tabelas do domínio.
+**Reason:** `service_role` no Postgres do Supabase ignora *policies* de RLS, mas continua exigindo GRANT de tabela como qualquer outro role — o mesmo princípio já registrado em AD-014 para `authenticated` também se aplica a `service_role`.
+**Trade-off:** Nenhum; é uma correção necessária para o contrato de acesso server-side funcionar.
+**Impact:** `T8` validou ponta a ponta (dois usuários isolados, seed de categorias, sync real via UI retornando 202) somente após essa correção. Futuras migrations que criem tabelas RLS devem sempre conceder privilégios a `authenticated` e `service_role` juntos.
+
+### AD-019: Componentes mortos do template Expo removidos por quebrarem o typecheck (2026-07-12)
+
+**Decision:** `mobile/src/components/app-tabs.tsx` e `app-tabs.web.tsx` (scaffolding do `create-expo-app`, não importados por nenhuma rota real) foram removidos após confirmarem quebra de `tsc --noEmit` (referenciavam uma rota `/explore` inexistente). `external-link.tsx`, `animated-icon*`, `hint-row.tsx`, `web-badge.tsx` e `ui/collapsible.tsx` ficaram órfãos como consequência e foram sinalizados para limpeza futura (task em background, não bloqueia Milestone 1).
+**Reason:** "App compila/inicia no shell mínimo" é critério de `T8`; um `tsc --noEmit` quebrado por código morto não satisfaz esse critério, mesmo o bundler do Metro não falhando em dev.
+**Trade-off:** Nenhum — os arquivos removidos não eram usados em nenhuma tela real (`src/app/index.tsx` + `src/app/_layout.tsx` + `src/features/`).
+**Impact:** Segunda rodada de validação de `T8` (re-execução completa: migrations do zero, seed idempotente, isolamento RLS em `planned_entries`/`financial_connections`/`sync_events`, bloqueio de acesso não autenticado, rejeição de escrita cross-user, Edge Function com `manual`/`scheduled`/erros de validação, e fluxo completo via UI no browser) passou 100% após as correções de AD-018 e AD-019.
+
 ---
 
 ## Active Blockers
@@ -123,6 +172,13 @@ None.
 | 007 | Criar estrutura base do Supabase (`T1`)             | 2026-07-11 | -      | ✅ Done |
 | 008 | Criar migration inicial do domínio MVP (`T2`)       | 2026-07-11 | -      | ✅ Done |
 | 009 | Validar `T2` no Supabase local                      | 2026-07-11 | -      | ✅ Done |
+| 010 | Criar seed global de categorias (`T2.1`)            | 2026-07-11 | -      | ✅ Done |
+| 011 | Habilitar RLS e policies mínimas (`T3`)             | 2026-07-11 | -      | ✅ Done |
+| 012 | Criar shell mobile Expo (`T4`)                      | 2026-07-12 | -      | ✅ Done |
+| 013 | Implementar autenticação base (`T5`)                | 2026-07-12 | -      | ✅ Done |
+| 014 | Criar stub inicial de `sync-pluggy` (`T6`)          | 2026-07-12 | -      | ✅ Done |
+| 015 | Integrar mobile com Supabase (`T7`)                 | 2026-07-12 | -      | ✅ Done |
+| 016 | Validar fundação ponta a ponta (`T8`)               | 2026-07-12 | -      | ✅ Done |
 
 ---
 
@@ -138,10 +194,6 @@ None.
 ---
 
 ## Todos
-
-- [ ] Criar esqueleto real de `mobile/`.
-- [ ] Criar seed idempotente de `categories`.
-- [ ] Habilitar RLS e policies mínimas.
 
 ## Preferences
 

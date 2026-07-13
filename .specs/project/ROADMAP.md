@@ -1,6 +1,6 @@
 # Roadmap
 
-**Current Milestone:** Milestone 1 - Fundação do MVP
+**Current Milestone:** Milestone 2 - Núcleo mensal do produto
 **Status:** In Progress
 
 ---
@@ -12,15 +12,15 @@
 
 ### Features
 
-**Fundação Supabase + Mobile** - IN PROGRESS
+**Fundação Supabase + Mobile** - DONE
 
 - Configurar Supabase Auth, Postgres, RLS e estrutura inicial de Edge Functions.
 - Criar estrutura `mobile/` com React Native + Expo + TypeScript.
 - Criar schema inicial do domínio financeiro.
 - Preparar ambiente para sync com Pluggy sem expor segredos no cliente.
-  Progress: `T1` concluído, `T2` concluído e validado localmente, `T2.1` pendente.
+  Progress: `T1` a `T8` concluídos e validados localmente. Fundação pronta para a Milestone 2.
 
-**Autenticação e bootstrap do usuário** - PLANNED
+**Autenticação e bootstrap do usuário** - DONE
 
 - Login por e-mail/senha.
 - Criação de perfil local.

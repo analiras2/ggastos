@@ -6,10 +6,10 @@ O projeto já tem visão de produto, stack e modelo de dados definidos, mas aind
 
 ## Goals
 
-- [ ] Colocar de pé a base técnica do MVP com Supabase e React Native/Expo.
-- [ ] Garantir que autenticação, schema inicial e segurança por usuário existam antes das features de negócio.
-- [ ] Deixar a integração com Pluggy pronta para começar com sync server-side sem expor segredos.
-- [ ] Criar o schema central completo do MVP desde a fundação, mesmo que as telas/funções de negócio sejam implementadas em fases posteriores.
+- [x] Colocar de pé a base técnica do MVP com Supabase e React Native/Expo.
+- [x] Garantir que autenticação, schema inicial e segurança por usuário existam antes das features de negócio.
+- [x] Deixar a integração com Pluggy pronta para começar com sync server-side sem expor segredos.
+- [x] Criar o schema central completo do MVP desde a fundação, mesmo que as telas/funções de negócio sejam implementadas em fases posteriores.
 
 ## Out of Scope
 
@@ -124,14 +124,14 @@ Each requirement gets a unique ID for tracking across design, tasks, and validat
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| FND-01 | P1: Autenticação e sessão base | Tasks | In Tasks |
-| FND-02 | P1: Autenticação e sessão base | Tasks | In Tasks |
-| FND-03 | P1: Schema inicial do domínio | Tasks | In Tasks |
-| FND-04 | P1: Schema inicial do domínio | Tasks | In Tasks |
-| FND-05 | P1: Sync server-side preparado para Pluggy | Tasks | In Tasks |
-| FND-06 | P1: Sync server-side preparado para Pluggy | Tasks | In Tasks |
-| FND-07 | P2: Estrutura mobile do MVP | Tasks | In Tasks |
-| FND-08 | P2: Base de observabilidade técnica | Tasks | In Tasks |
+| FND-01 | P1: Autenticação e sessão base | Validation | ✅ Verified |
+| FND-02 | P1: Autenticação e sessão base | Validation | ✅ Verified |
+| FND-03 | P1: Schema inicial do domínio | Validation | ✅ Verified |
+| FND-04 | P1: Schema inicial do domínio | Validation | ✅ Verified |
+| FND-05 | P1: Sync server-side preparado para Pluggy | Validation | ✅ Verified |
+| FND-06 | P1: Sync server-side preparado para Pluggy | Validation | ✅ Verified |
+| FND-07 | P2: Estrutura mobile do MVP | Validation | ✅ Verified |
+| FND-08 | P2: Base de observabilidade técnica | Validation | ✅ Verified |
 
 **ID format:** `[CATEGORY]-[NUMBER]`
 
@@ -145,9 +145,9 @@ Each requirement gets a unique ID for tracking across design, tasks, and validat
 
 How we know the feature is successful:
 
-- [ ] Um usuário consegue autenticar no app e manter sessão.
-- [ ] O schema inicial é aplicado com segurança e isolamento por usuário.
-- [ ] Existe uma função server-side pronta para disparar o sync sem segredo no cliente.
-- [ ] A seed global de categorias é aplicada e consultável.
-- [ ] RLS é validada com pelo menos dois usuários distintos.
-- [ ] A base técnica fica pronta para iniciar dashboard, planejamento e conciliação.
+- [x] Um usuário consegue autenticar no app e manter sessão.
+- [x] O schema inicial é aplicado com segurança e isolamento por usuário.
+- [x] Existe uma função server-side pronta para disparar o sync sem segredo no cliente.
+- [x] A seed global de categorias é aplicada e consultável.
+- [x] RLS é validada com pelo menos dois usuários distintos.
+- [x] A base técnica fica pronta para iniciar dashboard, planejamento e conciliação.
