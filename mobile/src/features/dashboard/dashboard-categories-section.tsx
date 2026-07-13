@@ -18,7 +18,7 @@ export function DashboardCategoriesSection({ categories, onOpenCategory }: Dashb
       </View>
       {categories.map((category) => (
         <CategoryBudgetRow
-          key={category.name}
+          key={category.categoryId}
           name={category.name}
           icon={category.icon}
           planned={category.planned}

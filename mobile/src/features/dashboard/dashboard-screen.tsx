@@ -8,6 +8,7 @@ import { SyncStatusBanner } from '@/components/ggastos/navigation/sync-status-ba
 import { MetricHeroCard } from '@/components/ggastos/cards/metric-hero-card';
 import { KpiComparisonCard } from '@/components/ggastos/cards/kpi-comparison-card';
 import { CommitmentCard } from '@/components/ggastos/cards/commitment-card';
+import { CategoryDetailsSheet } from '@/features/dashboard/category-details-sheet';
 import { DashboardCategoriesSection } from '@/features/dashboard/dashboard-categories-section';
 import { useDashboardViewModel } from '@/features/dashboard/use-dashboard-view-model';
 
@@ -16,8 +17,12 @@ export function DashboardScreen() {
     data,
     isSyncing,
     syncBanner,
+    categoryDetails,
     handleSync,
+    handlePrevMonth,
+    handleNextMonth,
     handleOpenCategory,
+    handleCloseCategoryDetails,
     handleAddPlan,
     handleReview,
   } = useDashboardViewModel();
@@ -25,7 +30,13 @@ export function DashboardScreen() {
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
-        <MonthHeader month={data.month} onSync={handleSync} syncing={isSyncing} />
+        <MonthHeader
+          month={data.month}
+          onPrev={handlePrevMonth}
+          onNext={handleNextMonth}
+          onSync={handleSync}
+          syncing={isSyncing}
+        />
 
         <MetricHeroCard label="Saldo previsto do mês" {...data.hero} />
 
@@ -61,6 +72,14 @@ export function DashboardScreen() {
           onAction={handleSync}
         />
       </ScrollView>
+
+      <CategoryDetailsSheet
+        visible={categoryDetails.visible}
+        isLoading={categoryDetails.isLoading}
+        isError={categoryDetails.isError}
+        details={categoryDetails.details}
+        onClose={handleCloseCategoryDetails}
+      />
     </SafeAreaView>
   );
 }

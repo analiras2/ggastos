@@ -1,12 +1,26 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { MOCK_DASHBOARD_DATA } from '@/features/dashboard/dashboard-data';
 import type { CategoryBudget, DashboardData } from '@/features/dashboard/dashboard-data';
+import { emptyDashboardData, formatDashboardData } from '@/features/dashboard/format-dashboard';
+import {
+  formatCategoryDetails,
+  type CategoryDetailsView,
+} from '@/features/dashboard/format-category-details';
+import { currentMonthKey, shiftMonthKey } from '@/features/dashboard/month-utils';
+import { useCategoryDetails } from '@/features/dashboard/use-category-details';
+import { useMonthDashboard } from '@/features/dashboard/use-month-dashboard';
 import {
   getFormattedSyncError,
   useLatestSyncEvent,
   useSyncPluggy,
 } from '@/features/dashboard/use-sync-pluggy';
+
+interface CategoryDetailsPanel {
+  visible: boolean;
+  isLoading: boolean;
+  isError: boolean;
+  details: CategoryDetailsView | null;
+}
 
 interface DashboardViewModel {
   data: DashboardData;
@@ -16,16 +30,45 @@ interface DashboardViewModel {
     message: string;
     actionLabel?: string;
   };
+  categoryDetails: CategoryDetailsPanel;
   handleSync: () => void;
+  handlePrevMonth: () => void;
+  handleNextMonth: () => void;
   handleOpenCategory: (category: CategoryBudget) => void;
+  handleCloseCategoryDetails: () => void;
   handleAddPlan: () => void;
   handleReview: () => void;
 }
 
 export function useDashboardViewModel(): DashboardViewModel {
-  const [data] = useState<DashboardData>(MOCK_DASHBOARD_DATA);
+  const [monthKey, setMonthKey] = useState<string>(currentMonthKey);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryBudget | null>(null);
+  const monthDashboardQuery = useMonthDashboard(monthKey);
   const latestSyncEventQuery = useLatestSyncEvent();
   const syncMutation = useSyncPluggy();
+  const categoryDetailsQuery = useCategoryDetails(monthKey, selectedCategory?.categoryId ?? null);
+
+  const categoryDetails = useMemo<CategoryDetailsPanel>(
+    () => ({
+      visible: selectedCategory !== null,
+      isLoading: categoryDetailsQuery.isLoading,
+      isError: categoryDetailsQuery.isError,
+      details: categoryDetailsQuery.data ? formatCategoryDetails(categoryDetailsQuery.data) : null,
+    }),
+    [
+      selectedCategory,
+      categoryDetailsQuery.isLoading,
+      categoryDetailsQuery.isError,
+      categoryDetailsQuery.data,
+    ]
+  );
+
+  const data = useMemo<DashboardData>(() => {
+    if (monthDashboardQuery.data) {
+      return formatDashboardData(monthDashboardQuery.data);
+    }
+    return emptyDashboardData(monthKey);
+  }, [monthDashboardQuery.data, monthKey]);
 
   const syncBanner = useMemo(() => {
     if (syncMutation.isPending) {
@@ -39,6 +82,21 @@ export function useDashboardViewModel(): DashboardViewModel {
       return {
         state: 'error' as const,
         message: getFormattedSyncError(syncMutation.error),
+        actionLabel: 'Tentar de novo',
+      };
+    }
+
+    if (monthDashboardQuery.isLoading) {
+      return {
+        state: 'pending' as const,
+        message: 'Carregando o mês...',
+      };
+    }
+
+    if (monthDashboardQuery.isError) {
+      return {
+        state: 'error' as const,
+        message: 'Não foi possível carregar os dados do mês.',
         actionLabel: 'Tentar de novo',
       };
     }
@@ -89,6 +147,8 @@ export function useDashboardViewModel(): DashboardViewModel {
   }, [
     latestSyncEventQuery.data,
     latestSyncEventQuery.isError,
+    monthDashboardQuery.isError,
+    monthDashboardQuery.isLoading,
     syncMutation.error,
     syncMutation.isError,
     syncMutation.isPending,
@@ -98,8 +158,20 @@ export function useDashboardViewModel(): DashboardViewModel {
     syncMutation.mutate();
   }, [syncMutation]);
 
-  const handleOpenCategory = useCallback((_category: CategoryBudget) => {
-    // Navigation to category detail wires up once expo-router routes exist for it.
+  const handlePrevMonth = useCallback(() => {
+    setMonthKey((current) => shiftMonthKey(current, -1));
+  }, []);
+
+  const handleNextMonth = useCallback(() => {
+    setMonthKey((current) => shiftMonthKey(current, 1));
+  }, []);
+
+  const handleOpenCategory = useCallback((category: CategoryBudget) => {
+    setSelectedCategory(category);
+  }, []);
+
+  const handleCloseCategoryDetails = useCallback(() => {
+    setSelectedCategory(null);
   }, []);
 
   const handleAddPlan = useCallback(() => {
@@ -114,8 +186,12 @@ export function useDashboardViewModel(): DashboardViewModel {
     data,
     isSyncing: syncMutation.isPending,
     syncBanner,
+    categoryDetails,
     handleSync,
+    handlePrevMonth,
+    handleNextMonth,
     handleOpenCategory,
+    handleCloseCategoryDetails,
     handleAddPlan,
     handleReview,
   };
