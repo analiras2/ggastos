@@ -17,6 +17,7 @@ vendor/bundle/
 *.jsbundle
 .metro-health-check*
 
-# Claude Code local/runtime artifacts (personal settings, agent worktrees)
-**/.claude/settings.local.json
-**/.claude/worktrees/
+# Claude Code / agent tooling — local only, never committed
+**/.claude/
+**/.agents/
+AGENTS.md
