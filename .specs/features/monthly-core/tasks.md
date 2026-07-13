@@ -138,10 +138,10 @@
 
 ### T7: Implementar hook de dashboard
 
-**What**: Criar hook TanStack Query para `get_month_dashboard`.
+**What**: Substituir o view model mockado por hook TanStack Query real para `get_month_dashboard`.
 **Where**: `mobile/src/features/dashboard/`
 **Depends on**: T2
-**Reuses**: Supabase RPC
+**Reuses**: Supabase RPC e `use-dashboard-view-model.ts`
 **Requirement**: MON-04
 
 **Done when**:
@@ -156,10 +156,10 @@
 
 ### T8: Criar tela de dashboard mensal
 
-**What**: Renderizar resumo mensal e lista de categorias.
+**What**: Conectar a tela de dashboard já existente à leitura real, preservando o scaffold visual atual e cobrindo estados vazio/erro.
 **Where**: `mobile/src/features/dashboard/`
 **Depends on**: T7
-**Reuses**: Mobile shell
+**Reuses**: Mobile shell, `dashboard-screen.tsx` e componentes em `mobile/src/components/ggastos/`
 **Requirement**: MON-04
 
 **Done when**:
@@ -177,7 +177,7 @@
 **What**: Listar planejamentos e transações filtrados por categoria/mês.
 **Where**: `mobile/src/features/dashboard/`
 **Depends on**: T4, T7
-**Reuses**: `planned_entries`, `imported_transactions`
+**Reuses**: `planned_entries`, `imported_transactions` e rows/cards já existentes no design system
 **Requirement**: MON-05
 
 **Done when**:

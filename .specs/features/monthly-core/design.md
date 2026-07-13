@@ -31,6 +31,9 @@ flowchart LR
 | Fundação Supabase + Mobile | `.specs/features/foundation-supabase-mobile/` | Base de auth, RLS, schema, cliente Supabase |
 | Contrato de dados | `docs/data-contract-schema-spec.md` | Fonte dos modelos `planning_templates`, `planned_entries`, `month_snapshots` |
 | Stack técnica | `docs/stack-tecnica-supabase-mvp.md` | Padrão views/RPC para leitura e Edge Functions para comandos sensíveis |
+| Design system GGastos | `mobile/src/components/ggastos/` e `mobile/src/constants/ggastos-theme.ts` | Reutilizar primitives, cards, rows e navegação em vez de redesenhar o dashboard/planning |
+| Shell autenticado do app | `mobile/src/features/app-shell/` | Manter a casca autenticada existente e plugar features reais por aba |
+| Dashboard mockado | `mobile/src/features/dashboard/` | Evoluir a tela existente substituindo dados mockados por leitura real do Supabase |
 
 ### Integration Points
 
@@ -39,6 +42,7 @@ flowchart LR
 | Supabase Auth/RLS | `user_id = auth.uid()` nas tabelas de usuário |
 | Postgres | RPC/view `get_month_dashboard(month)` e views auxiliares |
 | Mobile | TanStack Query para leitura e invalidação por mês |
+| UI Shell | Expo Router com `AppShell` autenticado e abas locais |
 
 ---
 
@@ -82,7 +86,7 @@ flowchart LR
   - `useMonthDashboard(month): QueryResult<MonthDashboard>`
   - `useCategoryDetails(month, categoryId): QueryResult<CategoryDetails>`
 - **Dependencies**: TanStack Query, Supabase RPC.
-- **Reuses**: Mobile shell da fundação.
+- **Reuses**: Mobile shell da fundação, design system GGastos e scaffold de dashboard já existente com dados mockados.
 
 ---
 
