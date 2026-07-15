@@ -1,3 +1,17 @@
+import { PluggyApiError, PluggyAuthError, PluggyClient } from "../_shared/pluggy-client.ts";
+import { normalizeAccount } from "../_shared/normalizers/normalize-account.ts";
+import { normalizeTransaction } from "../_shared/normalizers/normalize-transaction.ts";
+import {
+  buildConnectionUpsert,
+  markMissingTransactionsDeleted,
+  upsertFinancialAccount,
+  upsertFinancialConnection,
+  upsertImportedTransactions,
+} from "../_shared/upsert.ts";
+import { supabaseRest, type SupabaseRestConfig } from "../_shared/supabase-rest.ts";
+import { runAutoMatch } from "../_shared/reconciliation/auto-match.ts";
+import { getBearerToken, readAuthenticatedUser, type AuthUser } from "../_shared/auth.ts";
+
 type JsonValue =
   | string
   | number
@@ -9,13 +23,6 @@ type JsonValue =
 type SyncRequest = {
   connectionId?: string | null;
   mode?: "manual" | "scheduled";
-};
-
-type AuthUser = {
-  id: string;
-  email?: string | null;
-  user_metadata?: Record<string, unknown> | null;
-  app_metadata?: Record<string, unknown> | null;
 };
 
 type SyncEventInsert = {
@@ -30,6 +37,11 @@ type SyncEventInsert = {
 type SyncEventRow = {
   id: string;
   processing_status: SyncEventInsert["processing_status"];
+};
+
+type ConnectionRow = {
+  id: string;
+  pluggy_item_id: string | null;
 };
 
 const corsHeaders = {
@@ -62,20 +74,6 @@ function readRequiredEnv(name: string): string {
 function readOptionalEnv(name: string): string | null {
   const value = Deno.env.get(name);
   return value && value.trim().length > 0 ? value : null;
-}
-
-function getBearerToken(request: Request): string | null {
-  const authorization = request.headers.get("Authorization");
-  if (!authorization) {
-    return null;
-  }
-
-  const [scheme, token] = authorization.split(" ");
-  if (scheme?.toLowerCase() !== "bearer" || !token) {
-    return null;
-  }
-
-  return token;
 }
 
 function isUuid(value: string): boolean {
@@ -149,67 +147,6 @@ async function parseSyncRequest(request: Request): Promise<SyncRequest> {
   };
 }
 
-async function readAuthenticatedUser(
-  supabaseUrl: string,
-  anonKey: string,
-  accessToken: string,
-): Promise<AuthUser | null> {
-  const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
-    method: "GET",
-    headers: {
-      apikey: anonKey,
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  if (response.status === 401 || response.status === 403) {
-    return null;
-  }
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `Failed to validate authenticated user (${response.status}): ${errorText}`,
-    );
-  }
-
-  return (await response.json()) as AuthUser;
-}
-
-async function restRequest<T>(
-  supabaseUrl: string,
-  serviceRoleKey: string,
-  path: string,
-  init: RequestInit,
-): Promise<T> {
-  const response = await fetch(`${supabaseUrl}${path}`, {
-    ...init,
-    headers: {
-      apikey: serviceRoleKey,
-      Authorization: `Bearer ${serviceRoleKey}`,
-      ...init.headers,
-    },
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `Supabase REST request failed (${response.status}) for ${path}: ${errorText}`,
-    );
-  }
-
-  if (response.status === 204) {
-    return undefined as T;
-  }
-
-  const responseText = await response.text();
-  if (responseText.trim().length === 0) {
-    return undefined as T;
-  }
-
-  return JSON.parse(responseText) as T;
-}
-
 function buildProfilePayload(user: AuthUser) {
   const displayName =
     asNonEmptyString(user.user_metadata?.display_name) ??
@@ -228,68 +165,56 @@ function buildProfilePayload(user: AuthUser) {
   };
 }
 
-async function ensureProfile(
-  supabaseUrl: string,
-  serviceRoleKey: string,
-  user: AuthUser,
-) {
-  await restRequest<void>(
-    supabaseUrl,
-    serviceRoleKey,
-    "/rest/v1/profiles?on_conflict=id",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Prefer: "resolution=merge-duplicates,return=minimal",
-      },
-      body: JSON.stringify(buildProfilePayload(user)),
+async function ensureProfile(config: SupabaseRestConfig, user: AuthUser) {
+  await supabaseRest<void>(config, "/rest/v1/profiles?on_conflict=id", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Prefer: "resolution=merge-duplicates,return=minimal",
     },
-  );
+    body: JSON.stringify(buildProfilePayload(user)),
+  });
 }
 
-async function ensureConnectionOwnership(
-  supabaseUrl: string,
-  serviceRoleKey: string,
-  connectionId: string | null,
+async function listConnectionsToSync(
+  config: SupabaseRestConfig,
   userId: string,
-) {
-  if (!connectionId) {
-    return;
+  connectionId: string | null,
+): Promise<ConnectionRow[]> {
+  const params = new URLSearchParams({
+    select: "id,pluggy_item_id",
+    user_id: `eq.${userId}`,
+    pluggy_item_id: "not.is.null",
+  });
+  if (connectionId) {
+    params.set("id", `eq.${connectionId}`);
   }
 
-  const params = new URLSearchParams({
-    select: "id",
-    id: `eq.${connectionId}`,
-    user_id: `eq.${userId}`,
-    limit: "1",
-  });
-  const rows = await restRequest<Array<{ id: string }>>(
-    supabaseUrl,
-    serviceRoleKey,
+  const rows = await supabaseRest<ConnectionRow[]>(
+    config,
     `/rest/v1/financial_connections?${params.toString()}`,
     { method: "GET" },
   );
 
-  if (rows.length === 0) {
+  if (connectionId && rows.length === 0) {
     throw new Response(
       JSON.stringify({
         error: "connection_not_found",
-        message: "connectionId was not found for the authenticated user.",
+        message: "connectionId was not found for the authenticated user, or has no pluggy_item_id yet.",
       }),
       { status: 404, headers: corsHeaders },
     );
   }
+
+  return rows;
 }
 
 async function insertSyncEvent(
-  supabaseUrl: string,
-  serviceRoleKey: string,
+  config: SupabaseRestConfig,
   event: SyncEventInsert,
-) {
-  const rows = await restRequest<SyncEventRow[]>(
-    supabaseUrl,
-    serviceRoleKey,
+): Promise<SyncEventRow> {
+  const rows = await supabaseRest<SyncEventRow[]>(
+    config,
     "/rest/v1/sync_events?select=id,processing_status",
     {
       method: "POST",
@@ -306,6 +231,88 @@ async function insertSyncEvent(
   }
 
   return rows[0];
+}
+
+type ConnectionSyncOutcome = {
+  connectionId: string;
+  itemStatus: string;
+  accountsProcessed: number;
+  transactionsProcessed: number;
+  matchesCreated: number;
+  errorMessage: string | null;
+};
+
+async function syncConnection(
+  pluggyClient: PluggyClient,
+  restConfig: SupabaseRestConfig,
+  connection: ConnectionRow,
+  userId: string,
+): Promise<ConnectionSyncOutcome> {
+  const item = await pluggyClient.fetchItem(connection.pluggy_item_id as string);
+
+  await upsertFinancialConnection(
+    restConfig,
+    buildConnectionUpsert(item, { userId }),
+  );
+
+  if (item.status !== "UPDATED") {
+    return {
+      connectionId: connection.id,
+      itemStatus: item.status,
+      accountsProcessed: 0,
+      transactionsProcessed: 0,
+      matchesCreated: 0,
+      errorMessage: item.status === "LOGIN_ERROR" || item.status === "OUTDATED"
+        ? `Item status is ${item.status}; skipping data fetch until resolved.`
+        : null,
+    };
+  }
+
+  const accounts = await pluggyClient.fetchAccounts(item.id);
+  let transactionsProcessed = 0;
+  let matchesCreated = 0;
+
+  for (const account of accounts) {
+    const accountRow = await upsertFinancialAccount(
+      restConfig,
+      normalizeAccount(account, { userId, connectionId: connection.id }),
+    );
+
+    const transactions = await pluggyClient.fetchTransactions(account.id);
+    const normalizedTransactions = transactions.map((transaction) =>
+      normalizeTransaction(transaction, {
+        userId,
+        connectionId: connection.id,
+        accountId: accountRow.id,
+      })
+    );
+
+    transactionsProcessed += await upsertImportedTransactions(
+      restConfig,
+      normalizedTransactions,
+    );
+
+    await markMissingTransactionsDeleted(
+      restConfig,
+      accountRow.id,
+      transactions.map((transaction) => transaction.id),
+    );
+
+    const autoMatchOutcomes = await runAutoMatch(restConfig, {
+      userId,
+      accountId: accountRow.id,
+    });
+    matchesCreated += autoMatchOutcomes.length;
+  }
+
+  return {
+    connectionId: connection.id,
+    itemStatus: item.status,
+    accountsProcessed: accounts.length,
+    transactionsProcessed,
+    matchesCreated,
+    errorMessage: null,
+  };
 }
 
 Deno.serve(async (request) => {
@@ -326,7 +333,9 @@ Deno.serve(async (request) => {
     const serviceRoleKey = readRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
     const pluggyClientId = readOptionalEnv("PLUGGY_CLIENT_ID");
     const pluggyClientSecret = readOptionalEnv("PLUGGY_CLIENT_SECRET");
-    const pluggyBaseUrl = readOptionalEnv("PLUGGY_BASE_URL");
+    const pluggyBaseUrl = readOptionalEnv("PLUGGY_BASE_URL") ?? "https://api.pluggy.ai";
+
+    const restConfig: SupabaseRestConfig = { supabaseUrl, serviceRoleKey };
 
     const accessToken = getBearerToken(request);
     if (!accessToken) {
@@ -336,11 +345,7 @@ Deno.serve(async (request) => {
       });
     }
 
-    const user = await readAuthenticatedUser(
-      supabaseUrl,
-      anonKey,
-      accessToken,
-    );
+    const user = await readAuthenticatedUser(supabaseUrl, anonKey, accessToken);
     if (!user) {
       return jsonResponse(401, {
         error: "invalid_token",
@@ -350,36 +355,94 @@ Deno.serve(async (request) => {
 
     const syncRequest = await parseSyncRequest(request);
 
-    await ensureProfile(supabaseUrl, serviceRoleKey, user);
-    await ensureConnectionOwnership(
-      supabaseUrl,
-      serviceRoleKey,
-      syncRequest.connectionId ?? null,
+    await ensureProfile(restConfig, user);
+
+    if (!pluggyClientId || !pluggyClientSecret) {
+      const failedEvent = await insertSyncEvent(restConfig, {
+        event_id: crypto.randomUUID(),
+        user_id: user.id,
+        event_type: "PLUGGY_SYNC_REQUESTED",
+        connection_id: syncRequest.connectionId ?? null,
+        processing_status: "FAILED",
+        payload: {
+          source: "sync-pluggy",
+          mode: syncRequest.mode ?? "manual",
+          reason: "pluggy_credentials_not_configured",
+        },
+      });
+
+      return jsonResponse(424, {
+        syncEventId: failedEvent.id,
+        status: failedEvent.processing_status,
+        error: "pluggy_credentials_not_configured",
+        message: "PLUGGY_CLIENT_ID/PLUGGY_CLIENT_SECRET are not set as function secrets.",
+      });
+    }
+
+    const connections = await listConnectionsToSync(
+      restConfig,
       user.id,
+      syncRequest.connectionId,
     );
 
-    const createdEvent = await insertSyncEvent(supabaseUrl, serviceRoleKey, {
+    const pluggyClient = new PluggyClient({
+      clientId: pluggyClientId,
+      clientSecret: pluggyClientSecret,
+      baseUrl: pluggyBaseUrl,
+    });
+
+    const outcomes: ConnectionSyncOutcome[] = [];
+    let hadError = false;
+
+    for (const connection of connections) {
+      try {
+        outcomes.push(
+          await syncConnection(pluggyClient, restConfig, connection, user.id),
+        );
+      } catch (error) {
+        hadError = true;
+        const message = error instanceof PluggyAuthError || error instanceof PluggyApiError
+          ? error.message
+          : "Unexpected error while syncing this connection.";
+        outcomes.push({
+          connectionId: connection.id,
+          itemStatus: "SYNC_ERROR",
+          accountsProcessed: 0,
+          transactionsProcessed: 0,
+          matchesCreated: 0,
+          errorMessage: message,
+        });
+      }
+    }
+
+    const accountsProcessed = outcomes.reduce((sum, o) => sum + o.accountsProcessed, 0);
+    const transactionsProcessed = outcomes.reduce((sum, o) => sum + o.transactionsProcessed, 0);
+    const matchesCreated = outcomes.reduce((sum, o) => sum + o.matchesCreated, 0);
+    const status = hadError ? "FAILED" : "PROCESSED";
+
+    const syncEvent = await insertSyncEvent(restConfig, {
       event_id: crypto.randomUUID(),
       user_id: user.id,
       event_type: "PLUGGY_SYNC_REQUESTED",
       connection_id: syncRequest.connectionId ?? null,
-      processing_status: "RECEIVED",
+      processing_status: status,
       payload: {
-        source: "sync-pluggy-stub",
+        source: "sync-pluggy",
         mode: syncRequest.mode ?? "manual",
-        requested_by: "authenticated_user",
-        requested_by_user_id: user.id,
-        pluggy_credentials_present: {
-          clientId: Boolean(pluggyClientId),
-          clientSecret: Boolean(pluggyClientSecret),
-          baseUrl: Boolean(pluggyBaseUrl),
-        },
+        connectionsProcessed: connections.length,
+        accountsProcessed,
+        transactionsProcessed,
+        matchesCreated,
+        outcomes: outcomes as unknown as JsonValue,
       },
     });
 
-    return jsonResponse(202, {
-      syncEventId: createdEvent.id,
-      status: createdEvent.processing_status,
+    return jsonResponse(hadError ? 207 : 202, {
+      syncEventId: syncEvent.id,
+      status: syncEvent.processing_status,
+      accountsProcessed,
+      transactionsProcessed,
+      matchesCreated,
     });
   } catch (error) {
     if (error instanceof Response) {
@@ -390,7 +453,7 @@ Deno.serve(async (request) => {
 
     return jsonResponse(500, {
       error: "internal_error",
-      message: "Unable to create the initial sync event.",
+      message: "Unable to complete the sync.",
     });
   }
 });
