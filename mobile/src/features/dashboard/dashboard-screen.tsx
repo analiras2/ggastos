@@ -11,19 +11,21 @@ import { CommitmentCard } from '@/components/ggastos/cards/commitment-card';
 import { CategoryDetailsSheet } from '@/features/dashboard/category-details-sheet';
 import { DashboardCategoriesSection } from '@/features/dashboard/dashboard-categories-section';
 import { useDashboardViewModel } from '@/features/dashboard/use-dashboard-view-model';
+import { AddPlanSheet } from '@/features/planning/add-plan-sheet';
 
 export function DashboardScreen() {
   const {
     data,
     syncBanner,
     categoryDetails,
+    isAddPlanVisible,
     handleSync,
     handlePrevMonth,
     handleNextMonth,
     handleOpenCategory,
     handleCloseCategoryDetails,
     handleAddPlan,
-    handleReview,
+    handleCloseAddPlan,
   } = useDashboardViewModel();
 
   return (
@@ -34,8 +36,7 @@ export function DashboardScreen() {
         <QuickActionRow
           actions={[
             { label: 'Adicionar planejamento', icon: 'plus', onPress: handleAddPlan },
-            { label: 'Sincronizar', icon: 'refresh-cw', onPress: handleSync },
-            { label: 'Revisar pendências', icon: 'list-checks', onPress: handleReview },
+            { label: 'Sincronizar', icon: 'refresh-cw', onPress: handleSync }
           ]}
         />
 
@@ -73,6 +74,8 @@ export function DashboardScreen() {
         details={categoryDetails.details}
         onClose={handleCloseCategoryDetails}
       />
+
+      <AddPlanSheet visible={isAddPlanVisible} onClose={handleCloseAddPlan} />
     </SafeAreaView>
   );
 }

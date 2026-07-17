@@ -31,18 +31,20 @@ interface DashboardViewModel {
     actionLabel?: string;
   };
   categoryDetails: CategoryDetailsPanel;
+  isAddPlanVisible: boolean;
   handleSync: () => void;
   handlePrevMonth: () => void;
   handleNextMonth: () => void;
   handleOpenCategory: (category: CategoryBudget) => void;
   handleCloseCategoryDetails: () => void;
   handleAddPlan: () => void;
-  handleReview: () => void;
+  handleCloseAddPlan: () => void;
 }
 
 export function useDashboardViewModel(): DashboardViewModel {
   const [monthKey, setMonthKey] = useState<string>(currentMonthKey);
   const [selectedCategory, setSelectedCategory] = useState<CategoryBudget | null>(null);
+  const [isAddPlanVisible, setIsAddPlanVisible] = useState(false);
   const monthDashboardQuery = useMonthDashboard(monthKey);
   const latestSyncEventQuery = useLatestSyncEvent();
   const syncMutation = useSyncPluggy();
@@ -175,11 +177,11 @@ export function useDashboardViewModel(): DashboardViewModel {
   }, []);
 
   const handleAddPlan = useCallback(() => {
-    // Opens the planning bottom sheet once the planning feature is implemented.
+    setIsAddPlanVisible(true);
   }, []);
 
-  const handleReview = useCallback(() => {
-    // Navigates to the review/reconciliation screen once its route exists.
+  const handleCloseAddPlan = useCallback(() => {
+    setIsAddPlanVisible(false);
   }, []);
 
   return {
@@ -187,12 +189,13 @@ export function useDashboardViewModel(): DashboardViewModel {
     isSyncing: syncMutation.isPending,
     syncBanner,
     categoryDetails,
+    isAddPlanVisible,
     handleSync,
     handlePrevMonth,
     handleNextMonth,
     handleOpenCategory,
     handleCloseCategoryDetails,
     handleAddPlan,
-    handleReview,
+    handleCloseAddPlan,
   };
 }
