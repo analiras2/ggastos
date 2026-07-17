@@ -15,7 +15,6 @@ import { useDashboardViewModel } from '@/features/dashboard/use-dashboard-view-m
 export function DashboardScreen() {
   const {
     data,
-    isSyncing,
     syncBanner,
     categoryDetails,
     handleSync,
@@ -30,12 +29,14 @@ export function DashboardScreen() {
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
-        <MonthHeader
-          month={data.month}
-          onPrev={handlePrevMonth}
-          onNext={handleNextMonth}
-          onSync={handleSync}
-          syncing={isSyncing}
+        <MonthHeader month={data.month} onPrev={handlePrevMonth} onNext={handleNextMonth} />
+
+        <QuickActionRow
+          actions={[
+            { label: 'Adicionar planejamento', icon: 'plus', onPress: handleAddPlan },
+            { label: 'Sincronizar', icon: 'refresh-cw', onPress: handleSync },
+            { label: 'Revisar pendências', icon: 'list-checks', onPress: handleReview },
+          ]}
         />
 
         <MetricHeroCard label="Saldo previsto do mês" {...data.hero} />
@@ -53,14 +54,6 @@ export function DashboardScreen() {
           value={data.commitment.value}
           subtitle="Quanto do mês ainda está reservado por compromissos futuros"
           level={data.commitment.level}
-        />
-
-        <QuickActionRow
-          actions={[
-            { label: 'Adicionar planejamento', icon: 'plus', onPress: handleAddPlan },
-            { label: 'Sincronizar', icon: 'refresh-cw', onPress: handleSync },
-            { label: 'Revisar pendências', icon: 'list-checks', onPress: handleReview },
-          ]}
         />
 
         <DashboardCategoriesSection categories={data.categories} onOpenCategory={handleOpenCategory} />
@@ -90,7 +83,8 @@ const styles = StyleSheet.create({
     backgroundColor: GgastosColors.bgBase,
   },
   content: {
-    padding: GgastosSpacing.space5,
+    paddingHorizontal: GgastosSpacing.space5,
+    paddingTop: GgastosSpacing.space4,
     paddingBottom: 100,
     gap: GgastosSpacing.space5,
   },
