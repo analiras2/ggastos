@@ -5,11 +5,7 @@ import { GgastosColors, GgastosType } from '@/constants/ggastos-theme';
 import { BottomTabBar, BottomTabKey } from '@/components/ggastos/navigation/bottom-tab-bar';
 import { DashboardScreen } from '@/features/dashboard/dashboard-screen';
 import { ReconciliationInboxScreen } from '@/features/reconciliation/reconciliation-inbox-screen';
-
-const COMING_SOON_LABEL: Record<Exclude<BottomTabKey, 'mes' | 'revisar'>, string> = {
-  planejamento: 'Planejamento',
-  ajustes: 'Ajustes',
-};
+import { SettingsScreen } from '@/features/settings/settings-screen';
 
 export function AppShell() {
   const [activeTab, setActiveTab] = useState<BottomTabKey>('mes');
@@ -19,9 +15,10 @@ export function AppShell() {
       <View style={styles.content}>
         {activeTab === 'mes' ? <DashboardScreen /> : null}
         {activeTab === 'revisar' ? <ReconciliationInboxScreen /> : null}
-        {activeTab !== 'mes' && activeTab !== 'revisar' ? (
+        {activeTab === 'ajustes' ? <SettingsScreen /> : null}
+        {activeTab === 'planejamento' ? (
           <View style={styles.placeholder}>
-            <Text style={styles.placeholderText}>{COMING_SOON_LABEL[activeTab]} em construção.</Text>
+            <Text style={styles.placeholderText}>Planejamento em construção.</Text>
           </View>
         ) : null}
       </View>
