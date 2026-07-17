@@ -272,7 +272,6 @@ Visual:
 ### Quick actions
 - `Adicionar planejamento`
 - `Sincronizar`
-- `Revisar pendências`
 
 Formato:
 - botões pequenos ou chips largos;
