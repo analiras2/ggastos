@@ -1,5 +1,5 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import { Icon } from '@/components/ggastos/core/icon';
@@ -25,10 +25,17 @@ export function CategoryDetailsSheet({
 }: CategoryDetailsSheetProps) {
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
+      <SafeAreaProvider>
       <SafeAreaView style={styles.screen} edges={['top']}>
         <View style={styles.header}>
           <Text style={styles.title}>{details?.name ?? 'Categoria'}</Text>
-          <Pressable accessibilityRole="button" accessibilityLabel="Fechar" onPress={onClose} style={styles.closeButton}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Fechar"
+            hitSlop={12}
+            onPress={onClose}
+            style={styles.closeButton}
+          >
             <Icon name="x" size={18} />
           </Pressable>
         </View>
@@ -86,6 +93,7 @@ export function CategoryDetailsSheet({
           ) : null}
         </ScrollView>
       </SafeAreaView>
+      </SafeAreaProvider>
     </Modal>
   );
 }
