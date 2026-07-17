@@ -21,3 +21,6 @@ vendor/bundle/
 **/.claude/
 **/.agents/
 AGENTS.md
+
+# Specs
+.specs/quick/
