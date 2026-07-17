@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-07-13T15:00:00Z
-**Current Work:** Milestone 2 (Núcleo mensal) concluída e validada (T1-T10) / próximo passo é iniciar a Milestone 3 (Sync e conciliação)
+**Last Updated:** 2026-07-16T16:20:00Z
+**Current Work:** Milestone 3 (Sync e conciliação) concluída e validada ponta a ponta (T1-T12) / próximo passo é planejar a Milestone 4 (Consolidado anual e fechamento)
 
 ---
 
@@ -154,6 +154,20 @@
 **Trade-off:** Nenhum — é uma correção de gap, não uma nova capacidade de produto.
 **Impact:** Testado com sucesso rejeitando tanto `planned_entries` quanto `planning_templates` apontando para categoria inativa; geração de ocorrências e dashboard continuam funcionando normalmente para categorias ativas.
 
+### AD-022: Desfazer conciliação reaproveita a linha existente com status `UNMATCHED` (2026-07-15)
+
+**Decision:** `T8` (`reconcile-transactions`) implementa `undo` fazendo `UPDATE` do `status` da linha ativa (`AUTO_MATCHED`/`MANUAL_MATCHED`) existente para `UNMATCHED`, em vez de deletar a linha ou criar uma nova.
+**Reason:** Os índices únicos de `reconciliation_matches` só bloqueiam duplicidade para status `AUTO_MATCHED`/`MANUAL_MATCHED`; mudar para `UNMATCHED` libera o par para nova sugestão/match sem perder `created_at`, `match_score` e `rationale` originais, satisfazendo "desfazer preserva trilha" da spec sem exigir tabela de histórico separada.
+**Trade-off:** `UNMATCHED` nesta tabela passa a significar "já teve match e foi desfeito", distinto de nunca ter existido uma linha — consumidores futuros da tabela devem tratar essa diferença via ausência de linha vs. `status = 'UNMATCHED'`.
+**Impact:** `confirm` sempre insere uma nova linha; `reject` atualiza a linha existente do par (qualquer status) para `REJECTED` ou insere uma nova se não houver; `undo` só age sobre linha com status ativo e retorna `409 no_active_match` caso contrário.
+
+### AD-023: Sync agendado autentica `sync-pluggy` com a própria `service_role` key (2026-07-15)
+
+**Decision:** `T11` adicionou um segundo caminho de execução à Edge Function `sync-pluggy`: quando o `Authorization: Bearer` recebido é exatamente igual à `SUPABASE_SERVICE_ROLE_KEY` do runtime, a função entra em modo interno/agendado (exige `mode: "scheduled"` no corpo, senão retorna `400`), ignora `readAuthenticatedUser`, varre `financial_connections` de todos os usuários com `pluggy_item_id` preenchido e `status` fora de `LOGIN_ERROR`/`WAITING_USER_INPUT`/`DELETED`, e grava um único `sync_events` por execução com `user_id`/`connection_id` nulos. A migration `20260715220000_schedule_sync_pluggy_cron.sql` habilita `pg_cron` (já vinha em `shared_preload_libraries` da imagem local) e agenda `net.http_post` a cada 12h usando `current_setting('app.settings.supabase_url'|'service_role_key', true)`.
+**Reason:** Quem detém a `service_role` key já tem acesso irrestrito ao banco, então reconhecê-la como chamador "interno" no corpo da função não amplia superfície de ataque nenhuma, e evita inventar um segundo segredo/gateway só para o cron. A policy `sync_events_owner_read` (`user_id = auth.uid()`) já torna `user_id null` automaticamente invisível a qualquer cliente autenticado — sem precisar de policy nova.
+**Trade-off:** `current_setting('app.settings.supabase_url'|'service_role_key')` só vem pré-populado em projetos hospedados no Supabase Cloud; localmente é preciso rodar manualmente `alter database postgres set app.settings.... to '...'` (não versionado) para o cron realmente disparar — sem isso o job roda no schedule mas falha ao montar a URL. A verificação de `T11` foi feita disparando `net.http_post`/a Edge Function manualmente com a `service_role` key, replicando exatamente o que o cron enviaria.
+**Impact:** Qualquer nova Edge Function que precise rodar em contexto de sistema (sem usuário) deve seguir o mesmo padrão: checar `accessToken === serviceRoleKey`, exigir um sinalizador explícito no corpo (`mode`/similar) para evitar chamadas acidentais, e gravar auditoria com `user_id: null` para herdar a mesma invisibilidade via RLS.
+
 ---
 
 ## Active Blockers
@@ -163,6 +177,20 @@ None.
 ---
 
 ## Lessons Learned
+
+### L-003: `category` da Pluggy é sempre em inglês e nunca bate com o catálogo em português — o componente de categoria do score fica preso em zero (2026-07-16)
+
+**Context:** Validação `T12` com um item real do conector sandbox "Pluggy Bank" (id 2, `user-ok`/`password-ok`). Toda transação retornada trazia `category` preenchido em inglês (`"Salary"`, `"Housing"`, `"Electricity"`, etc.), nunca `null`.
+**Problem:** `scoreMatch` em `score.ts` só exclui o componente de categoria (peso 0.15) do cálculo quando `pluggy_category_name` é `null`; quando presente, ele SEMPRE entra na média ponderada, mas como as categorias do catálogo são nomeadas em português (`Moradia`, `Salário`, `Contas e serviços`...), a similaridade Jaccard com o texto em inglês da Pluggy é matematicamente sempre `0`. Isso cria um teto de score de `0.85` para qualquer transação categorizada pela Pluggy, mesmo com valor, data, conta e descrição perfeitos — abaixo do `AUTO_MATCH_THRESHOLD` (0.9). Ou seja, **com dados reais da Pluggy, o auto-match praticamente nunca dispara**, mesmo em pares que deveriam ser óbvios; tudo cai pelo menos para revisão manual na inbox.
+**Solution (validação, não corrigido nesta task):** Confirmado auto-match funcionando corretamente quando a categoria está ausente (`pluggy_category_name: null`, via fixture controlada) — score chegou a `0.9706` e criou `AUTO_MATCHED`. Isso prova que o motor de score e o auto-match em si estão corretos; o gap é especificamente a comparação textual EN↔PT do componente de categoria.
+**Prevents:** Não tentar "consertar" chamando isso de bug do auto-match — o código está correto, o problema é a ausência de um mapeamento Pluggy-categoria → categoria interna antes de alimentar o score. Ver Deferred Ideas para a solução recomendada.
+
+### L-002: UUIDs sintéticos de teste precisam respeitar o nibble de variante RFC4122 (2026-07-15)
+
+**Context:** Validação manual de `T10` (tela de inbox) com fixtures SQL usando IDs previsíveis como `77777777-7777-7777-7777-777777777777`.
+**Problem:** O Zod `.uuid()` usado em `reconciliation-schema.ts` valida o formato RFC4122 completo, incluindo o nibble de variante (`[89abAB]` no 17º caractere). IDs sintéticos "todos iguais" falham nessa validação, e como a falha ocorre dentro do `queryFn` do React Query, o retry entra em `fetchStatus: 'paused'` sem nunca expor `isError`, criando um estado que parece silenciosamente "vazio" na tela em vez de um erro visível.
+**Solution:** Gerar fixtures de teste com `uuid.uuid4()` real (Python) ou `gen_random_uuid()` do Postgres, nunca IDs decorativos como `aaaa...`/`1111...`.
+**Prevents:** Perda de tempo depurando "bug" de UI que na verdade é fixture malformada; também expõe que erros de parse dentro de `queryFn` ficam mascarados como carregamento infinito em vez de erro — vale considerar futuramente reduzir `retry` ou tratar `fetchStatus: 'paused'` explicitamente na UI se isso se repetir com dados reais.
 
 ### L-001: O principal ativo do legado é o modelo mental, não o código (2026-07-10)
 
@@ -203,11 +231,18 @@ None.
 | 024 | Conectar dashboard aos dados reais (`T8`)           | 2026-07-13 | -      | ✅ Done |
 | 025 | Criar detalhe de categoria mensal (`T9`)            | 2026-07-13 | -      | ✅ Done |
 | 026 | Validar núcleo mensal ponta a ponta (`T10`)         | 2026-07-13 | -      | ✅ Done |
+| 027 | Criar Edge Function de decisões de conciliação (`T8`) | 2026-07-15 | -      | ✅ Done |
+| 028 | Implementar hooks mobile de inbox (`T9`)            | 2026-07-15 | -      | ✅ Done |
+| 029 | Criar tela de inbox de conciliação (`T10`)          | 2026-07-15 | -      | ✅ Done |
+| 030 | Configurar sync agendado via pg_cron (`T11`)        | 2026-07-15 | -      | ✅ Done |
+| 031 | Validar sync e conciliação ponta a ponta (`T12`)    | 2026-07-16 | -      | ✅ Done |
 
 ---
 
 ## Deferred Ideas
 
+- [ ] Mapear `pluggy_category_name` (inglês) para as categorias internas (português) antes do score de conciliação, ou remover/reponderar o componente de categoria — sem isso, `AUTO_MATCH_THRESHOLD` (0.9) é praticamente inatingível para transações reais da Pluggy (teto de 0.85 comprovado em `T12`, ver L-003) — Captured during: validação `T12`
+- [ ] `internal_category_id` de `imported_transactions` nunca é preenchido automaticamente a partir do `pluggy_category_name`/`user_category_rules`, então o breakdown por categoria do dashboard mensal mostra `actualCents: 0` mesmo com transações reais sincronizadas (os totais gerais do resumo continuam corretos) — Captured during: validação `T12`
 - [ ] Usar sinais de saúde financeira da Pluggy como enriquecimento opcional — Captured during: definição do PRD
 - [ ] Considerar entidade explícita de fatura de cartão em fase 2 — Captured during: TDD
 - [ ] Considerar RRULE para recorrências avançadas em fase posterior — Captured during: revisão de lacunas

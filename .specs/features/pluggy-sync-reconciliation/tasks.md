@@ -164,10 +164,10 @@
 
 **Done when**:
 
-- [ ] Confirma cria `MANUAL_MATCHED`.
-- [ ] Rejeita cria/atualiza `REJECTED`.
-- [ ] Desfazer preserva trilha.
-- [ ] Impede match ativo duplicado.
+- [x] Confirma cria `MANUAL_MATCHED`.
+- [x] Rejeita cria/atualiza `REJECTED`.
+- [x] Desfazer preserva trilha.
+- [x] Impede match ativo duplicado.
 
 **Verify**: Testes de função com usuário autenticado.
 
@@ -183,9 +183,9 @@
 
 **Done when**:
 
-- [ ] Hook lista inbox por mês.
-- [ ] Mutations confirmam/rejeitam.
-- [ ] Cache do dashboard é invalidado após decisão.
+- [x] Hook lista inbox por mês.
+- [x] Mutations confirmam/rejeitam.
+- [x] Cache do dashboard é invalidado após decisão.
 
 **Verify**: Testes de hooks/mocks.
 
@@ -201,9 +201,9 @@
 
 **Done when**:
 
-- [ ] Lista sugestões por score.
-- [ ] Mostra estado vazio.
-- [ ] Ações atualizam lista.
+- [x] Lista sugestões por score.
+- [x] Mostra estado vazio.
+- [x] Ações atualizam lista.
 
 **Verify**: Rodar app com fixtures de inbox.
 
@@ -219,10 +219,10 @@
 
 **Done when**:
 
-- [ ] Cron padrão do MVP roda a cada 12 horas
-- [ ] Cron chama função com contexto interno.
-- [ ] Eventos agendados sem usuário não são visíveis ao cliente.
-- [ ] Conexões com erro acionável são ignoradas.
+- [x] Cron padrão do MVP roda a cada 12 horas
+- [x] Cron chama função com contexto interno.
+- [x] Eventos agendados sem usuário não são visíveis ao cliente.
+- [x] Conexões com erro acionável são ignoradas.
 
 **Verify**: Disparo manual do job/cron em ambiente local ou remoto.
 
@@ -238,11 +238,11 @@
 
 **Done when**:
 
-- [ ] Sync manual importa lote sem duplicar.
-- [ ] Auto-match cria match esperado.
-- [ ] Inbox permite confirmar/rejeitar.
-- [ ] Eventos e dados respeitam RLS.
-- [ ] Dashboard mensal reflete conciliações.
+- [x] Sync manual importa lote sem duplicar.
+- [x] Auto-match cria match esperado.
+- [x] Inbox permite confirmar/rejeitar.
+- [x] Eventos e dados respeitam RLS.
+- [x] Dashboard mensal reflete conciliações.
 
 **Verify**: E2E local com fixtures/mock Pluggy.
 
