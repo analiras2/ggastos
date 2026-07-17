@@ -23,13 +23,21 @@ export function AuthScreen() {
 
   async function handleAuthAction(action: 'signin' | 'signup') {
     setErrorMessage(null);
+
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail || !password) {
+      setErrorMessage('Preencha e-mail e senha para continuar.');
+      return;
+    }
+
     setPendingAction(action);
 
     try {
       if (action === 'signin') {
-        await signIn(email.trim(), password);
+        await signIn(trimmedEmail, password);
       } else {
-        await signUp(email.trim(), password);
+        await signUp(trimmedEmail, password);
       }
     } catch (error) {
       const message =
