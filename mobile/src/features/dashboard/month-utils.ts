@@ -19,9 +19,10 @@ export function currentMonthKey(): string {
 }
 
 export function monthLabel(monthKey: string): string {
-  const [, monthPart] = monthKey.split('-');
+  const [yearPart, monthPart] = monthKey.split('-');
   const index = Number(monthPart) - 1;
-  return MONTH_LABELS[index] ?? monthKey;
+  const monthName = MONTH_LABELS[index];
+  return monthName ? `${monthName} ${yearPart}` : monthKey;
 }
 
 export function shiftMonthKey(monthKey: string, delta: number): string {
