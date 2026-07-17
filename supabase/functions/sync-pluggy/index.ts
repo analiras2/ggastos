@@ -44,6 +44,12 @@ type ConnectionRow = {
   pluggy_item_id: string | null;
 };
 
+type ScheduledConnectionRow = ConnectionRow & {
+  user_id: string;
+};
+
+const ACTIONABLE_ERROR_STATUSES = ["LOGIN_ERROR", "WAITING_USER_INPUT", "DELETED"];
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -209,6 +215,22 @@ async function listConnectionsToSync(
   return rows;
 }
 
+async function listActiveConnectionsForScheduledSync(
+  config: SupabaseRestConfig,
+): Promise<ScheduledConnectionRow[]> {
+  const params = new URLSearchParams({
+    select: "id,pluggy_item_id,user_id",
+    pluggy_item_id: "not.is.null",
+    status: `not.in.(${ACTIONABLE_ERROR_STATUSES.join(",")})`,
+  });
+
+  return await supabaseRest<ScheduledConnectionRow[]>(
+    config,
+    `/rest/v1/financial_connections?${params.toString()}`,
+    { method: "GET" },
+  );
+}
+
 async function insertSyncEvent(
   config: SupabaseRestConfig,
   event: SyncEventInsert,
@@ -315,6 +337,108 @@ async function syncConnection(
   };
 }
 
+/**
+ * Cron-triggered path: authenticated by the service-role key itself (the
+ * shared secret pg_cron's net.http_post call is configured with), so there is
+ * no end user in context. Syncs every active connection across every user in
+ * one batch and records a single sync_events row with user_id null — the
+ * sync_events_owner_read RLS policy (`user_id = auth.uid()`) never matches
+ * null, so scheduled events stay invisible to every client.
+ */
+async function runScheduledSync(
+  restConfig: SupabaseRestConfig,
+  pluggyClientId: string | null,
+  pluggyClientSecret: string | null,
+  pluggyBaseUrl: string,
+): Promise<Response> {
+  if (!pluggyClientId || !pluggyClientSecret) {
+    const failedEvent = await insertSyncEvent(restConfig, {
+      event_id: crypto.randomUUID(),
+      user_id: null,
+      event_type: "PLUGGY_SYNC_SCHEDULED",
+      connection_id: null,
+      processing_status: "FAILED",
+      payload: {
+        source: "sync-pluggy",
+        mode: "scheduled",
+        reason: "pluggy_credentials_not_configured",
+      },
+    });
+
+    return jsonResponse(424, {
+      syncEventId: failedEvent.id,
+      status: failedEvent.processing_status,
+      error: "pluggy_credentials_not_configured",
+      message: "PLUGGY_CLIENT_ID/PLUGGY_CLIENT_SECRET are not set as function secrets.",
+    });
+  }
+
+  const connections = await listActiveConnectionsForScheduledSync(restConfig);
+
+  const pluggyClient = new PluggyClient({
+    clientId: pluggyClientId,
+    clientSecret: pluggyClientSecret,
+    baseUrl: pluggyBaseUrl,
+  });
+
+  const outcomes: Array<ConnectionSyncOutcome & { userId: string }> = [];
+  let hadError = false;
+
+  for (const connection of connections) {
+    try {
+      outcomes.push({
+        ...(await syncConnection(pluggyClient, restConfig, connection, connection.user_id)),
+        userId: connection.user_id,
+      });
+    } catch (error) {
+      hadError = true;
+      const message = error instanceof PluggyAuthError || error instanceof PluggyApiError
+        ? error.message
+        : "Unexpected error while syncing this connection.";
+      outcomes.push({
+        connectionId: connection.id,
+        itemStatus: "SYNC_ERROR",
+        accountsProcessed: 0,
+        transactionsProcessed: 0,
+        matchesCreated: 0,
+        errorMessage: message,
+        userId: connection.user_id,
+      });
+    }
+  }
+
+  const accountsProcessed = outcomes.reduce((sum, o) => sum + o.accountsProcessed, 0);
+  const transactionsProcessed = outcomes.reduce((sum, o) => sum + o.transactionsProcessed, 0);
+  const matchesCreated = outcomes.reduce((sum, o) => sum + o.matchesCreated, 0);
+  const status = hadError ? "FAILED" : "PROCESSED";
+
+  const syncEvent = await insertSyncEvent(restConfig, {
+    event_id: crypto.randomUUID(),
+    user_id: null,
+    event_type: "PLUGGY_SYNC_SCHEDULED",
+    connection_id: null,
+    processing_status: status,
+    payload: {
+      source: "sync-pluggy",
+      mode: "scheduled",
+      connectionsProcessed: connections.length,
+      accountsProcessed,
+      transactionsProcessed,
+      matchesCreated,
+      outcomes: outcomes as unknown as JsonValue,
+    },
+  });
+
+  return jsonResponse(hadError ? 207 : 202, {
+    syncEventId: syncEvent.id,
+    status: syncEvent.processing_status,
+    connectionsProcessed: connections.length,
+    accountsProcessed,
+    transactionsProcessed,
+    matchesCreated,
+  });
+}
+
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -345,6 +469,23 @@ Deno.serve(async (request) => {
       });
     }
 
+    const syncRequest = await parseSyncRequest(request);
+
+    // pg_cron authenticates with the service-role key itself (see the
+    // migration that schedules this function) — whoever holds that key
+    // already has unrestricted DB access, so trusting it here as an
+    // internal/system caller adds no new exposure.
+    if (accessToken === serviceRoleKey) {
+      if (syncRequest.mode !== "scheduled") {
+        return jsonResponse(400, {
+          error: "invalid_mode",
+          message: "Service-role callers must set mode to 'scheduled'.",
+        });
+      }
+
+      return await runScheduledSync(restConfig, pluggyClientId, pluggyClientSecret, pluggyBaseUrl);
+    }
+
     const user = await readAuthenticatedUser(supabaseUrl, anonKey, accessToken);
     if (!user) {
       return jsonResponse(401, {
@@ -352,8 +493,6 @@ Deno.serve(async (request) => {
         message: "Authenticated Supabase user could not be resolved.",
       });
     }
-
-    const syncRequest = await parseSyncRequest(request);
 
     await ensureProfile(restConfig, user);
 
