@@ -12,6 +12,7 @@ import { CategoryDetailsSheet } from '@/features/dashboard/category-details-shee
 import { DashboardCategoriesSection } from '@/features/dashboard/dashboard-categories-section';
 import { useDashboardViewModel } from '@/features/dashboard/use-dashboard-view-model';
 import { AddPlanSheet } from '@/features/planning/add-plan-sheet';
+import { AddTemplateSheet } from '@/features/planning/add-template-sheet';
 
 export function DashboardScreen() {
   const {
@@ -19,6 +20,7 @@ export function DashboardScreen() {
     syncBanner,
     categoryDetails,
     isAddPlanVisible,
+    isAddTemplateVisible,
     handleSync,
     handlePrevMonth,
     handleNextMonth,
@@ -26,6 +28,8 @@ export function DashboardScreen() {
     handleCloseCategoryDetails,
     handleAddPlan,
     handleCloseAddPlan,
+    handleAddTemplate,
+    handleCloseAddTemplate,
   } = useDashboardViewModel();
 
   return (
@@ -36,7 +40,8 @@ export function DashboardScreen() {
         <QuickActionRow
           actions={[
             { label: 'Adicionar planejamento', icon: 'plus', onPress: handleAddPlan },
-            { label: 'Sincronizar', icon: 'refresh-cw', onPress: handleSync }
+            { label: 'Template', icon: 'repeat', onPress: handleAddTemplate },
+            { label: 'Sincronizar', icon: 'refresh-cw', onPress: handleSync },
           ]}
         />
 
@@ -76,6 +81,8 @@ export function DashboardScreen() {
       />
 
       <AddPlanSheet visible={isAddPlanVisible} onClose={handleCloseAddPlan} />
+
+      <AddTemplateSheet visible={isAddTemplateVisible} onClose={handleCloseAddTemplate} />
     </SafeAreaView>
   );
 }

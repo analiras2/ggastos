@@ -20,3 +20,12 @@ export function centsFromMaskedInput(text: string): number {
   const digitsOnly = text.replace(/\D/g, '');
   return digitsOnly ? parseInt(digitsOnly, 10) : 0;
 }
+
+export function installmentAmountCents(totalCents: number, installmentTotal: number): number {
+  return Math.round(totalCents / installmentTotal);
+}
+
+export function installmentCountFromInput(text: string): number {
+  const digitsOnly = text.replace(/\D/g, '');
+  return digitsOnly ? parseInt(digitsOnly, 10) : 0;
+}

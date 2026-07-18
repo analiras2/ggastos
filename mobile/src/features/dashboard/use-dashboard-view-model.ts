@@ -32,6 +32,7 @@ interface DashboardViewModel {
   };
   categoryDetails: CategoryDetailsPanel;
   isAddPlanVisible: boolean;
+  isAddTemplateVisible: boolean;
   handleSync: () => void;
   handlePrevMonth: () => void;
   handleNextMonth: () => void;
@@ -39,12 +40,15 @@ interface DashboardViewModel {
   handleCloseCategoryDetails: () => void;
   handleAddPlan: () => void;
   handleCloseAddPlan: () => void;
+  handleAddTemplate: () => void;
+  handleCloseAddTemplate: () => void;
 }
 
 export function useDashboardViewModel(): DashboardViewModel {
   const [monthKey, setMonthKey] = useState<string>(currentMonthKey);
   const [selectedCategory, setSelectedCategory] = useState<CategoryBudget | null>(null);
   const [isAddPlanVisible, setIsAddPlanVisible] = useState(false);
+  const [isAddTemplateVisible, setIsAddTemplateVisible] = useState(false);
   const monthDashboardQuery = useMonthDashboard(monthKey);
   const latestSyncEventQuery = useLatestSyncEvent();
   const syncMutation = useSyncPluggy();
@@ -184,12 +188,21 @@ export function useDashboardViewModel(): DashboardViewModel {
     setIsAddPlanVisible(false);
   }, []);
 
+  const handleAddTemplate = useCallback(() => {
+    setIsAddTemplateVisible(true);
+  }, []);
+
+  const handleCloseAddTemplate = useCallback(() => {
+    setIsAddTemplateVisible(false);
+  }, []);
+
   return {
     data,
     isSyncing: syncMutation.isPending,
     syncBanner,
     categoryDetails,
     isAddPlanVisible,
+    isAddTemplateVisible,
     handleSync,
     handlePrevMonth,
     handleNextMonth,
@@ -197,5 +210,7 @@ export function useDashboardViewModel(): DashboardViewModel {
     handleCloseCategoryDetails,
     handleAddPlan,
     handleCloseAddPlan,
+    handleAddTemplate,
+    handleCloseAddTemplate,
   };
 }
