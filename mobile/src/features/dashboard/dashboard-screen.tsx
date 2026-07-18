@@ -21,9 +21,11 @@ export function DashboardScreen() {
     categoryDetails,
     isAddPlanVisible,
     isAddTemplateVisible,
+    isCurrentMonth,
     handleSync,
     handlePrevMonth,
     handleNextMonth,
+    handleGoToCurrentMonth,
     handleOpenCategory,
     handleCloseCategoryDetails,
     handleAddPlan,
@@ -35,7 +37,13 @@ export function DashboardScreen() {
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
-        <MonthHeader month={data.month} onPrev={handlePrevMonth} onNext={handleNextMonth} />
+        <MonthHeader
+          month={data.month}
+          isCurrentMonth={isCurrentMonth}
+          onPrev={handlePrevMonth}
+          onNext={handleNextMonth}
+          onPressMonth={handleGoToCurrentMonth}
+        />
 
         <QuickActionRow
           actions={[

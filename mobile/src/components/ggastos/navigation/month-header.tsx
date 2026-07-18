@@ -5,11 +5,19 @@ import { Icon } from '@/components/ggastos/core/icon';
 
 type MonthHeaderProps = {
   month: string;
+  isCurrentMonth?: boolean;
   onPrev?: () => void;
   onNext?: () => void;
+  onPressMonth?: () => void;
 };
 
-export function MonthHeader({ month, onPrev, onNext }: MonthHeaderProps) {
+export function MonthHeader({
+  month,
+  isCurrentMonth = true,
+  onPrev,
+  onNext,
+  onPressMonth,
+}: MonthHeaderProps) {
   const lastSpaceIndex = month.lastIndexOf(' ');
   const monthName = lastSpaceIndex >= 0 ? month.slice(0, lastSpaceIndex) : month;
   const year = lastSpaceIndex >= 0 ? month.slice(lastSpaceIndex + 1) : '';
@@ -20,10 +28,16 @@ export function MonthHeader({ month, onPrev, onNext }: MonthHeaderProps) {
         <Pressable accessibilityRole="button" accessibilityLabel="Mês anterior" onPress={onPrev} style={styles.chevron}>
           <Icon name="chevron-left" size={18} />
         </Pressable>
-        <View style={styles.monthGroup}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Voltar para o mês atual"
+          disabled={isCurrentMonth}
+          onPress={onPressMonth}
+          style={styles.monthGroup}
+        >
           {year ? <Text style={styles.year}>{year}</Text> : null}
           <Text style={styles.month}>{monthName}</Text>
-        </View>
+        </Pressable>
         <Pressable accessibilityRole="button" accessibilityLabel="Próximo mês" onPress={onNext} style={styles.chevron}>
           <Icon name="chevron-right" size={18} />
         </Pressable>
