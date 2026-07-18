@@ -10,6 +10,14 @@ async function fetchMonthDashboard(month: string): Promise<MonthDashboard> {
     throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
   }
 
+  const { error: generateError } = await supabase.rpc('generate_planned_entries', {
+    p_month: month,
+  });
+
+  if (generateError) {
+    throw generateError;
+  }
+
   const { data, error } = await supabase.rpc('get_month_dashboard', { p_month: month });
 
   if (error) {
