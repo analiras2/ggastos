@@ -94,9 +94,9 @@
 
 **Done when**:
 
-- [ ] Aceita escopo controlado.
-- [ ] Registra evento técnico.
-- [ ] Falha sem corromper estado anterior.
+- [x] Aceita escopo controlado.
+- [x] Registra evento técnico.
+- [x] Falha sem corromper estado anterior.
 
 **Verify**: Teste de reprocessamento com fixture.
 
