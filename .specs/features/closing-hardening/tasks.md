@@ -130,10 +130,10 @@
 
 **Done when**:
 
-- [ ] Usuário A não lê dados do usuário B.
-- [ ] RPCs respeitam usuário autenticado.
-- [ ] Edge Functions validam dono dos recursos.
-- [ ] `categories` é leitura global autenticada.
+- [x] Usuário A não lê dados do usuário B.
+- [x] RPCs respeitam usuário autenticado.
+- [x] Edge Functions validam dono dos recursos.
+- [x] `categories` é leitura global autenticada.
 
 **Verify**: Rodar suíte RLS.
 

@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-07-24T16:30:00Z
-**Current Work:** Milestone 4 (Fechamento e endurecimento) em andamento — T1-T3 e T5 concluídas / T4 e T6 em execução paralela via subagentes (worktrees isolados)
+**Last Updated:** 2026-07-24T16:45:00Z
+**Current Work:** Milestone 4 (Fechamento e endurecimento) em andamento — T1-T3, T5-T6 concluídas / T4 ainda em execução via subagente
 
 ---
 
@@ -240,6 +240,7 @@ None.
 | 033 | Criar RPC de consolidado anual (`T2`)               | 2026-07-24 | -      | ✅ Done |
 | 034 | Criar hook mobile de fechamento mensal (`T3`)       | 2026-07-24 | -      | ✅ Done |
 | 035 | Padronizar observabilidade de sync/conciliação (`T5`) | 2026-07-24 | -    | ✅ Done |
+| 036 | Criar suíte de segurança RLS (`T6`)                 | 2026-07-24 | -      | ✅ Done |
 
 ---
 
