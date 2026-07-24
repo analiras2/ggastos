@@ -6,6 +6,8 @@ import {
   type UseQueryResult,
 } from '@tanstack/react-query';
 
+import { categoryDetailsKey } from '@/features/dashboard/use-category-details';
+import { monthDashboardKey } from '@/features/dashboard/use-month-dashboard';
 import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
 import {
   createPlannedEntrySchema,
@@ -15,6 +17,12 @@ import {
 } from '@/features/planning/planning-schema';
 
 const plannedEntriesKey = (month: string) => ['planned-entries', month];
+
+type PlannedEntryLocation = {
+  id: string;
+  month: string;
+  categoryId: string;
+};
 
 function requireSupabase() {
   if (!supabase) {
@@ -108,6 +116,32 @@ async function cancelPlannedEntry(id: string): Promise<void> {
   }
 }
 
+async function confirmPlannedEntryManually({ id }: PlannedEntryLocation): Promise<void> {
+  const client = requireSupabase();
+
+  const { error } = await client
+    .from('planned_entries')
+    .update({ status: 'RECONCILED', manually_confirmed_at: new Date().toISOString() })
+    .eq('id', id);
+
+  if (error) {
+    throw error;
+  }
+}
+
+async function undoManualConfirmation({ id }: PlannedEntryLocation): Promise<void> {
+  const client = requireSupabase();
+
+  const { error } = await client
+    .from('planned_entries')
+    .update({ status: 'PLANNED', manually_confirmed_at: null })
+    .eq('id', id);
+
+  if (error) {
+    throw error;
+  }
+}
+
 export function usePlannedEntries(month: string): UseQueryResult<PlannedEntry[], Error> {
   return useQuery({
     queryKey: plannedEntriesKey(month),
@@ -140,5 +174,42 @@ export function useCancelPlannedEntry(
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: plannedEntriesKey(month) });
     },
+  });
+}
+
+async function invalidatePlannedEntryLocation(
+  queryClient: ReturnType<typeof useQueryClient>,
+  { month, categoryId }: PlannedEntryLocation
+) {
+  await Promise.all([
+    queryClient.invalidateQueries({ queryKey: plannedEntriesKey(month) }),
+    queryClient.invalidateQueries({ queryKey: monthDashboardKey(month) }),
+    queryClient.invalidateQueries({ queryKey: categoryDetailsKey(month, categoryId) }),
+  ]);
+}
+
+export function useConfirmPlannedEntryManually(): UseMutationResult<
+  void,
+  Error,
+  PlannedEntryLocation
+> {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: confirmPlannedEntryManually,
+    onSuccess: (_data, variables) => invalidatePlannedEntryLocation(queryClient, variables),
+  });
+}
+
+export function useUndoManualConfirmation(): UseMutationResult<
+  void,
+  Error,
+  PlannedEntryLocation
+> {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: undoManualConfirmation,
+    onSuccess: (_data, variables) => invalidatePlannedEntryLocation(queryClient, variables),
   });
 }

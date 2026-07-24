@@ -13,6 +13,8 @@ type CategoryDetailsSheetProps = {
   isLoading: boolean;
   isError: boolean;
   details: CategoryDetailsView | null;
+  togglingEntryId: string | null;
+  onToggleEntryStatus: (entryId: string, isUndo: boolean) => void;
   onClose: () => void;
 };
 
@@ -21,6 +23,8 @@ export function CategoryDetailsSheet({
   isLoading,
   isError,
   details,
+  togglingEntryId,
+  onToggleEntryStatus,
   onClose,
 }: CategoryDetailsSheetProps) {
   return (
@@ -69,6 +73,10 @@ export function CategoryDetailsSheet({
                       kind={item.kind}
                       competence={item.competence}
                       status={item.status}
+                      isConfirmable={item.isConfirmable}
+                      isUndoable={item.isUndoable}
+                      isTogglingStatus={togglingEntryId === item.id}
+                      onToggleStatus={() => onToggleEntryStatus(item.id, item.isUndoable)}
                     />
                   ))}
                 </View>

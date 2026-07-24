@@ -1,6 +1,7 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { EntryKind, GgastosColors, GgastosType, KindColors, StatusChipStatus } from '@/constants/ggastos-theme';
+import { Icon } from '@/components/ggastos/core/icon';
 
 type PlannedEntryRowProps = {
   title: string;
@@ -9,7 +10,10 @@ type PlannedEntryRowProps = {
   kind?: EntryKind;
   competence: string;
   status?: StatusChipStatus;
-  onPress?: () => void;
+  isConfirmable?: boolean;
+  isUndoable?: boolean;
+  isTogglingStatus?: boolean;
+  onToggleStatus?: () => void;
 };
 
 export function PlannedEntryRow({
@@ -19,10 +23,15 @@ export function PlannedEntryRow({
   kind = 'despesa',
   competence,
   status = 'PLANEJADO',
-  onPress,
+  isConfirmable = false,
+  isUndoable = false,
+  isTogglingStatus = false,
+  onToggleStatus,
 }: PlannedEntryRowProps) {
+  const showToggle = isConfirmable || isUndoable;
+
   return (
-    <Pressable accessibilityRole={onPress ? 'button' : undefined} onPress={onPress} style={styles.row}>
+    <View style={styles.row}>
       <View style={[styles.dot, { backgroundColor: KindColors[kind] }]} />
       <View style={styles.content}>
         <Text style={styles.title} numberOfLines={1}>
@@ -36,7 +45,22 @@ export function PlannedEntryRow({
         <Text style={[styles.amount, { color: KindColors[kind] }]}>{amount}</Text>
         <Text style={styles.status}>{status}</Text>
       </View>
-    </Pressable>
+      {showToggle ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={isUndoable ? 'Desfazer pagamento' : 'Marcar como pago'}
+          disabled={isTogglingStatus}
+          onPress={onToggleStatus}
+          style={styles.toggle}
+        >
+          {isTogglingStatus ? (
+            <ActivityIndicator size="small" color={GgastosColors.brandPrimary} />
+          ) : (
+            <Icon name={isUndoable ? 'check-circle-2' : 'circle'} size={22} />
+          )}
+        </Pressable>
+      ) : null}
+    </View>
   );
 }
 
@@ -79,5 +103,11 @@ const styles = StyleSheet.create({
   status: {
     ...GgastosType.labelCaps,
     color: GgastosColors.inkFaint,
+  },
+  toggle: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

@@ -85,6 +85,8 @@ export function DashboardScreen() {
         isLoading={categoryDetails.isLoading}
         isError={categoryDetails.isError}
         details={categoryDetails.details}
+        togglingEntryId={categoryDetails.togglingEntryId}
+        onToggleEntryStatus={categoryDetails.onToggleEntryStatus}
         onClose={handleCloseCategoryDetails}
       />
 

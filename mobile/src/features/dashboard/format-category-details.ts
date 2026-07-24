@@ -26,6 +26,8 @@ export type PlannedEntryItem = {
   kind: EntryKind;
   competence: string;
   status: StatusChipStatus;
+  isConfirmable: boolean;
+  isUndoable: boolean;
 };
 
 export type TransactionItem = {
@@ -65,6 +67,8 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
     kind,
     competence: formatCompetence(entry.installmentIndex, entry.installmentTotal, entry.dueDate),
     status: PLANNING_STATUS_TO_CHIP[entry.status],
+    isConfirmable: entry.status === 'PLANNED' || entry.status === 'PROJECTED' || entry.status === 'CARRIED_OVER',
+    isUndoable: entry.status === 'RECONCILED' && entry.manuallyConfirmedAt !== null,
   }));
 
   const transactionItems = details.importedTransactions.map((transaction) => ({

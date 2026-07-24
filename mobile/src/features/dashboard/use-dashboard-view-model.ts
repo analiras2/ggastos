@@ -9,6 +9,7 @@ import {
 import { currentMonthKey, shiftMonthKey } from '@/features/dashboard/month-utils';
 import { useCategoryDetails } from '@/features/dashboard/use-category-details';
 import { useMonthDashboard } from '@/features/dashboard/use-month-dashboard';
+import { usePlannedEntryStatusToggle } from '@/features/dashboard/use-planned-entry-status-toggle';
 import {
   getFormattedSyncError,
   useLatestSyncEvent,
@@ -20,6 +21,8 @@ interface CategoryDetailsPanel {
   isLoading: boolean;
   isError: boolean;
   details: CategoryDetailsView | null;
+  togglingEntryId: string | null;
+  onToggleEntryStatus: (entryId: string, isUndo: boolean) => void;
 }
 
 interface DashboardViewModel {
@@ -55,6 +58,10 @@ export function useDashboardViewModel(): DashboardViewModel {
   const latestSyncEventQuery = useLatestSyncEvent();
   const syncMutation = useSyncPluggy();
   const categoryDetailsQuery = useCategoryDetails(monthKey, selectedCategory?.categoryId ?? null);
+  const { togglingEntryId, handleToggleStatus } = usePlannedEntryStatusToggle(
+    monthKey,
+    selectedCategory?.categoryId ?? null
+  );
 
   const categoryDetails = useMemo<CategoryDetailsPanel>(
     () => ({
@@ -62,12 +69,16 @@ export function useDashboardViewModel(): DashboardViewModel {
       isLoading: categoryDetailsQuery.isLoading,
       isError: categoryDetailsQuery.isError,
       details: categoryDetailsQuery.data ? formatCategoryDetails(categoryDetailsQuery.data) : null,
+      togglingEntryId,
+      onToggleEntryStatus: handleToggleStatus,
     }),
     [
       selectedCategory,
       categoryDetailsQuery.isLoading,
       categoryDetailsQuery.isError,
       categoryDetailsQuery.data,
+      togglingEntryId,
+      handleToggleStatus,
     ]
   );
 

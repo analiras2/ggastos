@@ -55,6 +55,7 @@ export const categoryDetailsSchema = z.object({
       dueDate: z.string().nullable(),
       installmentIndex: z.number().int().nullable(),
       installmentTotal: z.number().int().nullable(),
+      manuallyConfirmedAt: z.string().nullable(),
     })
   ),
   importedTransactions: z.array(

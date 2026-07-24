@@ -3,7 +3,7 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
 import { categoryDetailsSchema, type CategoryDetails } from '@/features/dashboard/dashboard-schema';
 
-const categoryDetailsKey = (month: string, categoryId: string) => [
+export const categoryDetailsKey = (month: string, categoryId: string) => [
   'category-details',
   month,
   categoryId,
@@ -18,7 +18,9 @@ async function fetchCategoryDetails(month: string, categoryId: string): Promise<
     supabase.from('categories').select('code,name,impact_type').eq('id', categoryId).single(),
     supabase
       .from('planned_entries')
-      .select('id,title,amount_cents,status,due_date,installment_index,installment_total')
+      .select(
+        'id,title,amount_cents,status,due_date,installment_index,installment_total,manually_confirmed_at'
+      )
       .eq('month', month)
       .eq('category_id', categoryId)
       .neq('status', 'CANCELLED')
@@ -56,6 +58,7 @@ async function fetchCategoryDetails(month: string, categoryId: string): Promise<
       dueDate: row.due_date,
       installmentIndex: row.installment_index,
       installmentTotal: row.installment_total,
+      manuallyConfirmedAt: row.manually_confirmed_at,
     })),
     importedTransactions: (transactionsResult.data ?? []).map((row) => ({
       id: row.id,
