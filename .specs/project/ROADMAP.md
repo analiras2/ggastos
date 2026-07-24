@@ -1,6 +1,6 @@
 # Roadmap
 
-**Current Milestone:** Milestone 3 - Sync e conciliação
+**Current Milestone:** Milestone 4 - Fechamento e endurecimento
 **Status:** In Progress
 
 ---
@@ -59,14 +59,15 @@
 
 ### Features
 
-**Sincronização Pluggy** - PLANNED
+**Sincronização Pluggy** - DONE
 
 - Sync manual.
 - Sync agendado.
 - Upsert idempotente de contas, saldos, investimentos e transações.
 - Spec: `.specs/features/pluggy-sync-reconciliation/spec.md`
+  Progress: `T1` a `T12` concluídos e validados ponta a ponta (sandbox real da Pluggy + mock local), incluindo RLS entre usuários.
 
-**Conciliação planejado vs. realizado** - PLANNED
+**Conciliação planejado vs. realizado** - DONE
 
 - Matching automático por score.
 - Inbox de revisão.

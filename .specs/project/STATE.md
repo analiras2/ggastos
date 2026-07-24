@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-07-16T16:20:00Z
-**Current Work:** Milestone 3 (Sync e conciliação) concluída e validada ponta a ponta (T1-T12) / próximo passo é planejar a Milestone 4 (Consolidado anual e fechamento)
+**Last Updated:** 2026-07-24T16:30:00Z
+**Current Work:** Milestone 4 (Fechamento e endurecimento) em andamento — T1-T3 e T5 concluídas / T4 e T6 em execução paralela via subagentes (worktrees isolados)
 
 ---
 
@@ -236,6 +236,10 @@ None.
 | 029 | Criar tela de inbox de conciliação (`T10`)          | 2026-07-15 | -      | ✅ Done |
 | 030 | Configurar sync agendado via pg_cron (`T11`)        | 2026-07-15 | -      | ✅ Done |
 | 031 | Validar sync e conciliação ponta a ponta (`T12`)    | 2026-07-16 | -      | ✅ Done |
+| 032 | Criar função de snapshot mensal (`T1`)              | 2026-07-24 | -      | ✅ Done |
+| 033 | Criar RPC de consolidado anual (`T2`)               | 2026-07-24 | -      | ✅ Done |
+| 034 | Criar hook mobile de fechamento mensal (`T3`)       | 2026-07-24 | -      | ✅ Done |
+| 035 | Padronizar observabilidade de sync/conciliação (`T5`) | 2026-07-24 | -    | ✅ Done |
 
 ---
 

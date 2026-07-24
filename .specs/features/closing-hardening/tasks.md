@@ -37,10 +37,10 @@
 
 **Done when**:
 
-- [ ] Cria snapshot de mês vazio.
-- [ ] Atualiza snapshot existente com novo `computed_at`.
-- [ ] Preserva status `OPEN`/`CLOSED`.
-- [ ] Não bloqueia correções posteriores.
+- [x] Cria snapshot de mês vazio.
+- [x] Atualiza snapshot existente com novo `computed_at`.
+- [x] Preserva status `OPEN`/`CLOSED`.
+- [x] Não bloqueia correções posteriores.
 
 **Verify**: Invocar função com mês de fixture e validar tabela.
 
@@ -56,11 +56,11 @@
 
 **Done when**:
 
-- [ ] Retorna meses do ano.
-- [ ] Retorna totais por categoria.
-- [ ] Mantém transferências neutras.
-- [ ] Lida com meses sem snapshot.
-- [ ] Não mistura competência com liquidação no contrato do MVP.
+- [x] Retorna meses do ano.
+- [x] Retorna totais por categoria.
+- [x] Mantém transferências neutras.
+- [x] Lida com meses sem snapshot.
+- [x] Não mistura competência com liquidação no contrato do MVP.
 
 **Verify**: Consulta com snapshots de dois meses.
 
@@ -76,9 +76,9 @@
 
 **Done when**:
 
-- [ ] Usuário dispara fechamento.
-- [ ] Estado de loading/erro/sucesso existe.
-- [ ] Dashboard/anual invalidam cache após fechamento.
+- [x] Usuário dispara fechamento.
+- [x] Estado de loading/erro/sucesso existe.
+- [x] Dashboard/anual invalidam cache após fechamento.
 
 **Verify**: Teste de mutation/hook.
 
@@ -112,9 +112,9 @@
 
 **Done when**:
 
-- [ ] Eventos registram tipo, status, user/connection e erro sanitizado.
-- [ ] Logs não contêm credenciais.
-- [ ] Status de conexão reflete último sync.
+- [x] Eventos registram tipo, status, user/connection e erro sanitizado.
+- [x] Logs não contêm credenciais.
+- [x] Status de conexão reflete último sync.
 
 **Verify**: Forçar sucesso e falha de sync.
 
