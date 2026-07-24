@@ -5,6 +5,7 @@ import { GgastosColors, GgastosType } from '@/constants/ggastos-theme';
 import { BottomTabBar, BottomTabKey } from '@/components/ggastos/navigation/bottom-tab-bar';
 import { DashboardScreen } from '@/features/dashboard/dashboard-screen';
 import { ReconciliationInboxScreen } from '@/features/reconciliation/reconciliation-inbox-screen';
+import { AnnualReportScreen } from '@/features/reports/annual-report-screen';
 import { SettingsScreen } from '@/features/settings/settings-screen';
 
 export function AppShell() {
@@ -15,6 +16,7 @@ export function AppShell() {
       <View style={styles.content}>
         {activeTab === 'mes' ? <DashboardScreen /> : null}
         {activeTab === 'revisar' ? <ReconciliationInboxScreen /> : null}
+        {activeTab === 'anual' ? <AnnualReportScreen /> : null}
         {activeTab === 'ajustes' ? <SettingsScreen /> : null}
         {activeTab === 'planejamento' ? (
           <View style={styles.placeholder}>

@@ -3,12 +3,13 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { GgastosColors, GgastosRadius, GgastosType } from '@/constants/ggastos-theme';
 import { Icon } from '@/components/ggastos/core/icon';
 
-export type BottomTabKey = 'mes' | 'planejamento' | 'revisar' | 'ajustes';
+export type BottomTabKey = 'mes' | 'planejamento' | 'revisar' | 'anual' | 'ajustes';
 
 const TABS: { key: BottomTabKey; label: string; icon: string }[] = [
   { key: 'mes', label: 'Mês', icon: 'calendar' },
   { key: 'planejamento', label: 'Planejamento', icon: 'list-checks' },
   { key: 'revisar', label: 'Revisar', icon: 'shield-check' },
+  { key: 'anual', label: 'Anual', icon: 'calendar-range' },
   { key: 'ajustes', label: 'Ajustes', icon: 'settings' },
 ];
 
