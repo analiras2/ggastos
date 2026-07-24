@@ -1,8 +1,9 @@
-import { PluggyApiError, PluggyAuthError, PluggyClient } from "../_shared/pluggy-client.ts";
+import { PluggyClient } from "../_shared/pluggy-client.ts";
 import { normalizeAccount } from "../_shared/normalizers/normalize-account.ts";
 import { normalizeTransaction } from "../_shared/normalizers/normalize-transaction.ts";
 import {
   buildConnectionUpsert,
+  markConnectionSyncFailed,
   markMissingTransactionsDeleted,
   upsertFinancialAccount,
   upsertFinancialConnection,
@@ -11,6 +12,7 @@ import {
 import { supabaseRest, type SupabaseRestConfig } from "../_shared/supabase-rest.ts";
 import { runAutoMatch } from "../_shared/reconciliation/auto-match.ts";
 import { getBearerToken, readAuthenticatedUser, type AuthUser } from "../_shared/auth.ts";
+import { sanitizeConnectionSyncError } from "../_shared/sync-error.ts";
 
 type JsonValue =
   | string
@@ -392,9 +394,8 @@ async function runScheduledSync(
       });
     } catch (error) {
       hadError = true;
-      const message = error instanceof PluggyAuthError || error instanceof PluggyApiError
-        ? error.message
-        : "Unexpected error while syncing this connection.";
+      const message = sanitizeConnectionSyncError(error);
+      await markConnectionSyncFailed(restConfig, connection.id, message).catch(() => {});
       outcomes.push({
         connectionId: connection.id,
         itemStatus: "SYNC_ERROR",
@@ -540,9 +541,8 @@ Deno.serve(async (request) => {
         );
       } catch (error) {
         hadError = true;
-        const message = error instanceof PluggyAuthError || error instanceof PluggyApiError
-          ? error.message
-          : "Unexpected error while syncing this connection.";
+        const message = sanitizeConnectionSyncError(error);
+        await markConnectionSyncFailed(restConfig, connection.id, message).catch(() => {});
         outcomes.push({
           connectionId: connection.id,
           itemStatus: "SYNC_ERROR",

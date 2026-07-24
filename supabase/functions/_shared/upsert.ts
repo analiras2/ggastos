@@ -72,6 +72,34 @@ export function upsertFinancialConnection(
   return upsertOne(config, "financial_connections", "pluggy_item_id", connection);
 }
 
+/**
+ * Records a failed sync attempt directly on the connection row so
+ * `last_error_code`/`last_error_message` reflect the most recent attempt
+ * even when the failure happens before `upsertFinancialConnection` ever runs
+ * (e.g. Pluggy auth/API errors thrown by `fetchItem` itself).
+ */
+export async function markConnectionSyncFailed(
+  config: SupabaseRestConfig,
+  connectionId: string,
+  errorMessage: string,
+): Promise<void> {
+  await supabaseRest<void>(
+    config,
+    `/rest/v1/financial_connections?id=eq.${connectionId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify({
+        last_error_code: "SYNC_ERROR",
+        last_error_message: errorMessage,
+      }),
+    },
+  );
+}
+
 export function upsertFinancialAccount(
   config: SupabaseRestConfig,
   account: FinancialAccountUpsert,
