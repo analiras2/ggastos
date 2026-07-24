@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-07-24T18:45:00Z
-**Current Work:** Milestone 4 (Fechamento e endurecimento) em andamento — T1-T9 concluídas / próximo passo é T10 (validação MVP ponta a ponta), última tarefa da milestone
+**Last Updated:** 2026-07-24T18:55:00Z
+**Current Work:** Milestone 4 (Fechamento e endurecimento) concluída — T1-T10 feitas e validadas ponta a ponta. MVP (Milestones 1-4) completo. Próximo passo: definir o que vem depois (Future Considerations do ROADMAP.md) ou endereçar os itens em Deferred Ideas.
 
 ---
 
@@ -245,11 +245,14 @@ None.
 | 038 | Criar tela de consolidado anual (`T7`)              | 2026-07-24 | -      | ✅ Done |
 | 039 | Criar status mínimo de sync em Ajustes (`T8`)       | 2026-07-24 | -      | ✅ Done |
 | 040 | Criar checklist de hardening do MVP (`T9`)          | 2026-07-24 | -      | ✅ Done |
+| 041 | Validar MVP ponta a ponta (`T10`)                   | 2026-07-24 | -      | ✅ Done |
 
 ---
 
 ## Deferred Ideas
 
+- [ ] `@react-native-community/datetimepicker` (usado em `mobile/src/features/planning/date-field.tsx`) não renderiza nada no `Platform.OS === 'web'` — o campo "Data" do formulário "Adicionar planejamento" fica impossível de preencher via UI no build web (funciona normalmente em iOS/Android). Precisa de um fallback web (ex.: `<input type="date">` condicional por plataforma) — Captured during: validação `T10`
+- [ ] `useCloseMonth` (`mobile/src/features/closing/use-close-month.ts`, T3) nunca foi conectado a nenhum botão/tela — não existe forma de fechar um mês pela UI hoje, só chamando a Edge Function diretamente. Nenhuma task da Milestone 4 cobria essa wiring explicitamente; T10 validou o fechamento via chamada direta à função — Captured during: validação `T10`
 - [ ] Mapear `pluggy_category_name` (inglês) para as categorias internas (português) antes do score de conciliação, ou remover/reponderar o componente de categoria — sem isso, `AUTO_MATCH_THRESHOLD` (0.9) é praticamente inatingível para transações reais da Pluggy (teto de 0.85 comprovado em `T12`, ver L-003) — Captured during: validação `T12`
 - [ ] `internal_category_id` de `imported_transactions` nunca é preenchido automaticamente a partir do `pluggy_category_name`/`user_category_rules`, então o breakdown por categoria do dashboard mensal mostra `actualCents: 0` mesmo com transações reais sincronizadas (os totais gerais do resumo continuam corretos) — Captured during: validação `T12`
 - [ ] Usar sinais de saúde financeira da Pluggy como enriquecimento opcional — Captured during: definição do PRD

@@ -203,13 +203,13 @@
 
 **Done when**:
 
-- [ ] Usuário cria planejamento.
-- [ ] Sync importa dados.
-- [ ] Conciliação ocorre ou vai para inbox.
-- [ ] Dashboard reflete estado correto.
-- [ ] Fechamento gera snapshot.
-- [ ] Consolidado anual mostra resultado.
-- [ ] RLS passa com dois usuários.
+- [x] Usuário cria planejamento.
+- [x] Sync importa dados.
+- [x] Conciliação ocorre ou vai para inbox.
+- [x] Dashboard reflete estado correto.
+- [x] Fechamento gera snapshot.
+- [x] Consolidado anual mostra resultado.
+- [x] RLS passa com dois usuários.
 
 **Verify**: E2E manual/automatizado documentado.
 

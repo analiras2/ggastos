@@ -1,7 +1,7 @@
 # Roadmap
 
 **Current Milestone:** Milestone 4 - Fechamento e endurecimento
-**Status:** In Progress
+**Status:** Done — MVP completo (Milestones 1-4). Ver Deferred Ideas em `.specs/project/STATE.md` para lacunas conhecidas e próximos passos possíveis.
 
 ---
 
@@ -82,18 +82,20 @@
 
 ### Features
 
-**Fechamento mensal e consolidado anual** - PLANNED
+**Fechamento mensal e consolidado anual** - DONE
 
 - Snapshot mensal.
 - Consolidado anual por categoria.
 - Comparação entre meses.
 - Spec: `.specs/features/closing-hardening/spec.md`
+  Progress: `T1`, `T2`, `T3`, `T7` concluídos e validados ponta a ponta (fechamento real via Edge Function, tela "Anual" mostrando dados reais). Comparação entre meses é implícita na listagem mensal da tela anual.
 
-**Observabilidade e robustez** - PLANNED
+**Observabilidade e robustez** - DONE
 
 - Logs de sync e conciliação.
 - Reprocessamento.
 - Endurecimento de RLS e segurança.
+  Progress: `T4`, `T5`, `T6`, `T8`, `T9` concluídos. Suíte de RLS (`supabase/tests/rls-suite.mjs`) com 17/17 passando; checklist de hardening (`hardening-checklist.md` + `run-hardening-checklist.sh`) automatiza o gate de migrations/RLS antes de UAT.
 - Spec: `.specs/features/closing-hardening/spec.md`
 
 ---
