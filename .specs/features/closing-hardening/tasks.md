@@ -185,9 +185,9 @@
 
 **Done when**:
 
-- [ ] Checklist cobre migrations, RLS, sync, dashboard, conciliação e fechamento.
-- [ ] Comandos de validação estão documentados.
-- [ ] Falhas bloqueiam início de UAT.
+- [x] Checklist cobre migrations, RLS, sync, dashboard, conciliação e fechamento.
+- [x] Comandos de validação estão documentados.
+- [x] Falhas bloqueiam início de UAT.
 
 **Verify**: Executar checklist em ambiente local.
 

@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-07-24T18:35:00Z
-**Current Work:** Milestone 4 (Fechamento e endurecimento) em andamento — T1-T8 concluídas / próximo passo é T9 (checklist de hardening do MVP)
+**Last Updated:** 2026-07-24T18:45:00Z
+**Current Work:** Milestone 4 (Fechamento e endurecimento) em andamento — T1-T9 concluídas / próximo passo é T10 (validação MVP ponta a ponta), última tarefa da milestone
 
 ---
 
@@ -244,6 +244,7 @@ None.
 | 037 | Criar função de reprocessamento (`T4`)              | 2026-07-24 | -      | ✅ Done |
 | 038 | Criar tela de consolidado anual (`T7`)              | 2026-07-24 | -      | ✅ Done |
 | 039 | Criar status mínimo de sync em Ajustes (`T8`)       | 2026-07-24 | -      | ✅ Done |
+| 040 | Criar checklist de hardening do MVP (`T9`)          | 2026-07-24 | -      | ✅ Done |
 
 ---
 
