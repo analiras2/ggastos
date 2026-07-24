@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-07-24T16:50:00Z
-**Current Work:** Milestone 4 (Fechamento e endurecimento) em andamento — T1-T6 concluídas / próximo passo é T7 ou T8 (paralelizáveis: tela de consolidado anual, status mínimo de sync)
+**Last Updated:** 2026-07-24T18:35:00Z
+**Current Work:** Milestone 4 (Fechamento e endurecimento) em andamento — T1-T8 concluídas / próximo passo é T9 (checklist de hardening do MVP)
 
 ---
 
@@ -242,6 +242,8 @@ None.
 | 035 | Padronizar observabilidade de sync/conciliação (`T5`) | 2026-07-24 | -    | ✅ Done |
 | 036 | Criar suíte de segurança RLS (`T6`)                 | 2026-07-24 | -      | ✅ Done |
 | 037 | Criar função de reprocessamento (`T4`)              | 2026-07-24 | -      | ✅ Done |
+| 038 | Criar tela de consolidado anual (`T7`)              | 2026-07-24 | -      | ✅ Done |
+| 039 | Criar status mínimo de sync em Ajustes (`T8`)       | 2026-07-24 | -      | ✅ Done |
 
 ---
 

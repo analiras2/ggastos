@@ -149,9 +149,9 @@
 
 **Done when**:
 
-- [ ] Exibe totais mensais.
-- [ ] Exibe totais por categoria.
-- [ ] Estado vazio funciona.
+- [x] Exibe totais mensais.
+- [x] Exibe totais por categoria.
+- [x] Estado vazio funciona.
 
 **Verify**: Rodar app com snapshots de fixture.
 
@@ -167,9 +167,9 @@
 
 **Done when**:
 
-- [ ] Mostra último sucesso.
-- [ ] Mostra erro de consentimento/autorização.
-- [ ] Não expõe logs técnicos sensíveis.
+- [x] Mostra último sucesso.
+- [x] Mostra erro de consentimento/autorização.
+- [x] Não expõe logs técnicos sensíveis.
 
 **Verify**: Fixture de conexão com sucesso e erro.
 
