@@ -15,6 +15,7 @@ import {
   useLatestSyncEvent,
   useSyncPluggy,
 } from '@/features/dashboard/use-sync-pluggy';
+import { getFormattedCloseMonthError, useCloseMonth } from '@/features/closing/use-close-month';
 
 interface CategoryDetailsPanel {
   visible: boolean;
@@ -37,6 +38,8 @@ interface DashboardViewModel {
   isAddPlanVisible: boolean;
   isAddTemplateVisible: boolean;
   isCurrentMonth: boolean;
+  isClosingMonth: boolean;
+  closeMonthBanner: { state: 'ok' | 'pending' | 'error'; message: string } | null;
   handleSync: () => void;
   handlePrevMonth: () => void;
   handleNextMonth: () => void;
@@ -47,6 +50,7 @@ interface DashboardViewModel {
   handleCloseAddPlan: () => void;
   handleAddTemplate: () => void;
   handleCloseAddTemplate: () => void;
+  handleCloseMonth: () => void;
 }
 
 export function useDashboardViewModel(): DashboardViewModel {
@@ -57,6 +61,7 @@ export function useDashboardViewModel(): DashboardViewModel {
   const monthDashboardQuery = useMonthDashboard(monthKey);
   const latestSyncEventQuery = useLatestSyncEvent();
   const syncMutation = useSyncPluggy();
+  const closeMonthMutation = useCloseMonth();
   const categoryDetailsQuery = useCategoryDetails(monthKey, selectedCategory?.categoryId ?? null);
   const { togglingEntryId, handleToggleStatus } = usePlannedEntryStatusToggle(
     monthKey,
@@ -173,9 +178,29 @@ export function useDashboardViewModel(): DashboardViewModel {
     syncMutation.isPending,
   ]);
 
+  const closeMonthBanner = useMemo(() => {
+    if (closeMonthMutation.isPending) {
+      return { state: 'pending' as const, message: 'Fechando o mês...' };
+    }
+
+    if (closeMonthMutation.isError) {
+      return { state: 'error' as const, message: getFormattedCloseMonthError(closeMonthMutation.error) };
+    }
+
+    if (closeMonthMutation.isSuccess) {
+      return { state: 'ok' as const, message: 'Mês fechado. O snapshot pode ser recalculado a qualquer momento.' };
+    }
+
+    return null;
+  }, [closeMonthMutation.isPending, closeMonthMutation.isError, closeMonthMutation.error, closeMonthMutation.isSuccess]);
+
   const handleSync = useCallback(() => {
     syncMutation.mutate();
   }, [syncMutation]);
+
+  const handleCloseMonth = useCallback(() => {
+    closeMonthMutation.mutate(monthKey);
+  }, [closeMonthMutation, monthKey]);
 
   const handlePrevMonth = useCallback(() => {
     setMonthKey((current) => shiftMonthKey(current, -1));
@@ -221,6 +246,8 @@ export function useDashboardViewModel(): DashboardViewModel {
     isAddPlanVisible,
     isAddTemplateVisible,
     isCurrentMonth: monthKey === currentMonthKey(),
+    isClosingMonth: closeMonthMutation.isPending,
+    closeMonthBanner,
     handleSync,
     handlePrevMonth,
     handleNextMonth,
@@ -231,5 +258,6 @@ export function useDashboardViewModel(): DashboardViewModel {
     handleCloseAddPlan,
     handleAddTemplate,
     handleCloseAddTemplate,
+    handleCloseMonth,
   };
 }

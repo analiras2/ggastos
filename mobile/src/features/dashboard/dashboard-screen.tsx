@@ -22,6 +22,8 @@ export function DashboardScreen() {
     isAddPlanVisible,
     isAddTemplateVisible,
     isCurrentMonth,
+    isClosingMonth,
+    closeMonthBanner,
     handleSync,
     handlePrevMonth,
     handleNextMonth,
@@ -32,6 +34,7 @@ export function DashboardScreen() {
     handleCloseAddPlan,
     handleAddTemplate,
     handleCloseAddTemplate,
+    handleCloseMonth,
   } = useDashboardViewModel();
 
   return (
@@ -50,6 +53,11 @@ export function DashboardScreen() {
             { label: 'Adicionar planejamento', icon: 'plus', onPress: handleAddPlan },
             { label: 'Template', icon: 'repeat', onPress: handleAddTemplate },
             { label: 'Sincronizar', icon: 'refresh-cw', onPress: handleSync },
+            {
+              label: isClosingMonth ? 'Fechando...' : 'Fechar mês',
+              icon: 'calendar-check',
+              onPress: handleCloseMonth,
+            },
           ]}
         />
 
@@ -78,6 +86,10 @@ export function DashboardScreen() {
           actionLabel={syncBanner.actionLabel}
           onAction={handleSync}
         />
+
+        {closeMonthBanner ? (
+          <SyncStatusBanner state={closeMonthBanner.state} message={closeMonthBanner.message} />
+        ) : null}
       </ScrollView>
 
       <CategoryDetailsSheet
