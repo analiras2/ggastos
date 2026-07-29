@@ -12,6 +12,7 @@ import {
 } from '@supabase/supabase-js';
 
 import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
+import { connectionsStatusKey } from '@/features/settings/use-connections-status';
 
 export type SyncEventPreview = {
   id: string;
@@ -127,7 +128,10 @@ export function useSyncPluggy(): UseMutationResult<
   return useMutation({
     mutationFn: invokeSyncPluggy,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: latestSyncEventKey });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: latestSyncEventKey }),
+        queryClient.invalidateQueries({ queryKey: connectionsStatusKey }),
+      ]);
     },
     throwOnError: false,
     meta: {
