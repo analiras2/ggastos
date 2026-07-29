@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import { useAuth } from '@/features/auth/use-auth';
@@ -26,7 +27,7 @@ export function SettingsScreen() {
   }
 
   return (
-    <View style={styles.screen}>
+    <SafeAreaView style={styles.screen} edges={['top']}>
       <Text style={styles.title}>Ajustes</Text>
 
       <View style={styles.accountBox}>
@@ -48,7 +49,7 @@ export function SettingsScreen() {
           {isSigningOut ? 'Saindo...' : 'Sair'}
         </Text>
       </Pressable>
-    </View>
+    </SafeAreaView>
   );
 }
 
