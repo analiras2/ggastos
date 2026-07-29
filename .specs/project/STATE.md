@@ -178,6 +178,13 @@
 - Mobile: `ConnectAccountSheet` renderiza `<PluggyConnect connectToken updateItem includeSandbox onSuccess onError onClose />` em vez de um formulário; `use-connect-account-view-model.ts` busca o Connect Token via `useQuery` (não `useEffect`) e persiste o item no `onSuccess`.
 **Verified:** testado ponta a ponta no simulador com o widget real — busca de instituição (incluindo bancos reais como Inter, Caixa), fluxo "criar" completo com o conector sandbox, e fluxo "reconectar" confirmado entrando em modo update (`updateItem` correto, botão muda para "Atualizar").
 
+### AD-026: Badge da inbox de conciliação passou a refletir a contagem real de sugestões (2026-07-29)
+
+**Decision:** `AppShell` (`mobile/src/features/app-shell/app-shell.tsx`) chamava `useReconciliationInbox(currentMonthKey())` e passava `badge={inboxQuery.data?.length ?? 0}` para `BottomTabBar`, substituindo o `badge={3}` literal que existia antes.
+**Reason:** Validação da PARTE 6 do checklist (T6.5, inbox vazio) expôs que o badge da aba "Revisar" mostrava "3" fixo independentemente do estado real do banco — inclusive com zero sugestões pendentes.
+**Trade-off:** Nenhum — é puramente uma correção de bug, a aba já teria os dados via um hook existente reutilizável.
+**Impact:** Badge agora reage em tempo real a confirmar/rejeitar/desfazer, testado do zero até 62 sugestões simultâneas.
+
 ### AD-023: Sync agendado autentica `sync-pluggy` com a própria `service_role` key (2026-07-15)
 
 **Decision:** `T11` adicionou um segundo caminho de execução à Edge Function `sync-pluggy`: quando o `Authorization: Bearer` recebido é exatamente igual à `SUPABASE_SERVICE_ROLE_KEY` do runtime, a função entra em modo interno/agendado (exige `mode: "scheduled"` no corpo, senão retorna `400`), ignora `readAuthenticatedUser`, varre `financial_connections` de todos os usuários com `pluggy_item_id` preenchido e `status` fora de `LOGIN_ERROR`/`WAITING_USER_INPUT`/`DELETED`, e grava um único `sync_events` por execução com `user_id`/`connection_id` nulos. A migration `20260715220000_schedule_sync_pluggy_cron.sql` habilita `pg_cron` (já vinha em `shared_preload_libraries` da imagem local) e agenda `net.http_post` a cada 12h usando `current_setting('app.settings.supabase_url'|'service_role_key', true)`.
