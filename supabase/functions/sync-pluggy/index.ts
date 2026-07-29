@@ -292,6 +292,7 @@ async function syncConnection(
     };
   }
 
+  console.log(`[sync-pluggy] Fetching accounts for connection ${connection.id}...`);
   const accounts = await pluggyClient.fetchAccounts(item.id);
   let transactionsProcessed = 0;
   let matchesCreated = 0;
@@ -328,6 +329,10 @@ async function syncConnection(
     });
     matchesCreated += autoMatchOutcomes.length;
   }
+
+  console.log(
+    `[sync-pluggy] Connection ${connection.id}: ${accounts.length} accounts, ${transactionsProcessed} transactions, ${matchesCreated} auto-matches.`,
+  );
 
   return {
     connectionId: connection.id,
