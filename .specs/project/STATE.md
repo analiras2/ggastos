@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-07-29T14:00:00Z
-**Current Work:** Validation Day 2026-07-17 concluído ponta a ponta (PARTE 5-12, o restante do checklist que ainda estava pendente). Três bugs corrigidos nesta sessão (badge fixo da inbox, falta de confirmação antes de rejeitar um match, ausência de logs em `sync-pluggy`); dois gaps seguem documentados como Deferred Ideas (tela de undo/histórico inexistente, mensagem técnica de categoria inativa). MVP (Milestones 1-4) segue completo — próximo passo continua sendo definir o que vem depois (Future Considerations do ROADMAP.md) ou endereçar os itens em Deferred Ideas.
+**Last Updated:** 2026-07-29T14:30:00Z
+**Current Work:** Validation Day 2026-07-17 concluído ponta a ponta (PARTE 5-12, o restante do checklist que ainda estava pendente). Quatro bugs corrigidos nesta sessão (badge fixo da inbox, falta de confirmação antes de rejeitar um match, ausência de logs em `sync-pluggy`, título da aba Ajustes sobrepondo a status bar); dois gaps seguem documentados como Deferred Ideas (tela de undo/histórico inexistente, mensagem técnica de categoria inativa). MVP (Milestones 1-4) segue completo — próximo passo continua sendo definir o que vem depois (Future Considerations do ROADMAP.md) ou endereçar os itens em Deferred Ideas.
 
 ---
 
@@ -192,6 +192,13 @@
 **Trade-off:** Nenhum.
 **Impact:** Testado ao vivo no simulador: "Cancelar" não altera o banco (par segue no status anterior); "Rejeitar" no alerta continua persistindo `status = REJECTED` normalmente.
 
+### AD-028: `SettingsScreen` passou a usar `SafeAreaView`, corrigindo sobreposição com a status bar (2026-07-29)
+
+**Decision:** `mobile/src/features/settings/settings-screen.tsx` trocou a `View` raiz por `<SafeAreaView edges={['top']}>` (mesmo padrão já usado em `dashboard-screen.tsx`, `reconciliation-inbox-screen.tsx` e `annual-report-screen.tsx`).
+**Reason:** Usuário reportou que o título "Ajustes" estava colado na borda superior da tela, sobrepondo visualmente o relógio/status bar — diferente do espaçamento das demais abas.
+**Trade-off:** Nenhum.
+**Impact:** Verificado ao vivo no simulador: título agora respeita a safe area, sem sobreposição.
+
 ### AD-023: Sync agendado autentica `sync-pluggy` com a própria `service_role` key (2026-07-15)
 
 **Decision:** `T11` adicionou um segundo caminho de execução à Edge Function `sync-pluggy`: quando o `Authorization: Bearer` recebido é exatamente igual à `SUPABASE_SERVICE_ROLE_KEY` do runtime, a função entra em modo interno/agendado (exige `mode: "scheduled"` no corpo, senão retorna `400`), ignora `readAuthenticatedUser`, varre `financial_connections` de todos os usuários com `pluggy_item_id` preenchido e `status` fora de `LOGIN_ERROR`/`WAITING_USER_INPUT`/`DELETED`, e grava um único `sync_events` por execução com `user_id`/`connection_id` nulos. A migration `20260715220000_schedule_sync_pluggy_cron.sql` habilita `pg_cron` (já vinha em `shared_preload_libraries` da imagem local) e agenda `net.http_post` a cada 12h usando `current_setting('app.settings.supabase_url'|'service_role_key', true)`.
@@ -286,6 +293,7 @@ None.
 | 041 | Validar MVP ponta a ponta (`T10`)                   | 2026-07-24 | -      | ✅ Done |
 | 042 | Concluir validation day (PARTE 5-12) + corrigir badge fixo e falta de logs | 2026-07-29 | - | ✅ Done |
 | 043 | Adicionar confirmação antes de rejeitar match de conciliação | 2026-07-29 | - | ✅ Done |
+| 044 | Corrigir sobreposição do título "Ajustes" com a status bar | 2026-07-29 | - | ✅ Done |
 
 ---
 
