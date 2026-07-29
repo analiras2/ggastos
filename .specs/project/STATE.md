@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-07-24T18:55:00Z
-**Current Work:** Milestone 4 (Fechamento e endurecimento) concluída — T1-T10 feitas e validadas ponta a ponta. MVP (Milestones 1-4) completo. Próximo passo: definir o que vem depois (Future Considerations do ROADMAP.md) ou endereçar os itens em Deferred Ideas.
+**Last Updated:** 2026-07-29T13:15:00Z
+**Current Work:** Validation Day 2026-07-17 concluído ponta a ponta (PARTE 5-12, o restante do checklist que ainda estava pendente). Dois bugs corrigidos nesta sessão (badge fixo da inbox, ausência de logs em `sync-pluggy`); três gaps documentados como Deferred Ideas (confirmação de rejeitar match, tela de undo/histórico inexistente, mensagem técnica de categoria inativa). MVP (Milestones 1-4) segue completo — próximo passo continua sendo definir o que vem depois (Future Considerations do ROADMAP.md) ou endereçar os itens em Deferred Ideas.
 
 ---
 
@@ -277,6 +277,7 @@ None.
 | 039 | Criar status mínimo de sync em Ajustes (`T8`)       | 2026-07-24 | -      | ✅ Done |
 | 040 | Criar checklist de hardening do MVP (`T9`)          | 2026-07-24 | -      | ✅ Done |
 | 041 | Validar MVP ponta a ponta (`T10`)                   | 2026-07-24 | -      | ✅ Done |
+| 042 | Concluir validation day (PARTE 5-12) + corrigir badge fixo e falta de logs | 2026-07-29 | - | ✅ Done |
 
 ---
 
@@ -293,6 +294,9 @@ None.
 - [ ] Adicionar anexos e comprovantes com Supabase Storage — Captured during: roadmap
 - [ ] Avaliar migração para plano comercial da Pluggy se o onboarding no app virar requisito — Captured during: estratégia de integração
 - [x] ~~Substituir o formulário simples de conexão Pluggy pelo Pluggy Connect Widget oficial~~ — Resolvido em 2026-07-29 (AD-025): app migrou para `react-native-pluggy-connect` + dev client customizado, suporta busca de instituição e Open Finance/OAuth. Ver AD-025 e L-004.
+- [ ] Adicionar diálogo de confirmação antes de "Rejeitar" uma sugestão de conciliação (`reconciliation-suggestion-row.tsx` / `use-reconciliation-inbox-view-model.ts`) — hoje a rejeição é executada com um único toque e não há como desfazer uma rejeição pela UI — Captured during: validação PARTE 6 (T6.3), 2026-07-29
+- [ ] Criar uma tela de "Histórico"/"Realizados" de conciliação com botão "Desfazer Match" — o backend (`reconcile-transactions`, `action: "undo"`, AD-022) já funciona e foi validado via API, mas `useUndoMatch()` nunca é usado por nenhum componente; não existe hoje nenhum caminho de UI para desfazer um match confirmado — Captured during: validação PARTE 6 (T6.4), 2026-07-29
+- [ ] Traduzir/mapear a mensagem de erro de "categoria inativa" no formulário de planejamento — hoje o app repassa o texto cru do `RAISE EXCEPTION` do trigger `ensure_active_category()` (em inglês, com UUID) direto para a tela via `use-add-plan-view-model.ts`; considerar também filtrar categorias inativas do `CategoryField` para evitar o cenário — Captured during: validação PARTE 8 (T8.1), 2026-07-29
 
 ---
 
