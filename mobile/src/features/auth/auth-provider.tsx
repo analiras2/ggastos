@@ -7,7 +7,7 @@ import {
 } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 
-import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
+import { missingSupabaseEnv, ownerCredentials, supabase } from '@/lib/supabase/client';
 
 type AuthContextValue = {
   isConfigured: boolean;
@@ -47,6 +47,26 @@ async function ensureProfile(user: User) {
   }
 }
 
+async function attemptOwnerAutoSignIn() {
+  if (!supabase || !ownerCredentials) {
+    return;
+  }
+
+  const { error: signInError } = await supabase.auth.signInWithPassword(
+    ownerCredentials
+  );
+  if (!signInError) {
+    return;
+  }
+
+  // First launch against this Supabase project: the owner account doesn't
+  // exist yet, so create it.
+  const { error: signUpError } = await supabase.auth.signUp(ownerCredentials);
+  if (signUpError) {
+    throw signUpError;
+  }
+}
+
 export function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(supabase !== null);
@@ -62,7 +82,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     supabase.auth
       .getSession()
-      .then(({ data, error }) => {
+      .then(async ({ data, error }) => {
         if (error) {
           console.warn('Unable to restore existing Supabase session.', error.message);
         }
@@ -71,12 +91,30 @@ export function AuthProvider({ children }: PropsWithChildren) {
           return;
         }
 
-        setSession(data.session);
-        setIsLoading(false);
-
         if (data.session?.user) {
+          setSession(data.session);
+          setIsLoading(false);
           lastProfileSyncUserId.current = data.session.user.id;
           void ensureProfile(data.session.user);
+          return;
+        }
+
+        if (!ownerCredentials) {
+          setIsLoading(false);
+          return;
+        }
+
+        try {
+          await attemptOwnerAutoSignIn();
+        } catch (autoSignInError) {
+          console.warn(
+            'Automatic owner sign-in failed; falling back to manual login.',
+            autoSignInError
+          );
+        } finally {
+          if (isMounted) {
+            setIsLoading(false);
+          }
         }
       })
       .catch((error: unknown) => {

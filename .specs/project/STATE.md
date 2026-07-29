@@ -161,6 +161,13 @@
 **Trade-off:** `UNMATCHED` nesta tabela passa a significar "já teve match e foi desfeito", distinto de nunca ter existido uma linha — consumidores futuros da tabela devem tratar essa diferença via ausência de linha vs. `status = 'UNMATCHED'`.
 **Impact:** `confirm` sempre insere uma nova linha; `reject` atualiza a linha existente do par (qualquer status) para `REJECTED` ou insere uma nova se não houver; `undo` só age sobre linha com status ativo e retorna `409 no_active_match` caso contrário.
 
+### AD-024: App é de uso pessoal — login fica invisível via auto sign-in (2026-07-29)
+
+**Decision:** Mantida a arquitetura de Supabase Auth + RLS (não removida — 39 usos de `auth.uid()` espalhados em RLS policies e funções SQL tornariam essa remoção um refactor grande e arriscado para um ganho pequeno). Em vez disso, `mobile/src/features/auth/auth-provider.tsx` tenta login silencioso com `EXPO_PUBLIC_OWNER_EMAIL`/`EXPO_PUBLIC_OWNER_PASSWORD` assim que o app abre sem sessão — login na primeira vez (`signUp`), depois `signInWithPassword` nas seguintes. `AuthScreen` deixou de aparecer no fluxo normal, mas continua existindo como fallback manual (env vars não configuradas, ou auto-login falha).
+**Reason:** Usuário confirmou que o app é para uso pessoal (planilha de gastos, sem multiusuário real) e achou desnecessário digitar email/senha toda vez.
+**Trade-off:** A senha do dono fica em texto plano no bundle JS do app (`EXPO_PUBLIC_*`). Aceitável para um app pessoal não distribuído publicamente, mas não deve ser tratado como segredo forte.
+**Impact:** `mobile/.env`/`.env.example` ganharam essas duas variáveis. Ver `mobile/src/lib/supabase/client.ts` (`ownerCredentials`) e `auth-provider.tsx` (`attemptOwnerAutoSignIn`).
+
 ### AD-023: Sync agendado autentica `sync-pluggy` com a própria `service_role` key (2026-07-15)
 
 **Decision:** `T11` adicionou um segundo caminho de execução à Edge Function `sync-pluggy`: quando o `Authorization: Bearer` recebido é exatamente igual à `SUPABASE_SERVICE_ROLE_KEY` do runtime, a função entra em modo interno/agendado (exige `mode: "scheduled"` no corpo, senão retorna `400`), ignora `readAuthenticatedUser`, varre `financial_connections` de todos os usuários com `pluggy_item_id` preenchido e `status` fora de `LOGIN_ERROR`/`WAITING_USER_INPUT`/`DELETED`, e grava um único `sync_events` por execução com `user_id`/`connection_id` nulos. A migration `20260715220000_schedule_sync_pluggy_cron.sql` habilita `pg_cron` (já vinha em `shared_preload_libraries` da imagem local) e agenda `net.http_post` a cada 12h usando `current_setting('app.settings.supabase_url'|'service_role_key', true)`.
