@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-07-29T13:15:00Z
-**Current Work:** Validation Day 2026-07-17 concluído ponta a ponta (PARTE 5-12, o restante do checklist que ainda estava pendente). Dois bugs corrigidos nesta sessão (badge fixo da inbox, ausência de logs em `sync-pluggy`); três gaps documentados como Deferred Ideas (confirmação de rejeitar match, tela de undo/histórico inexistente, mensagem técnica de categoria inativa). MVP (Milestones 1-4) segue completo — próximo passo continua sendo definir o que vem depois (Future Considerations do ROADMAP.md) ou endereçar os itens em Deferred Ideas.
+**Last Updated:** 2026-07-29T14:00:00Z
+**Current Work:** Validation Day 2026-07-17 concluído ponta a ponta (PARTE 5-12, o restante do checklist que ainda estava pendente). Três bugs corrigidos nesta sessão (badge fixo da inbox, falta de confirmação antes de rejeitar um match, ausência de logs em `sync-pluggy`); dois gaps seguem documentados como Deferred Ideas (tela de undo/histórico inexistente, mensagem técnica de categoria inativa). MVP (Milestones 1-4) segue completo — próximo passo continua sendo definir o que vem depois (Future Considerations do ROADMAP.md) ou endereçar os itens em Deferred Ideas.
 
 ---
 
@@ -185,6 +185,13 @@
 **Trade-off:** Nenhum — é puramente uma correção de bug, a aba já teria os dados via um hook existente reutilizável.
 **Impact:** Badge agora reage em tempo real a confirmar/rejeitar/desfazer, testado do zero até 62 sugestões simultâneas.
 
+### AD-027: Rejeitar uma sugestão de conciliação passou a pedir confirmação (2026-07-29)
+
+**Decision:** `handleReject` em `mobile/src/features/reconciliation/use-reconciliation-inbox-view-model.ts` agora chama `Alert.alert('Rejeitar sugestão', 'Tem certeza que quer rejeitar este match?', [...])` antes de disparar `rejectMutation.mutate(...)` — só o botão "Rejeitar" (`style: 'destructive'`) do alerta efetiva a chamada; "Cancelar" não faz nada.
+**Reason:** Validação da PARTE 6 (T6.3) expôs que rejeitar era irreversível (o par fica permanentemente bloqueado de reaparecer como sugestão, ver AD-022) e disparava com um único toque, sem nenhuma confirmação — divergindo do próprio checklist de testes que já previa esse diálogo.
+**Trade-off:** Nenhum.
+**Impact:** Testado ao vivo no simulador: "Cancelar" não altera o banco (par segue no status anterior); "Rejeitar" no alerta continua persistindo `status = REJECTED` normalmente.
+
 ### AD-023: Sync agendado autentica `sync-pluggy` com a própria `service_role` key (2026-07-15)
 
 **Decision:** `T11` adicionou um segundo caminho de execução à Edge Function `sync-pluggy`: quando o `Authorization: Bearer` recebido é exatamente igual à `SUPABASE_SERVICE_ROLE_KEY` do runtime, a função entra em modo interno/agendado (exige `mode: "scheduled"` no corpo, senão retorna `400`), ignora `readAuthenticatedUser`, varre `financial_connections` de todos os usuários com `pluggy_item_id` preenchido e `status` fora de `LOGIN_ERROR`/`WAITING_USER_INPUT`/`DELETED`, e grava um único `sync_events` por execução com `user_id`/`connection_id` nulos. A migration `20260715220000_schedule_sync_pluggy_cron.sql` habilita `pg_cron` (já vinha em `shared_preload_libraries` da imagem local) e agenda `net.http_post` a cada 12h usando `current_setting('app.settings.supabase_url'|'service_role_key', true)`.
@@ -278,6 +285,7 @@ None.
 | 040 | Criar checklist de hardening do MVP (`T9`)          | 2026-07-24 | -      | ✅ Done |
 | 041 | Validar MVP ponta a ponta (`T10`)                   | 2026-07-24 | -      | ✅ Done |
 | 042 | Concluir validation day (PARTE 5-12) + corrigir badge fixo e falta de logs | 2026-07-29 | - | ✅ Done |
+| 043 | Adicionar confirmação antes de rejeitar match de conciliação | 2026-07-29 | - | ✅ Done |
 
 ---
 
@@ -294,7 +302,7 @@ None.
 - [ ] Adicionar anexos e comprovantes com Supabase Storage — Captured during: roadmap
 - [ ] Avaliar migração para plano comercial da Pluggy se o onboarding no app virar requisito — Captured during: estratégia de integração
 - [x] ~~Substituir o formulário simples de conexão Pluggy pelo Pluggy Connect Widget oficial~~ — Resolvido em 2026-07-29 (AD-025): app migrou para `react-native-pluggy-connect` + dev client customizado, suporta busca de instituição e Open Finance/OAuth. Ver AD-025 e L-004.
-- [ ] Adicionar diálogo de confirmação antes de "Rejeitar" uma sugestão de conciliação (`reconciliation-suggestion-row.tsx` / `use-reconciliation-inbox-view-model.ts`) — hoje a rejeição é executada com um único toque e não há como desfazer uma rejeição pela UI — Captured during: validação PARTE 6 (T6.3), 2026-07-29
+- [x] ~~Adicionar diálogo de confirmação antes de "Rejeitar" uma sugestão de conciliação~~ — Resolvido em 2026-07-29 (AD-027): `handleReject` em `use-reconciliation-inbox-view-model.ts` agora pede confirmação via `Alert.alert` antes de chamar a mutation. Ver AD-027.
 - [ ] Criar uma tela de "Histórico"/"Realizados" de conciliação com botão "Desfazer Match" — o backend (`reconcile-transactions`, `action: "undo"`, AD-022) já funciona e foi validado via API, mas `useUndoMatch()` nunca é usado por nenhum componente; não existe hoje nenhum caminho de UI para desfazer um match confirmado — Captured during: validação PARTE 6 (T6.4), 2026-07-29
 - [ ] Traduzir/mapear a mensagem de erro de "categoria inativa" no formulário de planejamento — hoje o app repassa o texto cru do `RAISE EXCEPTION` do trigger `ensure_active_category()` (em inglês, com UUID) direto para a tela via `use-add-plan-view-model.ts`; considerar também filtrar categorias inativas do `CategoryField` para evitar o cenário — Captured during: validação PARTE 8 (T8.1), 2026-07-29
 

@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import { Alert } from 'react-native';
 
 import { currentMonthKey } from '@/features/dashboard/month-utils';
 import {
@@ -71,7 +72,18 @@ export function useReconciliationInboxViewModel(): ReconciliationInboxViewModel 
 
   const handleReject = useCallback(
     (suggestion: ReconciliationSuggestionView) => {
-      rejectMutation.mutate(toDecisionInput(suggestion));
+      Alert.alert(
+        'Rejeitar sugestão',
+        'Tem certeza que quer rejeitar este match?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          {
+            text: 'Rejeitar',
+            style: 'destructive',
+            onPress: () => rejectMutation.mutate(toDecisionInput(suggestion)),
+          },
+        ]
+      );
     },
     [rejectMutation]
   );
