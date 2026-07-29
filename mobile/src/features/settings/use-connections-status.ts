@@ -18,7 +18,7 @@ export type ConnectionStatusRecord = {
   lastErrorCode: string | null;
 };
 
-const connectionsStatusKey = ['financial-connections', 'status'];
+export const connectionsStatusKey = ['financial-connections', 'status'];
 
 async function readConnectionsStatus(): Promise<ConnectionStatusRecord[]> {
   if (!supabase) {

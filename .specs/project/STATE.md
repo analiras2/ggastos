@@ -168,6 +168,16 @@
 **Trade-off:** A senha do dono fica em texto plano no bundle JS do app (`EXPO_PUBLIC_*`). Aceitável para um app pessoal não distribuído publicamente, mas não deve ser tratado como segredo forte.
 **Impact:** `mobile/.env`/`.env.example` ganharam essas duas variáveis. Ver `mobile/src/lib/supabase/client.ts` (`ownerCredentials`) e `auth-provider.tsx` (`attemptOwnerAutoSignIn`).
 
+### AD-025: Conexão bancária real migrou do formulário simples para o Pluggy Connect Widget oficial (2026-07-29)
+
+**Decision:** Superou a decisão provisória do AD anterior (formulário usuário/senha direto na API `/items`) depois que a análise do catálogo real de conectores mostrou que 130 dos 137 bancos pessoais brasileiros (praticamente todos os grandes: Nubank, Itaú, Bradesco, Santander, BB conta corrente, Inter...) exigem Open Finance/OAuth, que só funciona com o widget hospedado (WebView + postMessage), não com um POST direto de credenciais. Migrado para `react-native-pluggy-connect` + `react-native-webview`.
+**Reason:** O usuário confirmou que quer conectar um banco grande de verdade, não só o sandbox — o formulário simples nunca teria funcionado para esse caso.
+**Trade-off:** Saiu do Expo Go. O projeto agora tem `/ios` e `/android` (gerados via `expo prebuild`) e roda via dev client customizado (`npx expo run:ios`), não mais `expo start` + Expo Go puro. `app.json` ganhou `ios.bundleIdentifier`/`android.package` (`com.ggastos.app`), exigidos pelo prebuild.
+**Impact:**
+- Backend: nova Edge Function `pluggy-connect-token` (emite Connect Token via `POST /connect_token` da Pluggy, nunca a API key completa) e `connect-pluggy-item` simplificada para um único modo `link` (persiste o item que o próprio widget já criou/atualizou, reaproveitando `buildConnectionUpsert`). `PluggyClient.createItem`/`updateItem` (credenciais diretas) foram removidos por ficarem mortos.
+- Mobile: `ConnectAccountSheet` renderiza `<PluggyConnect connectToken updateItem includeSandbox onSuccess onError onClose />` em vez de um formulário; `use-connect-account-view-model.ts` busca o Connect Token via `useQuery` (não `useEffect`) e persiste o item no `onSuccess`.
+**Verified:** testado ponta a ponta no simulador com o widget real — busca de instituição (incluindo bancos reais como Inter, Caixa), fluxo "criar" completo com o conector sandbox, e fluxo "reconectar" confirmado entrando em modo update (`updateItem` correto, botão muda para "Atualizar").
+
 ### AD-023: Sync agendado autentica `sync-pluggy` com a própria `service_role` key (2026-07-15)
 
 **Decision:** `T11` adicionou um segundo caminho de execução à Edge Function `sync-pluggy`: quando o `Authorization: Bearer` recebido é exatamente igual à `SUPABASE_SERVICE_ROLE_KEY` do runtime, a função entra em modo interno/agendado (exige `mode: "scheduled"` no corpo, senão retorna `400`), ignora `readAuthenticatedUser`, varre `financial_connections` de todos os usuários com `pluggy_item_id` preenchido e `status` fora de `LOGIN_ERROR`/`WAITING_USER_INPUT`/`DELETED`, e grava um único `sync_events` por execução com `user_id`/`connection_id` nulos. A migration `20260715220000_schedule_sync_pluggy_cron.sql` habilita `pg_cron` (já vinha em `shared_preload_libraries` da imagem local) e agenda `net.http_post` a cada 12h usando `current_setting('app.settings.supabase_url'|'service_role_key', true)`.
@@ -184,6 +194,13 @@ None.
 ---
 
 ## Lessons Learned
+
+### L-004: `expo-modules-jsi` não compila em Xcode 26 / Swift 6.2 sem patch — precisa de `patch-package` (2026-07-29)
+
+**Context:** Primeiro build nativo real do projeto (`expo prebuild` + `npx expo run:ios`), feito para adotar `react-native-webview`/`react-native-pluggy-connect` (AD-025). Até então o app só rodava via Expo Go, que não compila módulos nativos localmente.
+**Problem:** `expo-modules-jsi@57.0.4` (dependência interna do Expo SDK 57, não algo que o projeto instala diretamente) declara `weak let` em várias structs `~Copyable` — inválido em qualquer Swift, mas só é pego pelo compilador do Xcode 26.0.1/Swift 6.2 instalado nesta máquina. Depois de trocar para `weak var`, um segundo erro aparece: Swift 6.2 rejeita propriedade `weak var` mutável em classe `Sendable` sem `nonisolated(unsafe)`. Um terceiro bug separado (`abs(milliseconds)` ambíguo em `JavaScriptCodable+Date.swift`, provavelmente por overload de `abs` vindo do lado C++/JSI) também só aparece nesse toolchain.
+**Solution:** Editados os 14 arquivos afetados em `node_modules/expo-modules-jsi` (`weak let`→`weak var`, `nonisolated(unsafe) weak var` nas 5 classes `Sendable`, `abs(milliseconds)`→`milliseconds.magnitude`), depois congelado com `patch-package` (`npx patch-package expo-modules-jsi`, patch salvo em `mobile/patches/`, `postinstall: patch-package` no `package.json`) para sobreviver a um `npm install` limpo.
+**Prevents:** Se um `npm install` limpo voltar a quebrar o build iOS com erros de `weak let`/`Sendable` em `expo-modules-jsi`, não é regressão do projeto — é essa mesma incompatibilidade Xcode 26/Swift 6.2 reaparecendo (ex.: alguém rodou `rm -rf node_modules` sem o patch, ou o patch não bateu numa versão nova do pacote). Primeiro confirmar se `patches/expo-modules-jsi+*.patch` está presente e se `postinstall` rodou; se o Expo já tiver corrigido isso upstream (acompanhar `expo/expo#46242`), o patch pode ser removido.
 
 ### L-003: `category` da Pluggy é sempre em inglês e nunca bate com o catálogo em português — o componente de categoria do score fica preso em zero (2026-07-16)
 
@@ -268,6 +285,7 @@ None.
 - [ ] Considerar orçamento-meta por categoria pós-MVP — Captured during: revisão de lacunas
 - [ ] Adicionar anexos e comprovantes com Supabase Storage — Captured during: roadmap
 - [ ] Avaliar migração para plano comercial da Pluggy se o onboarding no app virar requisito — Captured during: estratégia de integração
+- [x] ~~Substituir o formulário simples de conexão Pluggy pelo Pluggy Connect Widget oficial~~ — Resolvido em 2026-07-29 (AD-025): app migrou para `react-native-pluggy-connect` + dev client customizado, suporta busca de instituição e Open Finance/OAuth. Ver AD-025 e L-004.
 
 ---
 

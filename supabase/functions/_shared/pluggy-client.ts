@@ -100,6 +100,26 @@ export class PluggyApiError extends Error {
   }
 }
 
+function extractPluggyErrorMessage(rawBody: string): string {
+  if (!rawBody.trim()) {
+    return "(empty response body)";
+  }
+
+  try {
+    const parsed = JSON.parse(rawBody) as { message?: unknown; error?: unknown };
+    if (typeof parsed.message === "string") {
+      return parsed.message;
+    }
+    if (typeof parsed.error === "string") {
+      return parsed.error;
+    }
+  } catch {
+    // Not JSON — fall through to raw text.
+  }
+
+  return rawBody;
+}
+
 export type PluggyClientConfig = {
   clientId: string;
   clientSecret: string;
@@ -151,18 +171,27 @@ export class PluggyClient {
     return this.apiKey;
   }
 
-  private async request<T>(path: string): Promise<T> {
+  private async request<T>(
+    path: string,
+    init?: { method?: string; body?: unknown },
+  ): Promise<T> {
     const apiKey = await this.authenticate();
     const response = await fetch(`${this.config.baseUrl}${path}`, {
-      headers: { "X-API-KEY": apiKey },
+      method: init?.method ?? "GET",
+      headers: {
+        "X-API-KEY": apiKey,
+        ...(init?.body ? { "Content-Type": "application/json" } : {}),
+      },
+      body: init?.body ? JSON.stringify(init.body) : undefined,
     });
 
     if (response.status === 401) {
       throw new PluggyAuthError("Pluggy API key was rejected.");
     }
     if (!response.ok) {
+      const errorText = await response.text();
       throw new PluggyApiError(
-        `Pluggy request failed (${response.status}) for ${path}`,
+        `Pluggy request failed (${response.status}) for ${path}: ${extractPluggyErrorMessage(errorText)}`,
         response.status,
       );
     }
@@ -172,6 +201,25 @@ export class PluggyClient {
 
   fetchItem(itemId: string): Promise<PluggyItem> {
     return this.request<PluggyItem>(`/items/${itemId}`);
+  }
+
+  /**
+   * Issues a short-lived Connect Token, scoped to opening the hosted Connect
+   * Widget (never the full API key) — safe to hand to the mobile client.
+   * Passing `itemId` puts the widget in "update" mode, letting the user
+   * re-authenticate a specific existing item instead of creating a new one.
+   */
+  createConnectToken(
+    options: { clientUserId?: string; itemId?: string } = {},
+  ): Promise<{ accessToken: string }> {
+    const { itemId, ...rest } = options;
+    return this.request<{ accessToken: string }>("/connect_token", {
+      method: "POST",
+      body: {
+        ...(itemId ? { itemId } : {}),
+        options: rest,
+      },
+    });
   }
 
   async fetchAccounts(itemId: string): Promise<PluggyAccount[]> {

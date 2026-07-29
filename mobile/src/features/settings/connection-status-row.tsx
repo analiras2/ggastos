@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GgastosColors, GgastosType } from '@/constants/ggastos-theme';
 import type { ConnectionStatusTone } from '@/features/settings/format-connection-status';
@@ -7,6 +7,7 @@ type ConnectionStatusRowProps = {
   institutionName: string;
   message: string;
   tone: ConnectionStatusTone;
+  onReconnect?: () => void;
 };
 
 const toneColors: Record<ConnectionStatusTone, string> = {
@@ -16,13 +17,23 @@ const toneColors: Record<ConnectionStatusTone, string> = {
   pending: GgastosColors.inkSoft,
 };
 
-export function ConnectionStatusRow({ institutionName, message, tone }: ConnectionStatusRowProps) {
+export function ConnectionStatusRow({
+  institutionName,
+  message,
+  tone,
+  onReconnect,
+}: ConnectionStatusRowProps) {
   return (
     <View style={styles.row}>
       <Text style={styles.title} numberOfLines={1}>
         {institutionName}
       </Text>
       <Text style={[styles.message, { color: toneColors[tone] }]}>{message}</Text>
+      {tone === 'actionable' && onReconnect ? (
+        <Pressable accessibilityRole="button" onPress={onReconnect} hitSlop={8}>
+          <Text style={styles.reconnectAction}>Reconectar</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -42,5 +53,10 @@ const styles = StyleSheet.create({
   },
   message: {
     ...GgastosType.bodySm,
+  },
+  reconnectAction: {
+    ...GgastosType.label,
+    color: GgastosColors.brandPrimaryDark,
+    textDecorationLine: 'underline',
   },
 });
