@@ -20,6 +20,7 @@ export type ImportedTransactionUpsert = {
   merchant_name: string | null;
   merchant_legal_name: string | null;
   merchant_cnpj: string | null;
+  internal_category_id: string | null;
   impact_type: "INCOME" | "EXPENSE" | "INVESTMENT" | "TRANSFER";
   is_internal_transfer: boolean;
   provider_payload: Record<string, unknown>;
@@ -42,7 +43,12 @@ function looksLikeTransfer(category: string | null): boolean {
 
 export function normalizeTransaction(
   transaction: PluggyTransaction,
-  context: { userId: string; connectionId: string; accountId: string },
+  context: {
+    userId: string;
+    connectionId: string;
+    accountId: string;
+    categoryMap: Map<string, string>;
+  },
 ): ImportedTransactionUpsert {
   const isInternalTransfer = looksLikeTransfer(transaction.category);
   const impactType = isInternalTransfer
@@ -71,6 +77,9 @@ export function normalizeTransaction(
     merchant_name: transaction.merchant?.name ?? null,
     merchant_legal_name: transaction.merchant?.businessName ?? null,
     merchant_cnpj: transaction.merchant?.cnpj ?? null,
+    internal_category_id: transaction.category
+      ? context.categoryMap.get(transaction.category) ?? null
+      : null,
     impact_type: impactType,
     is_internal_transfer: isInternalTransfer,
     provider_payload: transaction as unknown as Record<string, unknown>,

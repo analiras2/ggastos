@@ -73,4 +73,46 @@ set
   parent_id = excluded.parent_id,
   is_active = true;
 
+-- Known Pluggy category strings (always English) mapped to our internal
+-- category codes. Extend this list as new pluggy_category_name values are
+-- observed in production syncs; anything left unmapped simply stays NULL,
+-- same as before this table existed (see STATE.md L-003).
+insert into public.pluggy_category_map (pluggy_category_name, category_code) values
+  ('Salary', 'salary'),
+  ('Income', 'salary'),
+  ('Other Income', 'extra_income'),
+  ('Housing', 'housing'),
+  ('Electricity', 'bills'),
+  ('Water and Sewage', 'bills'),
+  ('Telecommunication', 'bills'),
+  ('Internet', 'bills'),
+  ('Services', 'bills'),
+  ('Groceries', 'food'),
+  ('Food and Drinks', 'food'),
+  ('Restaurants and Bars', 'food'),
+  ('Transport', 'transport'),
+  ('Cars', 'transport'),
+  ('Health', 'health'),
+  ('Pharmacy', 'health'),
+  ('Education', 'education'),
+  ('Shopping', 'shopping'),
+  ('Leisure and Entertainment', 'leisure'),
+  ('Taxes', 'taxes_fees'),
+  ('Fees', 'taxes_fees'),
+  ('Bank Fees', 'taxes_fees'),
+  ('Investments', 'invested_amount'),
+  ('Transfer', 'internal_transfer'),
+  ('Credit Card Payment', 'internal_transfer'),
+  ('Loans', 'bills')
+on conflict (pluggy_category_name) do update
+set category_code = excluded.category_code, updated_at = now();
+
+-- Backfill: recategorize any transaction synced before this mapping existed.
+update public.imported_transactions imported_transaction
+set internal_category_id = category.id
+from public.pluggy_category_map category_map
+join public.categories category on category.code = category_map.category_code
+where imported_transaction.internal_category_id is null
+  and imported_transaction.pluggy_category_name = category_map.pluggy_category_name;
+
 commit;

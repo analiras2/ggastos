@@ -1,6 +1,7 @@
 import { PluggyClient } from "../_shared/pluggy-client.ts";
 import { normalizeAccount } from "../_shared/normalizers/normalize-account.ts";
 import { normalizeTransaction } from "../_shared/normalizers/normalize-transaction.ts";
+import { fetchPluggyCategoryMap } from "../_shared/normalizers/pluggy-category-map.ts";
 import {
   buildConnectionUpsert,
   markConnectionSyncFailed,
@@ -293,7 +294,10 @@ async function syncConnection(
   }
 
   console.log(`[sync-pluggy] Fetching accounts for connection ${connection.id}...`);
-  const accounts = await pluggyClient.fetchAccounts(item.id);
+  const [accounts, categoryMap] = await Promise.all([
+    pluggyClient.fetchAccounts(item.id),
+    fetchPluggyCategoryMap(restConfig),
+  ]);
   let transactionsProcessed = 0;
   let matchesCreated = 0;
 
@@ -309,6 +313,7 @@ async function syncConnection(
         userId,
         connectionId: connection.id,
         accountId: accountRow.id,
+        categoryMap,
       })
     );
 

@@ -10,7 +10,7 @@ type TransactionRow = {
   posted_at: string;
   competency_month: string;
   account_id: string;
-  pluggy_category_name: string | null;
+  internal_category_id: string | null;
 };
 
 type PlannedEntryRow = {
@@ -66,7 +66,7 @@ async function fetchUnmatchedTransactionsForMonth(
 ): Promise<TransactionRow[]> {
   const params = new URLSearchParams({
     select:
-      "id,description,merchant_name,impact_type,amount_cents,posted_at,competency_month,account_id,pluggy_category_name",
+      "id,description,merchant_name,impact_type,amount_cents,posted_at,competency_month,account_id,internal_category_id",
     user_id: `eq.${userId}`,
     competency_month: `eq.${month}`,
     deleted_at: "is.null",
@@ -103,26 +103,6 @@ async function fetchUnmatchedPlannedEntriesForMonth(
     `/rest/v1/planned_entries?${params.toString()}`,
     { method: "GET" },
   );
-}
-
-async function fetchCategoryNames(
-  config: SupabaseRestConfig,
-  categoryIds: string[],
-): Promise<Map<string, string>> {
-  if (categoryIds.length === 0) {
-    return new Map();
-  }
-
-  const params = new URLSearchParams({
-    select: "id,name",
-    id: `in.(${categoryIds.join(",")})`,
-  });
-  const rows = await supabaseRest<Array<{ id: string; name: string }>>(
-    config,
-    `/rest/v1/categories?${params.toString()}`,
-    { method: "GET" },
-  );
-  return new Map(rows.map((row) => [row.id, row.name]));
 }
 
 /**
@@ -162,11 +142,6 @@ export async function listReconciliationInbox(
     return [];
   }
 
-  const categoryNames = await fetchCategoryNames(
-    config,
-    [...new Set(plannedEntries.map((entry) => entry.category_id))],
-  );
-
   const rejectedPairs = new Set(
     rejectedMatches.map((match) => `${match.imported_transaction_id}:${match.planned_entry_id}`),
   );
@@ -191,7 +166,7 @@ export async function listReconciliationInbox(
           postedAt: transaction.posted_at,
           competencyMonth: transaction.competency_month,
           accountId: transaction.account_id,
-          pluggyCategoryName: transaction.pluggy_category_name,
+          internalCategoryId: transaction.internal_category_id,
         },
         {
           id: plannedEntry.id,
@@ -201,7 +176,7 @@ export async function listReconciliationInbox(
           dueDate: plannedEntry.due_date,
           month: plannedEntry.month,
           expectedAccountId: plannedEntry.expected_account_id,
-          categoryName: categoryNames.get(plannedEntry.category_id) ?? "",
+          categoryId: plannedEntry.category_id,
         },
       );
 

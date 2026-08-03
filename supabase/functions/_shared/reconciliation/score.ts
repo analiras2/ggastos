@@ -8,7 +8,7 @@ export type PlannedEntryForScoring = {
   dueDate: string | null;
   month: string;
   expectedAccountId: string | null;
-  categoryName: string;
+  categoryId: string;
 };
 
 export type TransactionForScoring = {
@@ -20,7 +20,7 @@ export type TransactionForScoring = {
   postedAt: string;
   competencyMonth: string;
   accountId: string;
-  pluggyCategoryName: string | null;
+  internalCategoryId: string | null;
 };
 
 export type MatchScore = {
@@ -113,9 +113,10 @@ const zeroScore = (amountDeltaCents: number): MatchScore => ({
 
 /**
  * Deterministic score in [0, 1]. Dimensions with no available signal (e.g. no
- * expected account on the plan, no category from the provider) are excluded
- * from the weighted average instead of penalizing the score, so a perfect
- * amount+date+description match can still reach the auto-match threshold.
+ * expected account on the plan, no mapped internal category for the
+ * transaction) are excluded from the weighted average instead of penalizing
+ * the score, so a perfect amount+date+description match can still reach the
+ * auto-match threshold.
  */
 export function scoreMatch(
   transaction: TransactionForScoring,
@@ -138,9 +139,9 @@ export function scoreMatch(
       : DATE_TOLERANCE_DAYS;
   const dateScore = clamp01(1 - dateDeltaDays / DATE_TOLERANCE_DAYS);
 
-  const categoryAvailable = transaction.pluggyCategoryName !== null;
+  const categoryAvailable = transaction.internalCategoryId !== null;
   const categoryScore = categoryAvailable
-    ? jaccardSimilarity(transaction.pluggyCategoryName as string, plannedEntry.categoryName)
+    ? (transaction.internalCategoryId === plannedEntry.categoryId ? 1 : 0)
     : 0;
 
   const accountAvailable = plannedEntry.expectedAccountId !== null;
