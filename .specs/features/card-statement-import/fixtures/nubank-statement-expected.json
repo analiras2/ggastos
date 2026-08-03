@@ -1,0 +1,74 @@
+{
+  "bank": "NUBANK",
+  "sourceEncoding": "utf-8",
+  "delimiter": ",",
+  "rowsRead": 6,
+  "transactions": [
+    {
+      "sourceRowNumber": 2,
+      "postedAt": "2026-02-24",
+      "competencyMonth": "2026-02",
+      "description": "Mp *Petshop Modelo",
+      "amountCents": 15900,
+      "direction": "DEBIT",
+      "impactType": "EXPENSE",
+      "installment": null
+    },
+    {
+      "sourceRowNumber": 3,
+      "postedAt": "2026-02-22",
+      "competencyMonth": "2026-02",
+      "description": "Cafe Jardim",
+      "amountCents": 1000,
+      "direction": "DEBIT",
+      "impactType": "EXPENSE",
+      "installment": null,
+      "visibleDuplicateGroup": "2026-02-22|Cafe Jardim|1000"
+    },
+    {
+      "sourceRowNumber": 4,
+      "postedAt": "2026-02-22",
+      "competencyMonth": "2026-02",
+      "description": "Cafe Jardim",
+      "amountCents": 1000,
+      "direction": "DEBIT",
+      "impactType": "EXPENSE",
+      "installment": null,
+      "visibleDuplicateGroup": "2026-02-22|Cafe Jardim|1000"
+    },
+    {
+      "sourceRowNumber": 5,
+      "postedAt": "2026-02-20",
+      "competencyMonth": "2026-02",
+      "description": "Farmacia Modelo",
+      "amountCents": 3015,
+      "direction": "DEBIT",
+      "impactType": "EXPENSE",
+      "installment": null
+    },
+    {
+      "sourceRowNumber": 6,
+      "postedAt": "2026-02-19",
+      "competencyMonth": "2026-02",
+      "description": "Loja Parcelada 2/3",
+      "amountCents": 12050,
+      "direction": "DEBIT",
+      "impactType": "EXPENSE",
+      "installment": {
+        "index": 2,
+        "total": 3
+      }
+    },
+    {
+      "sourceRowNumber": 7,
+      "postedAt": "2026-02-18",
+      "competencyMonth": "2026-02",
+      "description": "Estorno Loja Modelo",
+      "amountCents": 1500,
+      "direction": "CREDIT",
+      "impactType": "EXPENSE",
+      "isExpenseAdjustment": true,
+      "installment": null
+    }
+  ]
+}

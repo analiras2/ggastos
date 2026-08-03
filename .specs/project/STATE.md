@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-07-29T14:30:00Z
-**Current Work:** Validation Day 2026-07-17 concluído ponta a ponta (PARTE 5-12, o restante do checklist que ainda estava pendente). Quatro bugs corrigidos nesta sessão (badge fixo da inbox, falta de confirmação antes de rejeitar um match, ausência de logs em `sync-pluggy`, título da aba Ajustes sobrepondo a status bar); dois gaps seguem documentados como Deferred Ideas (tela de undo/histórico inexistente, mensagem técnica de categoria inativa). MVP (Milestones 1-4) segue completo — próximo passo continua sendo definir o que vem depois (Future Considerations do ROADMAP.md) ou endereçar os itens em Deferred Ideas.
+**Last Updated:** 2026-08-03T00:00:00-04:00
+**Current Work:** Pivot de estratégia iniciado na branch `card-statement-import`: Pluggy foi preservado na branch `pluggy-integration-snapshot`, e o produto passa a mirar importação de faturas CSV de cartão de crédito começando por Nubank e Bradesco. O núcleo mensal, planejamento, dashboard, conciliação e fechamento continuam como base reutilizável.
 
 ---
 
@@ -199,6 +199,13 @@
 **Trade-off:** Nenhum.
 **Impact:** Verificado ao vivo no simulador: título agora respeita a safe area, sem sobreposição.
 
+### AD-029: Estratégia ativa migrou de Pluggy para importação de fatura CSV (2026-08-03)
+
+**Decision:** A branch `pluggy-integration-snapshot` preserva o trabalho de integração Pluggy, enquanto a nova branch `card-statement-import` passa a reorganizar o produto ao redor de importação de faturas CSV de cartão de crédito, inicialmente Nubank e Bradesco. O restante dos gastos fora desses cartões será registrado manualmente.
+**Reason:** O acesso pessoal/comercial da Pluggy ficou incerto e demorado, bloqueando a validação prática do app. CSV de fatura é uma fonte controlável pelo usuário, sem depender de aprovação externa, e encaixa bem no principal caso de uso atual: planejar parcelas e evitar duplicidade quando a fatura real chega.
+**Trade-off:** O app perde atualização automática e cobertura ampla de contas/saldos no curto prazo. Em troca, ganha previsibilidade operacional e pode validar valor de produto com dois emissores reais antes de generalizar.
+**Impact:** A feature ativa passa a ser `.specs/features/card-statement-import/spec.md`. Devem ser reaproveitados `planned_entries`, `planning_templates`, `imported_transactions`, `reconciliation_matches`, dashboard mensal, inbox de conciliação, fechamento mensal e seed de categorias. Devem ser novos: modelo de lote/importação de fatura, parsers Nubank/Bradesco, normalização de CSV, idempotência por assinatura de linha e UX de upload/revisão.
+
 ### AD-023: Sync agendado autentica `sync-pluggy` com a própria `service_role` key (2026-07-15)
 
 **Decision:** `T11` adicionou um segundo caminho de execução à Edge Function `sync-pluggy`: quando o `Authorization: Bearer` recebido é exatamente igual à `SUPABASE_SERVICE_ROLE_KEY` do runtime, a função entra em modo interno/agendado (exige `mode: "scheduled"` no corpo, senão retorna `400`), ignora `readAuthenticatedUser`, varre `financial_connections` de todos os usuários com `pluggy_item_id` preenchido e `status` fora de `LOGIN_ERROR`/`WAITING_USER_INPUT`/`DELETED`, e grava um único `sync_events` por execução com `user_id`/`connection_id` nulos. A migration `20260715220000_schedule_sync_pluggy_cron.sql` habilita `pg_cron` (já vinha em `shared_preload_libraries` da imagem local) e agenda `net.http_post` a cada 12h usando `current_setting('app.settings.supabase_url'|'service_role_key', true)`.
@@ -309,6 +316,8 @@ None.
 - [ ] Considerar orçamento-meta por categoria pós-MVP — Captured during: revisão de lacunas
 - [ ] Adicionar anexos e comprovantes com Supabase Storage — Captured during: roadmap
 - [ ] Avaliar migração para plano comercial da Pluggy se o onboarding no app virar requisito — Captured during: estratégia de integração
+- [x] ~~Preservar o estado Pluggy em uma branch separada antes do pivot~~ — Resolvido em 2026-08-03: branch `pluggy-integration-snapshot` criada, commitada e enviada para GitHub.
+- [x] ~~Coletar amostras sanitizadas de CSV Nubank e Bradesco antes de implementar os parsers definitivos~~ — Resolvido em 2026-08-03: fixtures sintéticas e expected JSON criados em `.specs/features/card-statement-import/fixtures/`.
 - [x] ~~Substituir o formulário simples de conexão Pluggy pelo Pluggy Connect Widget oficial~~ — Resolvido em 2026-07-29 (AD-025): app migrou para `react-native-pluggy-connect` + dev client customizado, suporta busca de instituição e Open Finance/OAuth. Ver AD-025 e L-004.
 - [x] ~~Adicionar diálogo de confirmação antes de "Rejeitar" uma sugestão de conciliação~~ — Resolvido em 2026-07-29 (AD-027): `handleReject` em `use-reconciliation-inbox-view-model.ts` agora pede confirmação via `Alert.alert` antes de chamar a mutation. Ver AD-027.
 - [ ] Criar uma tela de "Histórico"/"Realizados" de conciliação com botão "Desfazer Match" — o backend (`reconcile-transactions`, `action: "undo"`, AD-022) já funciona e foi validado via API, mas `useUndoMatch()` nunca é usado por nenhum componente; não existe hoje nenhum caminho de UI para desfazer um match confirmado — Captured during: validação PARTE 6 (T6.4), 2026-07-29

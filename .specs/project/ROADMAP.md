@@ -1,7 +1,7 @@
 # Roadmap
 
-**Current Milestone:** Milestone 4 - Fechamento e endurecimento
-**Status:** Done — MVP completo (Milestones 1-4). Ver Deferred Ideas em `.specs/project/STATE.md` para lacunas conhecidas e próximos passos possíveis.
+**Current Milestone:** Milestone 5 - Importação de fatura de cartão
+**Status:** Pivot aprovado em 2026-08-03. O MVP Pluggy foi preservado na branch `pluggy-integration-snapshot`; a linha ativa passa a validar importação de CSV de faturas Nubank/Bradesco, mantendo planejamento, dashboard, conciliação e fechamento.
 
 ---
 
@@ -53,7 +53,7 @@
 
 ---
 
-## Milestone 3 - Sync e conciliação
+## Milestone 3 - Sync e conciliação Pluggy
 
 **Goal:** Integrar dados externos da Pluggy ao loop mensal do GGastos.
 
@@ -73,6 +73,8 @@
 - Inbox de revisão.
 - Confirmação e rejeição manual.
 - Spec: `.specs/features/pluggy-sync-reconciliation/spec.md`
+
+**Status estratégico:** Preservado como snapshot, não é mais a rota ativa do produto enquanto o acesso pessoal/comercial da Pluggy estiver incerto.
 
 ---
 
@@ -107,3 +109,25 @@
 - Forecast de caixa de múltiplos meses.
 - Anexos e comprovantes.
 - Migração para plano comercial da Pluggy se o produto exigir onboarding embutido.
+
+---
+
+## Milestone 5 - Importação de fatura de cartão
+
+**Goal:** Substituir a dependência da Pluggy por um fluxo controlável de importação de faturas CSV, começando por Nubank e Bradesco, sem perder a lógica de match entre planejado e realizado.
+
+### Features
+
+**Importação CSV Nubank/Bradesco** - PLANNED
+
+- Importar faturas CSV de cartão de crédito.
+- Normalizar linhas para transações internas idempotentes.
+- Identificar banco/emissor, fatura, data, descrição, valor e parcela quando disponível no arquivo.
+- Spec: `.specs/features/card-statement-import/spec.md`
+
+**Conciliação de fatura com planejamento** - PLANNED
+
+- Reutilizar matching 1:1 e inbox de revisão.
+- Evitar duplicar parcelas já planejadas quando a próxima parcela vier no CSV.
+- Permitir registrar manualmente o que não vier dos cartões suportados.
+- Spec: `.specs/features/card-statement-import/spec.md`
