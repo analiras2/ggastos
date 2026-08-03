@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     color: GgastosColors.inkSoft,
   },
   value: {
-    ...GgastosType.displayMd,
+    ...GgastosType.displayLg,
   },
   caption: {
     ...GgastosType.micro,

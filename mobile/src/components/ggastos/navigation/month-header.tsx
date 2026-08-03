@@ -1,9 +1,10 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, ViewStyle, Text, View } from 'react-native';
 
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import { Icon } from '@/components/ggastos/core/icon';
 
 type MonthHeaderProps = {
+  style?: StyleProp<ViewStyle>;
   month: string;
   isCurrentMonth?: boolean;
   onPrev?: () => void;
@@ -12,6 +13,7 @@ type MonthHeaderProps = {
 };
 
 export function MonthHeader({
+  style,
   month,
   isCurrentMonth = true,
   onPrev,
@@ -23,7 +25,7 @@ export function MonthHeader({
   const year = lastSpaceIndex >= 0 ? month.slice(lastSpaceIndex + 1) : '';
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <View style={styles.monthRow}>
         <Pressable accessibilityRole="button" accessibilityLabel="Mês anterior" onPress={onPrev} style={styles.chevron}>
           <Icon name="chevron-left" size={18} />

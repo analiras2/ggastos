@@ -22,7 +22,8 @@ export type DashboardData = {
   previsto: string;
   atual: string;
   commitment: {
-    value: string;
+    remainingIncome: string;
+    remainingExpenses: string;
     level: 'normal' | 'high';
   };
   categories: CategoryBudget[];

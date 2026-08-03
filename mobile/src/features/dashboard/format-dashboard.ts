@@ -68,9 +68,10 @@ function toCategoryBudget(category: MonthDashboard['categories'][number]): Categ
 export function formatDashboardData(monthDashboard: MonthDashboard): DashboardData {
   const { summary } = monthDashboard;
   const totalPlanned =
-    summary.plannedIncomeCents + summary.plannedExpenseCents + summary.plannedInvestmentCents;
+    summary.plannedIncomeCents - summary.plannedExpenseCents - summary.plannedInvestmentCents;
   const totalActual =
-    summary.actualIncomeCents + summary.actualExpenseCents + summary.actualInvestmentCents;
+    summary.actualIncomeCents - summary.actualExpenseCents - summary.actualInvestmentCents;
+  const remainingIncomeCents = Math.max(summary.plannedIncomeCents - summary.actualIncomeCents, 0);
   const heroDeltaCents = summary.expectedBalanceCents - summary.currentBalanceCents;
 
   return {
@@ -84,7 +85,8 @@ export function formatDashboardData(monthDashboard: MonthDashboard): DashboardDa
     previsto: formatCurrencyCents(totalPlanned),
     atual: formatCurrencyCents(totalActual),
     commitment: {
-      value: formatCurrencyCents(summary.committedRemainingCents),
+      remainingIncome: formatCurrencyCents(remainingIncomeCents),
+      remainingExpenses: formatCurrencyCents(summary.committedRemainingCents),
       level: summary.committedRemainingCents > summary.expectedBalanceCents ? 'high' : 'normal',
     },
     categories: monthDashboard.categories.map(toCategoryBudget),
@@ -103,7 +105,11 @@ export function emptyDashboardData(monthKey: string): DashboardData {
     },
     previsto: formatCurrencyCents(0),
     atual: formatCurrencyCents(0),
-    commitment: { value: formatCurrencyCents(0), level: 'normal' },
+    commitment: {
+      remainingIncome: formatCurrencyCents(0),
+      remainingExpenses: formatCurrencyCents(0),
+      level: 'normal',
+    },
     categories: [],
     pendingReviewCount: 0,
   };

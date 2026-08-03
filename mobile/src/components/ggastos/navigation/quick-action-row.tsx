@@ -1,6 +1,6 @@
 import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 
-import { GgastosColors, GgastosRadius, GgastosType } from '@/constants/ggastos-theme';
+import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import { Icon } from '@/components/ggastos/core/icon';
 
 export type QuickAction = {
@@ -30,16 +30,16 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     gap: 10,
+    marginVertical: 16,
+    paddingHorizontal: GgastosSpacing.space5,
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
+    height: 40,
     gap: 8,
-    paddingVertical: 11,
     paddingHorizontal: 18,
     borderRadius: GgastosRadius.pill,
-    borderWidth: 1,
-    borderColor: GgastosColors.lineSoft,
     backgroundColor: GgastosColors.bgSurface,
   },
   label: {

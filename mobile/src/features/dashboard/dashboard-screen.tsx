@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GgastosColors, GgastosSpacing } from '@/constants/ggastos-theme';
@@ -39,16 +39,15 @@ export function DashboardScreen() {
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <MonthHeader
-          month={data.month}
-          isCurrentMonth={isCurrentMonth}
-          onPrev={handlePrevMonth}
-          onNext={handleNextMonth}
-          onPressMonth={handleGoToCurrentMonth}
-        />
-
-        <QuickActionRow
+      <MonthHeader
+        style={styles.header}
+        month={data.month}
+        isCurrentMonth={isCurrentMonth}
+        onPrev={handlePrevMonth}
+        onNext={handleNextMonth}
+        onPressMonth={handleGoToCurrentMonth}
+      />
+       <QuickActionRow
           actions={[
             { label: 'Adicionar planejamento', icon: 'plus', onPress: handleAddPlan },
             { label: 'Template', icon: 'repeat', onPress: handleAddTemplate },
@@ -60,20 +59,14 @@ export function DashboardScreen() {
             },
           ]}
         />
+      <ScrollView contentContainerStyle={styles.content}>
+        <KpiComparisonCard label="ATUAL" value={data.atual} caption="Só o que já aconteceu" tone="accent" />
 
         <MetricHeroCard label="Saldo previsto do mês" {...data.hero} />
 
-        <View style={styles.kpiRow}>
-          <KpiComparisonCard
-            label="Previsto"
-            value={data.previsto}
-            caption="Todo o mês, incluindo o que ainda vai acontecer"
-          />
-          <KpiComparisonCard label="Atual" value={data.atual} caption="Só o que já aconteceu" tone="accent" />
-        </View>
-
         <CommitmentCard
-          value={data.commitment.value}
+          remainingIncome={data.commitment.remainingIncome}
+          remainingExpenses={data.commitment.remainingExpenses}
           subtitle="Quanto do mês ainda está reservado por compromissos futuros"
           level={data.commitment.level}
         />
@@ -114,14 +107,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: GgastosColors.bgBase,
   },
+  header: {
+    paddingHorizontal: GgastosSpacing.space5,
+  },
   content: {
     paddingHorizontal: GgastosSpacing.space5,
     paddingTop: GgastosSpacing.space4,
     paddingBottom: 100,
     gap: GgastosSpacing.space5,
-  },
-  kpiRow: {
-    flexDirection: 'row',
-    gap: 10,
   },
 });
