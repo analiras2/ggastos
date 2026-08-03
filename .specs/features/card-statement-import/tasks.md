@@ -86,10 +86,10 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] Handles comma CSV, quoted decimal-comma amounts and ISO dates.
-- [ ] Preserves exact duplicate visible tuples as distinct source rows.
-- [ ] Extracts installment markers conservatively.
-- [ ] Parser output matches `nubank-statement-expected.json`.
+- [x] Handles comma CSV, quoted decimal-comma amounts and ISO dates.
+- [x] Preserves exact duplicate visible tuples as distinct source rows.
+- [x] Extracts installment markers conservatively.
+- [x] Parser output matches `nubank-statement-expected.json`.
 
 **Commit**: `feat(statements): parse Nubank CSV`
 
