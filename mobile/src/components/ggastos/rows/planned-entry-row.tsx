@@ -14,6 +14,9 @@ type PlannedEntryRowProps = {
   isUndoable?: boolean;
   isTogglingStatus?: boolean;
   onToggleStatus?: () => void;
+  isCancellable?: boolean;
+  isCancelling?: boolean;
+  onCancel?: () => void;
 };
 
 export function PlannedEntryRow({
@@ -27,8 +30,12 @@ export function PlannedEntryRow({
   isUndoable = false,
   isTogglingStatus = false,
   onToggleStatus,
+  isCancellable = false,
+  isCancelling = false,
+  onCancel,
 }: PlannedEntryRowProps) {
   const showToggle = isConfirmable || isUndoable;
+  const showCancel = isCancellable && !!onCancel;
 
   return (
     <View style={styles.row}>
@@ -57,6 +64,21 @@ export function PlannedEntryRow({
             <ActivityIndicator size="small" color={GgastosColors.brandPrimary} />
           ) : (
             <Icon name={isUndoable ? 'check-circle-2' : 'circle'} size={22} />
+          )}
+        </Pressable>
+      ) : null}
+      {showCancel ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Cancelar planejamento"
+          disabled={isCancelling}
+          onPress={onCancel}
+          style={styles.toggle}
+        >
+          {isCancelling ? (
+            <ActivityIndicator size="small" color={GgastosColors.expense} />
+          ) : (
+            <Icon name="trash-2" size={20} />
           )}
         </Pressable>
       ) : null}

@@ -3,14 +3,14 @@ import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
 import type { CategoryDetails } from '@/features/dashboard/dashboard-schema';
 import type { ImpactType, PlanningStatus } from '@/features/planning/planning-schema';
 
-const IMPACT_TYPE_TO_KIND: Record<ImpactType, EntryKind> = {
+export const IMPACT_TYPE_TO_KIND: Record<ImpactType, EntryKind> = {
   INCOME: 'receita',
   EXPENSE: 'despesa',
   INVESTMENT: 'investimento',
   TRANSFER: 'transferencia',
 };
 
-const PLANNING_STATUS_TO_CHIP: Record<PlanningStatus, StatusChipStatus> = {
+export const PLANNING_STATUS_TO_CHIP: Record<PlanningStatus, StatusChipStatus> = {
   PLANNED: 'PLANEJADO',
   PROJECTED: 'PLANEJADO',
   RECONCILED: 'REALIZADO',
