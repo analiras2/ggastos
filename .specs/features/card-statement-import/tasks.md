@@ -67,9 +67,9 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] Types cover Nubank and Bradesco expected JSON.
-- [ ] Types avoid `any`.
-- [ ] `deno check` or function typecheck passes for the new module.
+- [x] Types cover Nubank and Bradesco expected JSON.
+- [x] Types avoid `any`.
+- [ ] `deno check` or function typecheck passes for the new module. Not run: `deno` is not installed in this environment.
 
 **Commit**: `feat(statements): define parser contracts`
 
