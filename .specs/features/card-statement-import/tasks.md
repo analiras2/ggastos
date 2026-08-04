@@ -227,10 +227,10 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] Dashboard no longer calls `useSyncPluggy`.
-- [ ] Primary action opens statement import.
-- [ ] Copy references import status, not Pluggy sync.
-- [ ] Month dashboard still loads normally.
+- [x] Dashboard no longer calls `useSyncPluggy`.
+- [x] Primary action opens statement import.
+- [x] Copy references import status, not Pluggy sync.
+- [x] Month dashboard still loads normally.
 
 **Commit**: `refactor(mobile): replace Pluggy sync with statement import`
 

@@ -13,18 +13,19 @@ import { DashboardCategoriesSection } from '@/features/dashboard/dashboard-categ
 import { useDashboardViewModel } from '@/features/dashboard/use-dashboard-view-model';
 import { AddPlanSheet } from '@/features/planning/add-plan-sheet';
 import { AddTemplateSheet } from '@/features/planning/add-template-sheet';
+import { StatementImportSheet } from '@/features/statements/statement-import-sheet';
 
 export function DashboardScreen() {
   const {
     data,
-    syncBanner,
+    importBanner,
     categoryDetails,
     isAddPlanVisible,
     isAddTemplateVisible,
+    isStatementImportVisible,
     isCurrentMonth,
     isClosingMonth,
     closeMonthBanner,
-    handleSync,
     handlePrevMonth,
     handleNextMonth,
     handleGoToCurrentMonth,
@@ -34,6 +35,8 @@ export function DashboardScreen() {
     handleCloseAddPlan,
     handleAddTemplate,
     handleCloseAddTemplate,
+    handleOpenStatementImport,
+    handleCloseStatementImport,
     handleCloseMonth,
   } = useDashboardViewModel();
 
@@ -50,9 +53,9 @@ export function DashboardScreen() {
 
         <QuickActionRow
           actions={[
+            { label: 'Importar fatura', icon: 'upload', onPress: handleOpenStatementImport },
             { label: 'Adicionar planejamento', icon: 'plus', onPress: handleAddPlan },
             { label: 'Template', icon: 'repeat', onPress: handleAddTemplate },
-            { label: 'Sincronizar', icon: 'refresh-cw', onPress: handleSync },
             {
               label: isClosingMonth ? 'Fechando...' : 'Fechar mês',
               icon: 'calendar-check',
@@ -81,10 +84,10 @@ export function DashboardScreen() {
         <DashboardCategoriesSection categories={data.categories} onOpenCategory={handleOpenCategory} />
 
         <SyncStatusBanner
-          state={syncBanner.state}
-          message={syncBanner.message}
-          actionLabel={syncBanner.actionLabel}
-          onAction={handleSync}
+          state={importBanner.state}
+          message={importBanner.message}
+          actionLabel={importBanner.actionLabel}
+          onAction={handleOpenStatementImport}
         />
 
         {closeMonthBanner ? (
@@ -105,6 +108,11 @@ export function DashboardScreen() {
       <AddPlanSheet visible={isAddPlanVisible} onClose={handleCloseAddPlan} />
 
       <AddTemplateSheet visible={isAddTemplateVisible} onClose={handleCloseAddTemplate} />
+
+      <StatementImportSheet
+        visible={isStatementImportVisible}
+        onClose={handleCloseStatementImport}
+      />
     </SafeAreaView>
   );
 }

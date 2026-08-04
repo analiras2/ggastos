@@ -10,11 +10,6 @@ import { currentMonthKey, shiftMonthKey } from '@/features/dashboard/month-utils
 import { useCategoryDetails } from '@/features/dashboard/use-category-details';
 import { useMonthDashboard } from '@/features/dashboard/use-month-dashboard';
 import { usePlannedEntryStatusToggle } from '@/features/dashboard/use-planned-entry-status-toggle';
-import {
-  getFormattedSyncError,
-  useLatestSyncEvent,
-  useSyncPluggy,
-} from '@/features/dashboard/use-sync-pluggy';
 import { getFormattedCloseMonthError, useCloseMonth } from '@/features/closing/use-close-month';
 
 interface CategoryDetailsPanel {
@@ -28,8 +23,7 @@ interface CategoryDetailsPanel {
 
 interface DashboardViewModel {
   data: DashboardData;
-  isSyncing: boolean;
-  syncBanner: {
+  importBanner: {
     state: 'ok' | 'pending' | 'error';
     message: string;
     actionLabel?: string;
@@ -37,10 +31,10 @@ interface DashboardViewModel {
   categoryDetails: CategoryDetailsPanel;
   isAddPlanVisible: boolean;
   isAddTemplateVisible: boolean;
+  isStatementImportVisible: boolean;
   isCurrentMonth: boolean;
   isClosingMonth: boolean;
   closeMonthBanner: { state: 'ok' | 'pending' | 'error'; message: string } | null;
-  handleSync: () => void;
   handlePrevMonth: () => void;
   handleNextMonth: () => void;
   handleGoToCurrentMonth: () => void;
@@ -50,6 +44,8 @@ interface DashboardViewModel {
   handleCloseAddPlan: () => void;
   handleAddTemplate: () => void;
   handleCloseAddTemplate: () => void;
+  handleOpenStatementImport: () => void;
+  handleCloseStatementImport: () => void;
   handleCloseMonth: () => void;
 }
 
@@ -58,9 +54,8 @@ export function useDashboardViewModel(): DashboardViewModel {
   const [selectedCategory, setSelectedCategory] = useState<CategoryBudget | null>(null);
   const [isAddPlanVisible, setIsAddPlanVisible] = useState(false);
   const [isAddTemplateVisible, setIsAddTemplateVisible] = useState(false);
+  const [isStatementImportVisible, setIsStatementImportVisible] = useState(false);
   const monthDashboardQuery = useMonthDashboard(monthKey);
-  const latestSyncEventQuery = useLatestSyncEvent();
-  const syncMutation = useSyncPluggy();
   const closeMonthMutation = useCloseMonth();
   const categoryDetailsQuery = useCategoryDetails(monthKey, selectedCategory?.categoryId ?? null);
   const { togglingEntryId, handleToggleStatus } = usePlannedEntryStatusToggle(
@@ -94,22 +89,7 @@ export function useDashboardViewModel(): DashboardViewModel {
     return emptyDashboardData(monthKey);
   }, [monthDashboardQuery.data, monthKey]);
 
-  const syncBanner = useMemo(() => {
-    if (syncMutation.isPending) {
-      return {
-        state: 'pending' as const,
-        message: 'Solicitando sincronização manual...',
-      };
-    }
-
-    if (syncMutation.isError) {
-      return {
-        state: 'error' as const,
-        message: getFormattedSyncError(syncMutation.error),
-        actionLabel: 'Tentar de novo',
-      };
-    }
-
+  const importBanner = useMemo(() => {
     if (monthDashboardQuery.isLoading) {
       return {
         state: 'pending' as const,
@@ -125,58 +105,12 @@ export function useDashboardViewModel(): DashboardViewModel {
       };
     }
 
-    if (latestSyncEventQuery.isError) {
-      return {
-        state: 'error' as const,
-        message: 'Não foi possível consultar o último evento de sync.',
-        actionLabel: 'Atualizar',
-      };
-    }
-
-    if (latestSyncEventQuery.data) {
-      const event = latestSyncEventQuery.data;
-      const receivedAt = new Date(event.receivedAt).toLocaleTimeString('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-
-      if (event.processingStatus === 'FAILED') {
-        return {
-          state: 'error' as const,
-          message: `Último sync falhou às ${receivedAt}.`,
-          actionLabel: 'Tentar de novo',
-        };
-      }
-
-      if (event.processingStatus === 'RECEIVED') {
-        return {
-          state: 'pending' as const,
-          message: `Último sync solicitado às ${receivedAt}.`,
-          actionLabel: 'Sincronizar',
-        };
-      }
-
-      return {
-        state: 'ok' as const,
-        message: `Último sync concluído às ${receivedAt}.`,
-        actionLabel: 'Sincronizar',
-      };
-    }
-
     return {
       state: 'ok' as const,
-      message: 'Nenhuma sincronização manual executada ainda.',
-      actionLabel: 'Sincronizar',
+      message: 'Importe a fatura do cartão para atualizar os gastos realizados.',
+      actionLabel: 'Importar CSV',
     };
-  }, [
-    latestSyncEventQuery.data,
-    latestSyncEventQuery.isError,
-    monthDashboardQuery.isError,
-    monthDashboardQuery.isLoading,
-    syncMutation.error,
-    syncMutation.isError,
-    syncMutation.isPending,
-  ]);
+  }, [monthDashboardQuery.isError, monthDashboardQuery.isLoading]);
 
   const closeMonthBanner = useMemo(() => {
     if (closeMonthMutation.isPending) {
@@ -193,10 +127,6 @@ export function useDashboardViewModel(): DashboardViewModel {
 
     return null;
   }, [closeMonthMutation.isPending, closeMonthMutation.isError, closeMonthMutation.error, closeMonthMutation.isSuccess]);
-
-  const handleSync = useCallback(() => {
-    syncMutation.mutate();
-  }, [syncMutation]);
 
   const handleCloseMonth = useCallback(() => {
     closeMonthMutation.mutate(monthKey);
@@ -238,17 +168,24 @@ export function useDashboardViewModel(): DashboardViewModel {
     setIsAddTemplateVisible(false);
   }, []);
 
+  const handleOpenStatementImport = useCallback(() => {
+    setIsStatementImportVisible(true);
+  }, []);
+
+  const handleCloseStatementImport = useCallback(() => {
+    setIsStatementImportVisible(false);
+  }, []);
+
   return {
     data,
-    isSyncing: syncMutation.isPending,
-    syncBanner,
+    importBanner,
     categoryDetails,
     isAddPlanVisible,
     isAddTemplateVisible,
+    isStatementImportVisible,
     isCurrentMonth: monthKey === currentMonthKey(),
     isClosingMonth: closeMonthMutation.isPending,
     closeMonthBanner,
-    handleSync,
     handlePrevMonth,
     handleNextMonth,
     handleGoToCurrentMonth,
@@ -258,6 +195,8 @@ export function useDashboardViewModel(): DashboardViewModel {
     handleCloseAddPlan,
     handleAddTemplate,
     handleCloseAddTemplate,
+    handleOpenStatementImport,
+    handleCloseStatementImport,
     handleCloseMonth,
   };
 }
