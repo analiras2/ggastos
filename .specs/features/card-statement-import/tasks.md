@@ -106,11 +106,11 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] Handles semicolon rows, metadata preamble and repeated transaction headers.
-- [ ] Handles ISO-8859-1/CR real export characteristics in tests.
-- [ ] Skips totals, previous balance, payment and summary rows explicitly.
-- [ ] Parses `Lancamentos programados` separately from current invoice rows.
-- [ ] Parser output matches `bradesco-statement-expected.json`.
+- [x] Handles semicolon rows, metadata preamble and repeated transaction headers.
+- [x] Handles ISO-8859-1/CR real export characteristics in tests.
+- [x] Skips totals, previous balance, payment and summary rows explicitly.
+- [x] Parses `Lancamentos programados` separately from current invoice rows.
+- [x] Parser output matches `bradesco-statement-expected.json`.
 
 **Commit**: `feat(statements): parse Bradesco CSV`
 
