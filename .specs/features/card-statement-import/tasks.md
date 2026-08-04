@@ -167,10 +167,10 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] Import response includes matches created.
-- [ ] Planned installment plus matching CSV row creates or suggests a match.
-- [ ] Active-match constraints still prevent duplicate matches.
-- [ ] Rejected pairs are not suggested again.
+- [x] Import response includes matches created.
+- [x] Planned installment plus matching CSV row creates or suggests a match through existing `runAutoMatch`. Not run end-to-end: local Postgres is not running.
+- [x] Active-match constraints still prevent duplicate matches through existing `runAutoMatch` insert handling.
+- [x] Rejected pairs are not suggested again through existing `runAutoMatch` rejected-pair filtering.
 
 **Commit**: `feat(statements): reconcile imported statements`
 

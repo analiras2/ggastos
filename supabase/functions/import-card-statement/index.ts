@@ -15,6 +15,7 @@ import {
   type FinancialConnectionUpsert,
 } from "../_shared/upsert.ts";
 import type { FinancialAccountUpsert } from "../_shared/normalizers/normalize-account.ts";
+import { runAutoMatch } from "../_shared/reconciliation/auto-match.ts";
 
 declare const Deno: {
   env: {
@@ -580,6 +581,10 @@ Deno.serve(async (request) => {
     });
     const rowsDuplicated = existingFingerprints.size;
     await upsertStatementTransactions(config, transactions);
+    const matchOutcomes = await runAutoMatch(config, {
+      userId: user.id,
+      accountId: accountContext.accountId,
+    });
 
     const rowsImported = transactions.length - rowsDuplicated;
     await updateImportBatch(config, batchId, {
@@ -589,10 +594,12 @@ Deno.serve(async (request) => {
       rows_duplicated: rowsDuplicated,
       rows_skipped: parsed.skippedRows.length,
       rows_failed: 0,
+      matches_created: matchOutcomes.length,
       payload: {
         source: "CARD_STATEMENT",
         metadata: parsed.metadata,
         skippedRows: parsed.skippedRows,
+        matches: matchOutcomes,
       },
     });
 
@@ -605,6 +612,7 @@ Deno.serve(async (request) => {
       rowsDuplicated,
       rowsSkipped: parsed.skippedRows.length,
       rowsFailed: 0,
+      matchesCreated: matchOutcomes.length,
     });
   } catch (error) {
     if (error instanceof Response) {
