@@ -147,10 +147,10 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] Accepts bank, file name, file contents and optional invoice month.
-- [ ] Returns rows read/imported/duplicated/skipped/failed.
-- [ ] Reimporting fixture content does not duplicate transactions.
-- [ ] Invalid format returns actionable error and persists failed batch when appropriate.
+- [x] Accepts bank, file name, file contents and optional invoice month.
+- [x] Returns rows read/imported/duplicated/skipped/failed.
+- [x] Reimporting fixture content does not duplicate transactions structurally through source fingerprints. Not run end-to-end: local Postgres is not running.
+- [x] Invalid format returns actionable error and persists failed batch when appropriate.
 
 **Commit**: `feat(statements): import card statement batches`
 

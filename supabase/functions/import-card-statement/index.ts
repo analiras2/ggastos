@@ -1,0 +1,620 @@
+import { getBearerToken, readAuthenticatedUser, type AuthUser } from "../_shared/auth.ts";
+import { parseBradescoStatement } from "../_shared/statements/parse-bradesco.ts";
+import { parseNubankStatement } from "../_shared/statements/parse-nubank.ts";
+import type {
+  ParsedStatement,
+  ParsedStatementTransaction,
+  StatementBank,
+  StatementImportMode,
+  StatementSection,
+} from "../_shared/statements/types.ts";
+import { supabaseRest, type SupabaseRestConfig } from "../_shared/supabase-rest.ts";
+import {
+  upsertFinancialAccount,
+  upsertFinancialConnection,
+  type FinancialConnectionUpsert,
+} from "../_shared/upsert.ts";
+import type { FinancialAccountUpsert } from "../_shared/normalizers/normalize-account.ts";
+
+declare const Deno: {
+  env: {
+    get(name: string): string | undefined;
+  };
+  serve(handler: (request: Request) => Response | Promise<Response>): void;
+};
+
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: JsonValue }
+  | JsonValue[];
+
+type ImportRequest = {
+  bank: StatementBank;
+  fileName: string;
+  contents: string;
+  invoiceMonth: string | null;
+  fileHash: string | null;
+};
+
+type StatementBatchRow = {
+  id: string;
+};
+
+type StatementTransactionUpsert = {
+  user_id: string;
+  connection_id: string;
+  account_id: string;
+  pluggy_transaction_id: string;
+  provider_created_at: string;
+  provider_updated_at: string;
+  posted_at: string;
+  competency_month: string;
+  description: string;
+  description_raw: string | null;
+  amount_cents: number;
+  currency_code: string;
+  status: "PENDING" | "POSTED";
+  direction: "DEBIT" | "CREDIT";
+  pluggy_category_id: string | null;
+  pluggy_category_name: string | null;
+  merchant_name: string | null;
+  merchant_legal_name: string | null;
+  merchant_cnpj: string | null;
+  internal_category_id: string | null;
+  impact_type: "INCOME" | "EXPENSE" | "INVESTMENT" | "TRANSFER";
+  is_internal_transfer: boolean;
+  is_hidden_from_budget: boolean;
+  note: string | null;
+  provider_payload: Record<string, unknown>;
+  statement_import_batch_id: string;
+  statement_source_bank: StatementBank;
+  statement_source_fingerprint: string;
+  statement_source_section: StatementSection;
+  statement_installment_index: number | null;
+  statement_installment_total: number | null;
+  statement_import_mode: StatementImportMode;
+};
+
+type ExistingFingerprintRow = {
+  statement_source_fingerprint: string;
+};
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Content-Type": "application/json",
+};
+
+const VALID_BANKS = new Set<StatementBank>(["NUBANK", "BRADESCO"]);
+const INVOICE_MONTH_PATTERN = /^[0-9]{4}-(0[1-9]|1[0-2])$/;
+
+function jsonResponse(status: number, body: Record<string, JsonValue>) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: corsHeaders,
+  });
+}
+
+function readRequiredEnv(name: string): string {
+  const value = Deno.env.get(name);
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+
+  return value;
+}
+
+function asNonEmptyString(value: unknown): string | null {
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
+}
+
+function isStatementBank(value: unknown): value is StatementBank {
+  return typeof value === "string" && VALID_BANKS.has(value as StatementBank);
+}
+
+async function parseImportRequest(request: Request): Promise<ImportRequest> {
+  let body: unknown;
+
+  try {
+    body = await request.json();
+  } catch {
+    throw jsonResponse(400, {
+      error: "invalid_json",
+      message: "Request body must be valid JSON.",
+    });
+  }
+
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw jsonResponse(400, {
+      error: "invalid_body",
+      message: "Request body must be a JSON object.",
+    });
+  }
+
+  const candidate = body as Record<string, unknown>;
+  const fileName = asNonEmptyString(candidate.fileName);
+  const contents = asNonEmptyString(candidate.contents);
+  const invoiceMonth =
+    candidate.invoiceMonth === undefined || candidate.invoiceMonth === null
+      ? null
+      : asNonEmptyString(candidate.invoiceMonth);
+  const fileHash =
+    candidate.fileHash === undefined || candidate.fileHash === null
+      ? null
+      : asNonEmptyString(candidate.fileHash);
+
+  if (!isStatementBank(candidate.bank)) {
+    throw jsonResponse(400, {
+      error: "invalid_bank",
+      message: "bank must be either NUBANK or BRADESCO.",
+    });
+  }
+
+  if (!fileName) {
+    throw jsonResponse(400, {
+      error: "invalid_file_name",
+      message: "fileName must be a non-empty string.",
+    });
+  }
+
+  if (!contents) {
+    throw jsonResponse(400, {
+      error: "invalid_contents",
+      message: "contents must be a non-empty CSV string.",
+    });
+  }
+
+  if (invoiceMonth !== null && !INVOICE_MONTH_PATTERN.test(invoiceMonth)) {
+    throw jsonResponse(400, {
+      error: "invalid_invoice_month",
+      message: "invoiceMonth must use YYYY-MM format.",
+    });
+  }
+
+  return {
+    bank: candidate.bank,
+    fileName,
+    contents,
+    invoiceMonth,
+    fileHash,
+  };
+}
+
+function buildProfilePayload(user: AuthUser) {
+  const displayName =
+    asNonEmptyString(user.user_metadata?.display_name) ??
+    asNonEmptyString(user.user_metadata?.name) ??
+    asNonEmptyString(user.app_metadata?.display_name);
+  const locale =
+    asNonEmptyString(user.user_metadata?.locale) ??
+    asNonEmptyString(user.app_metadata?.locale) ??
+    "pt-BR";
+
+  return {
+    id: user.id,
+    email: asNonEmptyString(user.email) ?? `${user.id}@users.ggastos.local`,
+    display_name: displayName,
+    locale,
+  };
+}
+
+async function ensureProfile(config: SupabaseRestConfig, user: AuthUser): Promise<void> {
+  await supabaseRest<void>(config, "/rest/v1/profiles?on_conflict=id", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Prefer: "resolution=merge-duplicates,return=minimal",
+    },
+    body: JSON.stringify(buildProfilePayload(user)),
+  });
+}
+
+function parseStatement(request: ImportRequest): ParsedStatement {
+  const input = {
+    bank: request.bank,
+    contents: request.contents,
+    fileName: request.fileName,
+    fileHash: request.fileHash,
+    invoiceMonth: request.invoiceMonth,
+  };
+
+  if (request.bank === "NUBANK") {
+    return parseNubankStatement(input);
+  }
+
+  return parseBradescoStatement(input);
+}
+
+async function sha256Hex(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(value),
+  );
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function bankDisplayName(bank: StatementBank): string {
+  return bank === "NUBANK" ? "Nubank" : "Bradesco";
+}
+
+async function ensureStatementAccount(
+  config: SupabaseRestConfig,
+  context: { userId: string; bank: StatementBank; now: string },
+): Promise<{ connectionId: string; accountId: string }> {
+  const bankLabel = bankDisplayName(context.bank);
+  const connection: FinancialConnectionUpsert = {
+    user_id: context.userId,
+    pluggy_item_id: `statement:${context.bank}:${context.userId}`,
+    pluggy_connector_id: `STATEMENT_${context.bank}`,
+    institution_name: `${bankLabel} Card Statement`,
+    status: "UPDATED",
+    last_synced_at: context.now,
+    last_error_code: null,
+    last_error_message: null,
+  };
+
+  const connectionRow = await upsertFinancialConnection(config, connection);
+  const account: FinancialAccountUpsert = {
+    user_id: context.userId,
+    connection_id: connectionRow.id,
+    pluggy_account_id: `statement:${context.bank}:${context.userId}:credit-card`,
+    type: "CREDIT",
+    subtype: "CREDIT_CARD",
+    name: `${bankLabel} Credit Card`,
+    marketing_name: `${bankLabel} CSV Import`,
+    masked_number: null,
+    owner_name: null,
+    currency_code: "BRL",
+    balance_cents: null,
+    credit_limit_cents: null,
+    due_date: null,
+    close_date: null,
+    provider_payload: {
+      source: "CARD_STATEMENT",
+      bank: context.bank,
+    },
+  };
+  const accountRow = await upsertFinancialAccount(config, account);
+
+  return {
+    connectionId: connectionRow.id,
+    accountId: accountRow.id,
+  };
+}
+
+async function createImportBatch(
+  config: SupabaseRestConfig,
+  batch: {
+    userId: string;
+    bank: StatementBank;
+    fileName: string;
+    fileHash: string;
+    invoiceMonth: string | null;
+    payload: Record<string, unknown>;
+  },
+): Promise<string> {
+  const rows = await supabaseRest<StatementBatchRow[]>(
+    config,
+    "/rest/v1/statement_import_batches?select=id",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Prefer: "return=representation",
+      },
+      body: JSON.stringify({
+        user_id: batch.userId,
+        bank: batch.bank,
+        file_name: batch.fileName,
+        file_hash: batch.fileHash,
+        invoice_month: batch.invoiceMonth,
+        status: "RECEIVED",
+        payload: batch.payload,
+      }),
+    },
+  );
+
+  if (rows.length !== 1) {
+    throw new Error("Expected exactly one statement_import_batches row.");
+  }
+
+  return rows[0].id;
+}
+
+async function updateImportBatch(
+  config: SupabaseRestConfig,
+  batchId: string,
+  patch: Record<string, unknown>,
+): Promise<void> {
+  await supabaseRest<void>(
+    config,
+    `/rest/v1/statement_import_batches?id=eq.${batchId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify(patch),
+    },
+  );
+}
+
+async function findExistingFingerprints(
+  config: SupabaseRestConfig,
+  context: { userId: string; bank: StatementBank; fingerprints: string[] },
+): Promise<Set<string>> {
+  if (context.fingerprints.length === 0) {
+    return new Set();
+  }
+
+  const params = new URLSearchParams({
+    select: "statement_source_fingerprint",
+    user_id: `eq.${context.userId}`,
+    statement_source_bank: `eq.${context.bank}`,
+    statement_source_fingerprint: `in.(${context.fingerprints.join(",")})`,
+  });
+  const rows = await supabaseRest<ExistingFingerprintRow[]>(
+    config,
+    `/rest/v1/imported_transactions?${params.toString()}`,
+    { method: "GET" },
+  );
+
+  return new Set(rows.map((row) => row.statement_source_fingerprint));
+}
+
+function buildImportedTransaction(
+  transaction: ParsedStatementTransaction,
+  context: {
+    userId: string;
+    connectionId: string;
+    accountId: string;
+    batchId: string;
+    bank: StatementBank;
+    fingerprint: string;
+    now: string;
+  },
+): StatementTransactionUpsert {
+  return {
+    user_id: context.userId,
+    connection_id: context.connectionId,
+    account_id: context.accountId,
+    pluggy_transaction_id: `statement:${context.bank.toLowerCase()}:${context.fingerprint}`,
+    provider_created_at: context.now,
+    provider_updated_at: context.now,
+    posted_at: transaction.postedAt,
+    competency_month: transaction.competencyMonth,
+    description: transaction.description,
+    description_raw: transaction.descriptionRaw,
+    amount_cents: transaction.amountCents,
+    currency_code: transaction.currencyCode,
+    status: "POSTED",
+    direction: transaction.direction,
+    pluggy_category_id: null,
+    pluggy_category_name: null,
+    merchant_name: null,
+    merchant_legal_name: null,
+    merchant_cnpj: null,
+    internal_category_id: null,
+    impact_type: transaction.impactType,
+    is_internal_transfer: false,
+    is_hidden_from_budget: transaction.defaultImportMode !== "IMPORT",
+    note: null,
+    provider_payload: {
+      source: "CARD_STATEMENT",
+      bank: context.bank,
+      section: transaction.section,
+      importMode: transaction.defaultImportMode,
+      row: transaction.raw,
+      sourceRowNumber: transaction.sourceRowNumber,
+      installment: transaction.installment,
+    },
+    statement_import_batch_id: context.batchId,
+    statement_source_bank: context.bank,
+    statement_source_fingerprint: context.fingerprint,
+    statement_source_section: transaction.section,
+    statement_installment_index: transaction.installment?.index ?? null,
+    statement_installment_total: transaction.installment?.total ?? null,
+    statement_import_mode: transaction.defaultImportMode,
+  };
+}
+
+async function buildImportedTransactions(
+  parsed: ParsedStatement,
+  context: {
+    userId: string;
+    connectionId: string;
+    accountId: string;
+    batchId: string;
+    bank: StatementBank;
+    now: string;
+  },
+): Promise<StatementTransactionUpsert[]> {
+  const transactions: StatementTransactionUpsert[] = [];
+
+  for (const transaction of parsed.transactions) {
+    if (transaction.defaultImportMode === "SKIP") {
+      continue;
+    }
+
+    const fingerprint = await sha256Hex(transaction.fingerprintInput);
+    transactions.push(
+      buildImportedTransaction(transaction, {
+        ...context,
+        fingerprint,
+      }),
+    );
+  }
+
+  return transactions;
+}
+
+async function upsertStatementTransactions(
+  config: SupabaseRestConfig,
+  transactions: StatementTransactionUpsert[],
+): Promise<number> {
+  if (transactions.length === 0) {
+    return 0;
+  }
+
+  const rows = await supabaseRest<Array<{ id: string }>>(
+    config,
+    "/rest/v1/imported_transactions?on_conflict=pluggy_transaction_id&select=id",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates,return=representation",
+      },
+      body: JSON.stringify(transactions),
+    },
+  );
+
+  return rows.length;
+}
+
+Deno.serve(async (request) => {
+  if (request.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders });
+  }
+
+  if (request.method !== "POST") {
+    return jsonResponse(405, {
+      error: "method_not_allowed",
+      message: "Use POST to import a card statement.",
+    });
+  }
+
+  try {
+    const supabaseUrl = readRequiredEnv("SUPABASE_URL");
+    const anonKey = readRequiredEnv("SUPABASE_ANON_KEY");
+    const serviceRoleKey = readRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
+    const config: SupabaseRestConfig = { supabaseUrl, serviceRoleKey };
+
+    const accessToken = getBearerToken(request);
+    if (!accessToken) {
+      return jsonResponse(401, {
+        error: "missing_auth",
+        message: "Authorization bearer token is required.",
+      });
+    }
+
+    const user = await readAuthenticatedUser(supabaseUrl, anonKey, accessToken);
+    if (!user) {
+      return jsonResponse(401, {
+        error: "invalid_auth",
+        message: "Authorization bearer token is invalid or expired.",
+      });
+    }
+
+    const importRequest = await parseImportRequest(request);
+    const fileHash = importRequest.fileHash ?? await sha256Hex(importRequest.contents);
+    const requestWithHash = { ...importRequest, fileHash };
+    const parsed = parseStatement(requestWithHash);
+    const now = new Date().toISOString();
+
+    await ensureProfile(config, user);
+    const batchId = await createImportBatch(config, {
+      userId: user.id,
+      bank: importRequest.bank,
+      fileName: importRequest.fileName,
+      fileHash,
+      invoiceMonth: parsed.metadata.invoiceMonth,
+      payload: {
+        source: "CARD_STATEMENT",
+        metadata: parsed.metadata,
+      },
+    });
+
+    if (parsed.errors.length > 0) {
+      const message = parsed.errors.map((error) => error.message).join(" ");
+      await updateImportBatch(config, batchId, {
+        status: "FAILED",
+        rows_read: parsed.rowsRead,
+        rows_skipped: parsed.skippedRows.length,
+        rows_failed: parsed.errors.length,
+        error_message: message,
+        payload: {
+          source: "CARD_STATEMENT",
+          metadata: parsed.metadata,
+          errors: parsed.errors,
+          skippedRows: parsed.skippedRows,
+        },
+      });
+
+      return jsonResponse(422, {
+        error: "invalid_statement",
+        message,
+        batchId,
+        rowsRead: parsed.rowsRead,
+        rowsImported: 0,
+        rowsDuplicated: 0,
+        rowsSkipped: parsed.skippedRows.length,
+        rowsFailed: parsed.errors.length,
+      });
+    }
+
+    const accountContext = await ensureStatementAccount(config, {
+      userId: user.id,
+      bank: importRequest.bank,
+      now,
+    });
+    const transactions = await buildImportedTransactions(parsed, {
+      userId: user.id,
+      bank: importRequest.bank,
+      batchId,
+      now,
+      ...accountContext,
+    });
+    const existingFingerprints = await findExistingFingerprints(config, {
+      userId: user.id,
+      bank: importRequest.bank,
+      fingerprints: transactions.map((transaction) => transaction.statement_source_fingerprint),
+    });
+    const rowsDuplicated = existingFingerprints.size;
+    await upsertStatementTransactions(config, transactions);
+
+    const rowsImported = transactions.length - rowsDuplicated;
+    await updateImportBatch(config, batchId, {
+      status: "PROCESSED",
+      rows_read: parsed.rowsRead,
+      rows_imported: rowsImported,
+      rows_duplicated: rowsDuplicated,
+      rows_skipped: parsed.skippedRows.length,
+      rows_failed: 0,
+      payload: {
+        source: "CARD_STATEMENT",
+        metadata: parsed.metadata,
+        skippedRows: parsed.skippedRows,
+      },
+    });
+
+    return jsonResponse(202, {
+      batchId,
+      bank: importRequest.bank,
+      accountId: accountContext.accountId,
+      rowsRead: parsed.rowsRead,
+      rowsImported,
+      rowsDuplicated,
+      rowsSkipped: parsed.skippedRows.length,
+      rowsFailed: 0,
+    });
+  } catch (error) {
+    if (error instanceof Response) {
+      return error;
+    }
+
+    const message = error instanceof Error ? error.message : "Unexpected import error.";
+    return jsonResponse(500, {
+      error: "import_failed",
+      message,
+    });
+  }
+});
