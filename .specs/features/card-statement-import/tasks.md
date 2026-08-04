@@ -187,10 +187,10 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] Sends bearer token and import payload.
-- [ ] Invalidates dashboard and reconciliation inbox queries on success.
-- [ ] Formats backend errors for UI.
-- [ ] TypeScript check passes.
+- [x] Sends bearer token and import payload.
+- [x] Invalidates dashboard and reconciliation inbox queries on success.
+- [x] Formats backend errors for UI.
+- [x] TypeScript check passes. `npm run lint` still fails on pre-existing React hook errors in `auth-provider.tsx` and `use-color-scheme.web.ts`.
 
 **Commit**: `feat(mobile): add statement import mutation`
 
