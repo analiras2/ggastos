@@ -207,10 +207,10 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] User can choose Nubank or Bradesco.
-- [ ] User can select a CSV file.
-- [ ] Loading, success and error states render clearly.
-- [ ] Import summary shows imported, duplicated, skipped and failed counts.
+- [x] User can choose Nubank or Bradesco.
+- [x] User can select a CSV file.
+- [x] Loading, success and error states render clearly.
+- [x] Import summary shows imported, duplicated, skipped and failed counts.
 
 **Commit**: `feat(mobile): add statement import UI`
 
