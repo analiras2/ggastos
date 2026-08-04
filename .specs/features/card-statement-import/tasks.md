@@ -127,10 +127,10 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] `statement_import_batches` exists with owner RLS.
-- [ ] Imported rows can store bank, batch and fingerprint metadata.
-- [ ] Reimporting same fingerprint is structurally idempotent.
-- [ ] Local `supabase db reset` succeeds.
+- [x] `statement_import_batches` exists with owner RLS.
+- [x] Imported rows can store bank, batch and fingerprint metadata.
+- [x] Reimporting same fingerprint is structurally idempotent.
+- [ ] Local `supabase db reset` succeeds. Not run: local Postgres on `127.0.0.1:54322` is not running; destructive reset was not approved.
 
 **Commit**: `feat(statements): add import batch schema`
 
