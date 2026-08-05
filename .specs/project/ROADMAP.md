@@ -1,7 +1,7 @@
 # Roadmap
 
 **Current Milestone:** Milestone 5 - Importação de fatura de cartão
-**Status:** Pivot aprovado em 2026-08-03. O MVP Pluggy foi preservado na branch `pluggy-integration-snapshot`; a linha ativa passa a validar importação de CSV de faturas Nubank/Bradesco, mantendo planejamento, dashboard, conciliação e fechamento.
+**Status:** Fluxo Nubank/Bradesco concluído e validado em 2026-08-05. O MVP Pluggy foi preservado na branch `pluggy-integration-snapshot`; a linha ativa importa CSV de faturas mantendo planejamento, dashboard, conciliação e fechamento.
 
 ---
 
@@ -118,14 +118,16 @@
 
 ### Features
 
-**Importação CSV Nubank/Bradesco** - PLANNED
+**Importação CSV Nubank/Bradesco** - DONE
 
 - Importar faturas CSV de cartão de crédito.
 - Normalizar linhas para transações internas idempotentes.
 - Identificar banco/emissor, fatura, data, descrição, valor e parcela quando disponível no arquivo.
 - Spec: `.specs/features/card-statement-import/spec.md`
+  Progress: `T1` a `T16` concluídos; importação e reimportação das fixtures
+  Nubank/Bradesco, conciliação, RLS, bundle iOS, lint e typecheck validados.
 
-**Conciliação de fatura com planejamento** - PLANNED
+**Conciliação de fatura com planejamento** - DONE
 
 - Reutilizar matching 1:1 e inbox de revisão.
 - Evitar duplicar parcelas já planejadas quando a próxima parcela vier no CSV.

@@ -6,11 +6,11 @@ O GGastos precisa continuar reduzindo lancamentos manuais sem depender da libera
 
 ## Goals
 
-- [ ] Importar CSVs de fatura Nubank e Bradesco com normalizacao consistente para o schema interno.
-- [ ] Evitar duplicidade quando uma linha importada representa uma parcela que ja existe em `planned_entries`.
-- [ ] Reaproveitar o motor de conciliacao e a inbox de revisao para confirmar ou rejeitar matches.
-- [ ] Manter registro manual como caminho principal para bancos, contas e gastos fora dos CSVs suportados.
-- [ ] Preservar dashboard mensal, fechamento e consolidado anual baseados em planejado vs. realizado.
+- [x] Importar CSVs de fatura Nubank e Bradesco com normalizacao consistente para o schema interno.
+- [x] Evitar duplicidade quando uma linha importada representa uma parcela que ja existe em `planned_entries`.
+- [x] Reaproveitar o motor de conciliacao e a inbox de revisao para confirmar ou rejeitar matches.
+- [x] Manter registro manual como caminho principal para bancos, contas e gastos fora dos CSVs suportados.
+- [x] Preservar dashboard mensal, fechamento e consolidado anual baseados em planejado vs. realizado.
 
 ## Product Reuse Plan
 
@@ -258,30 +258,30 @@ Raw samples were provided on 2026-08-03 and inspected locally only. They contain
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| CSV-01 | P1: Importar CSV Nubank MVP | Tasks | In Tasks |
-| CSV-02 | P1: Importar CSV Bradesco MVP | Tasks | In Tasks |
-| CSV-03 | P1: Conciliar parcelas importadas com planejamento existente | Tasks | In Tasks |
-| CSV-04 | P1: Revisar importacao antes de confiar nos dados | Tasks | In Tasks |
-| CSV-05 | P1: Registrar manualmente o que nao vem dos CSVs | Tasks | In Tasks |
-| CSV-06 | P2: Categorizacao assistida por regras | Tasks | In Tasks |
-| CSV-07 | P2: Historico de lotes importados | Tasks | In Tasks |
-| CSV-08 | P1: Remover Pluggy da rota ativa do app | Tasks | In Tasks |
+| CSV-01 | P1: Importar CSV Nubank MVP | Tasks | Done |
+| CSV-02 | P1: Importar CSV Bradesco MVP | Tasks | Done |
+| CSV-03 | P1: Conciliar parcelas importadas com planejamento existente | Tasks | Done |
+| CSV-04 | P1: Revisar importacao antes de confiar nos dados | Tasks | Done |
+| CSV-05 | P1: Registrar manualmente o que nao vem dos CSVs | Tasks | Done |
+| CSV-06 | P2: Categorizacao assistida por regras | Deferred Ideas | Deferred |
+| CSV-07 | P2: Historico de lotes importados | Deferred Ideas | Deferred |
+| CSV-08 | P1: Remover Pluggy da rota ativa do app | Tasks | Done |
 | CSV-09 | P1: Remover login manual da experiencia pessoal | Tasks | Done |
 
-**Coverage:** 9 total, 9 mapped to tasks, 0 unmapped.
+**Coverage:** 9 total, 7 concluídos, 2 adiados como evolução P2.
 
 ---
 
 ## Success Criteria
 
-- [ ] Um CSV Nubank sanitizado pode ser importado duas vezes sem duplicar transacoes.
-- [ ] Um CSV Bradesco sanitizado pode ser importado duas vezes sem duplicar transacoes.
-- [ ] Uma parcela ja planejada e importada depois aparece uma unica vez nos totais do dashboard.
-- [ ] Sugestoes ambiguas aparecem na inbox em vez de serem aplicadas silenciosamente.
-- [ ] Gastos fora de Nubank/Bradesco continuam registraveis manualmente.
-- [ ] O usuario consegue explicar de onde veio cada realizado do mes: planejamento confirmado, CSV importado ou match entre os dois.
-- [ ] O app nao mostra mais fluxo Pluggy na rota principal.
-- [ ] O app nao mostra mais login/cadastro manual no uso pessoal normal.
+- [x] Um CSV Nubank sanitizado pode ser importado duas vezes sem duplicar transacoes.
+- [x] Um CSV Bradesco sanitizado pode ser importado duas vezes sem duplicar transacoes.
+- [x] Uma parcela ja planejada e importada depois aparece uma unica vez nos totais do dashboard.
+- [x] Sugestoes ambiguas aparecem na inbox em vez de serem aplicadas silenciosamente.
+- [x] Gastos fora de Nubank/Bradesco continuam registraveis manualmente.
+- [x] O usuario consegue explicar de onde veio cada realizado do mes: planejamento confirmado, CSV importado ou match entre os dois.
+- [x] O app nao mostra mais fluxo Pluggy na rota principal.
+- [x] O app nao mostra mais login/cadastro manual no uso pessoal normal.
 
 ## Open Inputs Before Implementation
 

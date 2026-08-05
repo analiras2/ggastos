@@ -3,7 +3,19 @@
 ## Metadados
 - Projeto: GGastos
 - Data: 2026-07-10
-- Status: Aprovado para implementação do MVP
+- Status: Baseline histórico; estratégia ativa revisada em 2026-08-05
+
+## Estratégia ativa
+
+O Supabase, Expo, Auth/RLS, Edge Functions, Postgres e TanStack Query continuam
+como stack ativa. A ingestão externa agora é a Edge Function
+`import-card-statement`, que normaliza CSVs Nubank/Bradesco e aciona a
+conciliação existente. A integração Pluggy, seu cron e seus segredos foram
+retirados do fluxo ativo e preservados apenas na branch
+`pluggy-integration-snapshot`.
+
+As seções abaixo descrevem o baseline de arquitetura de 2026-07-10. Onde
+mencionarem Pluggy ou `sync-pluggy`, devem ser lidas como histórico.
 
 ## Decisão
 O backend do MVP será construído sobre **Supabase**.

@@ -3,12 +3,27 @@
 ## Metadados
 - Projeto: GGastos v2
 - Data: 2026-07-11
-- Status: Aprovado para implementação do MVP
+- Status: Baseline histórico com extensão ativa de importação CSV em 2026-08-05
 - Idioma: PT-BR
+
+## Estratégia ativa de origem de dados
+
+O schema preserva colunas herdadas da Pluggy por compatibilidade temporária,
+mas a origem ativa é CSV de fatura. A migration
+`20260803190000_create_statement_import_batches.sql` adiciona
+`statement_import_batches` e os metadados `statement_*` em
+`imported_transactions`: banco, lote, fingerprint, seção, modo de importação e
+parcelas. O índice único por usuário, banco e fingerprint garante reimportação
+idempotente.
+
+`financial_connections` e `financial_accounts` recebem identificadores
+`statement:*` para representar a origem de cartão sem exigir conexão Pluggy.
+Uma migração de nomes neutros será planejada separadamente; até lá, nomes
+legados não indicam integração Pluggy ativa.
 
 ## Objetivo
 Definir o contrato de dados interno do GGastos v2 para suportar:
-- ingestão de dados da Pluggy;
+- ingestão de faturas CSV e fontes futuras;
 - planejamento manual;
 - conciliação entre planejado e realizado;
 - agregações mensais e anuais;

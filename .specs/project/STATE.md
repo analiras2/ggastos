@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-08-05T13:14:52-04:00
-**Current Work:** Branch `card-statement-import`, Phase 4 em andamento. T13-T16 concluídas: UI/dependências mobile Pluggy e a UX manual de autenticação foram removidas, mantendo auto sign-in do owner e Supabase Auth/RLS. Próximo passo natural é reexecutar a bateria de validação das Phases 1-4.
+**Last Updated:** 2026-08-05
+**Current Work:** Branch `card-statement-import`, fluxo de importação CSV concluído. T1-T16, hardening de dependências e validação ponta a ponta foram concluídos: importação/reimportação Nubank e Bradesco, reconciliação, RLS (17/17), lint, typecheck, auditoria npm sem vulnerabilidades e exportação iOS. A documentação ativa foi consolidada em `docs/card-statement-import.md`; Pluggy permanece apenas como histórico.
 
 ---
 
@@ -215,6 +215,23 @@
 
 ---
 
+### AD-030: Documentação ativa declara CSV como origem principal (2026-08-05)
+
+**Decision:** A documentação de entrada do repositório, mobile, produto, stack,
+TDD, contrato de dados e roadmap passou a declarar a importação CSV
+Nubank/Bradesco como estratégia ativa. Pluggy continua documentada somente como
+baseline histórico e snapshot de branch.
+**Reason:** A implementação, UI e deploys ativos já não usam Pluggy; manter a
+documentação antiga como orientação operacional causaria decisões e setup
+equivocados.
+**Trade-off:** Os nomes de colunas herdados (`pluggy_*`) continuam aparecendo no
+contrato por compatibilidade até existir uma migration de nomes neutros.
+**Impact:** Novas features devem partir de `docs/card-statement-import.md` e
+`.specs/features/card-statement-import/`; referências de Pluggy não são alvos
+ativos de implementação.
+
+---
+
 ## Active Blockers
 
 None.
@@ -308,7 +325,7 @@ None.
 
 - [ ] `@react-native-community/datetimepicker` (usado em `mobile/src/features/planning/date-field.tsx`) não renderiza nada no `Platform.OS === 'web'` — o campo "Data" do formulário "Adicionar planejamento" fica impossível de preencher via UI no build web (funciona normalmente em iOS/Android). Precisa de um fallback web (ex.: `<input type="date">` condicional por plataforma) — Captured during: validação `T10`
 - [ ] Renomear/desacoplar colunas herdadas da Pluggy (`pluggy_item_id`, `pluggy_account_id`, `pluggy_transaction_id`, `pluggy_category_*`) para identificadores neutros de fonte/importação depois que o fluxo CSV estiver estável — Captured during: T15 `card-statement-import`
-- [ ] Revisar documentação histórica e decisões antigas que ainda descrevem Pluggy como estratégia ativa (`docs/stack-tecnica-supabase-mvp.md`, AD-002/004/009/017/023/025) para deixar claro o que virou histórico/snapshot — Captured during: T15 `card-statement-import`
+- [x] ~~Revisar documentação histórica e decisões antigas que ainda descrevem Pluggy como estratégia ativa~~ — Resolvido em 2026-08-05: `README`, `mobile/README`, `docs/card-statement-import.md`, PRD, TDD, stack, contrato de dados e roadmap agora identificam CSV Nubank/Bradesco como fluxo ativo e Pluggy como histórico/snapshot.
 - [ ] Reavaliar o breakdown por categoria para transações de fatura CSV: hoje a importação grava `internal_category_id: null`, então totais gerais funcionam, mas análises por categoria dependem de match/manual category posterior — Captured during: T12/T15 `card-statement-import`
 - [ ] Trocar o uso de identificadores sintéticos `statement:*` dentro de campos legados por um modelo mais explícito (`source_provider`, `source_account_id`, `source_transaction_id`) quando houver uma migration de compatibilidade planejada — Captured during: T15 `card-statement-import`
 - [x] ~~`useCloseMonth` nunca foi conectado a nenhum botão/tela~~ — Resolvido em 2026-07-28: botão "Fechar mês" adicionado ao `QuickActionRow` do dashboard (`dashboard-screen.tsx`), com banner de loading/erro/sucesso reaproveitando `SyncStatusBanner`. Verificado ao vivo via browser real (signup → clique → `200` → snapshot persistido no banco).

@@ -3,8 +3,19 @@
 ## Metadados
 - Projeto: GGastos v2
 - Data: 2026-07-10
-- Status: Aprovado para implementação do MVP
+- Status: Baseline histórico; estratégia ativa revisada em 2026-08-05
 - Idioma: PT-BR
+
+## Estratégia ativa
+
+O fluxo de ingestão em produção é importação de CSV de faturas Nubank/Bradesco
+pela Edge Function `import-card-statement`, com persistência idempotente em
+`imported_transactions` e conciliação reutilizada. Pluggy e `sync-pluggy` são
+histórico preservado, não dependências de runtime nem alvos de deploy.
+
+A especificação técnica ativa está em
+`.specs/features/card-statement-import/` e o resumo operacional em
+[`card-statement-import.md`](card-statement-import.md).
 
 ## Contexto
 O GGastos v2 precisa preservar a lógica valiosa da planilha original, mas trocar a base operacional de lançamento manual por uma arquitetura com ingestão automática de dados financeiros via Pluggy. O valor central do produto é o motor de `planejado vs. realizado`, e não apenas a importação bancária.

@@ -3,8 +3,19 @@
 ## Metadados
 - Produto: GGastos v2
 - Data: 2026-07-10
-- Status: Aprovado para implementação do MVP
+- Status: Baseline histórico; estratégia ativa revisada em 2026-08-05
 - Idioma: PT-BR
+
+## Atualização de estratégia
+
+Este PRD registra o desenho inicial baseado em Pluggy. A estratégia ativa do
+MVP passou a ser a importação assistida de faturas CSV de Nubank e Bradesco,
+com planejamento manual, conciliação e fechamento preservados. As seções que
+citam Pluggy abaixo são contexto histórico, não orientação de implementação ou
+deploy.
+
+Fonte ativa: [`card-statement-import.md`](card-statement-import.md) e
+`.specs/features/card-statement-import/`.
 
 ## Contexto
 O GGastos nasceu a partir de uma planilha mensal de controle financeiro com uma característica pouco atendida pelos apps atuais: mostrar com clareza o quanto do mês já está comprometido por gastos planejados, antes mesmo de todas as transações acontecerem.
@@ -31,11 +42,13 @@ Apps de finanças normalmente mostram bem o passado e o presente, mas mostram ma
 - o que veio automaticamente do banco e o que ainda preciso planejar manualmente.
 
 ## Visão do Produto
-O GGastos v2 será um app mobile de planejamento financeiro pessoal centrado em `planejado vs. realizado`, usando a Pluggy em modo pessoal/free como principal fonte automática dos próprios dados financeiros conectados no ecossistema Meu Pluggy, especialmente extrato, saldo e investimentos, sem perder a capacidade manual de modelar o futuro.
+O GGastos v2 é um app mobile de planejamento financeiro pessoal centrado em
+`planejado vs. realizado`. A fonte automática ativa são faturas CSV de cartão
+Nubank e Bradesco; registros fora desses cartões permanecem manuais.
 
 ## Objetivos
 1. Transformar o modelo mental da planilha em um produto digital confiável.
-2. Reduzir drasticamente a digitação manual via sincronização bancária.
+2. Reduzir drasticamente a digitação manual por importação de faturas CSV suportadas.
 3. Preservar e ampliar a visão de gasto previsto do mês.
 4. Conciliar automaticamente transações importadas com compromissos planejados.
 5. Dar fechamento mensal e consolidado anual com poucas ações manuais.
@@ -59,7 +72,26 @@ O GGastos v2 será um app mobile de planejamento financeiro pessoal centrado em 
 - Conciliação antes de resumo: dashboard não pode misturar planejado e realizado sem deixar a regra explícita.
 - Mês como unidade operacional: a experiência principal continua sendo mensal, com visão anual consolidada.
 
-## Escopo MVP
+## Escopo ativo do MVP
+
+### 1. Importação de fatura
+- Importar CSV de Nubank e Bradesco.
+- Mostrar resultado por lote: lidas, importadas, duplicadas, ignoradas, falhas
+  e matches criados.
+- Preservar dados de origem e impedir duplicidade por fingerprint de linha.
+
+### 2. Planejamento e conciliação
+- Manter lançamentos manuais, recorrências e parcelas futuras conhecidas.
+- Conciliar automaticamente ou sugerir a conciliação entre linha da fatura e
+  planejamento, sem dupla contagem no dashboard.
+
+### 3. Limites da primeira versão
+- Não há importação por PDF/OCR, e-mail ou Open Finance.
+- Apenas Nubank e Bradesco são suportados.
+- Categorias internas podem ficar vazias após a importação e ser revisadas
+  depois, sem bloquear o realizado do mês.
+
+## Escopo MVP original (histórico)
 
 ### 1. Conexão financeira
 - Consumir os próprios dados já autorizados no ambiente pessoal da Pluggy.

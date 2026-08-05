@@ -1,7 +1,9 @@
 # Importacao de Fatura de Cartao Tasks
 
 **Design**: `.specs/features/card-statement-import/design.md`
-**Status**: Draft
+**Status**: Implementado e validado em 2026-08-05. As exceções de ambiente
+registradas nas tarefas permanecem como histórico de verificação, não como
+bloqueio do fluxo de produto.
 
 ---
 
