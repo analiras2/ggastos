@@ -65,6 +65,17 @@ Pluggy cleanup should happen after the CSV import route exists, so the app does 
 
 ## Data Model Decisions
 
+### Card Credits and Expense Adjustments
+
+Imported card rows keep `amount_cents` as an absolute value. Budget impact is computed from
+`impact_type` plus `direction`:
+
+- `EXPENSE` + `DEBIT` increases actual expenses.
+- `EXPENSE` + `CREDIT` reduces actual expenses, covering card refunds, reversals and Nubank negative CSV amounts.
+- Bradesco payment/credit rows such as invoice payment and previous balance are parser-skipped and never become ordinary income.
+
+Monthly dashboard aggregates apply this signed interpretation before writing month snapshots, so card credits lower `actualExpenseCents` instead of inflating `actualIncomeCents`.
+
 ### `statement_import_batches`
 
 Tracks every upload and its parse/upsert summary.

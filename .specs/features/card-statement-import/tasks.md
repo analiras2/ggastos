@@ -267,10 +267,10 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] Negative Nubank amount fixture has expected budget effect.
-- [ ] Bradesco payment rows are skipped and not treated as income.
-- [ ] Dashboard actual totals reflect card expense adjustments correctly.
-- [ ] Behavior is documented in design notes.
+- [x] Negative Nubank amount fixture has expected budget effect.
+- [x] Bradesco payment rows are skipped and not treated as income.
+- [x] Dashboard actual totals reflect card expense adjustments correctly.
+- [x] Behavior is documented in design notes.
 
 **Commit**: `fix(statements): handle card credits as expense adjustments`
 
