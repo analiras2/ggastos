@@ -307,10 +307,10 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] `pluggy-js` is removed.
-- [ ] `react-native-pluggy-connect` is removed.
-- [ ] `react-native-webview` is removed only if unused elsewhere.
-- [ ] `npm install` completes and lockfile is updated.
+- [x] `pluggy-js` is removed.
+- [x] `react-native-pluggy-connect` is removed.
+- [x] `react-native-webview` is removed only if unused elsewhere.
+- [x] `npm install` completes and lockfile is updated. Note: existing `patch-package` postinstall reported an `expo-modules-jsi` patch failure, but npm exited 0 and the lockfile was updated.
 
 **Commit**: `chore(mobile): remove Pluggy dependencies`
 
