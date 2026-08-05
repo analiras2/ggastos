@@ -191,6 +191,10 @@ function buildSkippedRow(
   };
 }
 
+function shouldReturnSkippedRow(reason: StatementSkippedReason): boolean {
+  return reason !== "metadata" && reason !== "summary" && reason !== "total";
+}
+
 function toTransaction(
   row: BradescoRow,
   section: StatementSection,
@@ -206,7 +210,7 @@ function toTransaction(
   if (reason) {
     return {
       transaction: null,
-      skippedRow: buildSkippedRow(row, section, reason),
+      skippedRow: shouldReturnSkippedRow(reason) ? buildSkippedRow(row, section, reason) : null,
       error: null,
     };
   }
@@ -293,7 +297,6 @@ export function parseBradescoStatement(input: StatementParserInput): ParsedState
 
     if (firstField.startsWith("resumo das despesas")) {
       activeSection = "SUMMARY";
-      skippedRows.push(buildSkippedRow(row, null, "summary"));
       continue;
     }
 
@@ -305,7 +308,6 @@ export function parseBradescoStatement(input: StatementParserInput): ParsedState
     }
 
     if (activeSection === "SUMMARY") {
-      skippedRows.push(buildSkippedRow(row, null, skippedReason(row.fields[0] ?? "") ?? "summary"));
       continue;
     }
 
@@ -315,7 +317,9 @@ export function parseBradescoStatement(input: StatementParserInput): ParsedState
 
     if (!isTransactionLikeRow(row)) {
       const reason = skippedReason(row.fields.join(" ")) ?? "metadata";
-      skippedRows.push(buildSkippedRow(row, activeSection, reason));
+      if (shouldReturnSkippedRow(reason)) {
+        skippedRows.push(buildSkippedRow(row, activeSection, reason));
+      }
       continue;
     }
 
