@@ -7,7 +7,7 @@ begin
   where jobname = 'sync-pluggy-every-12-hours'
     or command ilike '%/functions/v1/sync-pluggy%';
 exception
-  when undefined_schema or undefined_table or undefined_function then
+  when invalid_schema_name or undefined_table or undefined_function then
     null;
 end $$;
 

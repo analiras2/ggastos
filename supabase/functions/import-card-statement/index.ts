@@ -1,6 +1,10 @@
 import { getBearerToken, readAuthenticatedUser, type AuthUser } from "../_shared/auth.ts";
 import { parseBradescoStatement } from "../_shared/statements/parse-bradesco.ts";
 import { parseNubankStatement } from "../_shared/statements/parse-nubank.ts";
+import {
+  resolveStatementCategory,
+  type StatementCategoryRule,
+} from "../_shared/statements/category-rules.ts";
 import type {
   ParsedStatement,
   ParsedStatementTransaction,
@@ -48,7 +52,8 @@ type StatementTransactionUpsert = {
   user_id: string;
   connection_id: string;
   account_id: string;
-  pluggy_transaction_id: string;
+  source_provider: "CARD_STATEMENT";
+  source_transaction_id: string;
   provider_created_at: string;
   provider_updated_at: string;
   posted_at: string;
@@ -59,8 +64,6 @@ type StatementTransactionUpsert = {
   currency_code: string;
   status: "PENDING" | "POSTED";
   direction: "DEBIT" | "CREDIT";
-  pluggy_category_id: string | null;
-  pluggy_category_name: string | null;
   merchant_name: string | null;
   merchant_legal_name: string | null;
   merchant_cnpj: string | null;
@@ -81,6 +84,13 @@ type StatementTransactionUpsert = {
 
 type ExistingFingerprintRow = {
   statement_source_fingerprint: string;
+};
+
+type UserCategoryRuleRow = {
+  rule_type: string;
+  rule_value: string;
+  target_category_id: string;
+  priority: number;
 };
 
 const corsHeaders = {
@@ -252,8 +262,8 @@ async function ensureStatementAccount(
   const bankLabel = bankDisplayName(context.bank);
   const connection: FinancialConnectionUpsert = {
     user_id: context.userId,
-    pluggy_item_id: `statement:${context.bank}:${context.userId}`,
-    pluggy_connector_id: `STATEMENT_${context.bank}`,
+    source_provider: "CARD_STATEMENT",
+    source_connection_id: context.bank,
     institution_name: `${bankLabel} Card Statement`,
     status: "UPDATED",
     last_synced_at: context.now,
@@ -265,7 +275,8 @@ async function ensureStatementAccount(
   const account: FinancialAccountUpsert = {
     user_id: context.userId,
     connection_id: connectionRow.id,
-    pluggy_account_id: `statement:${context.bank}:${context.userId}:credit-card`,
+    source_provider: "CARD_STATEMENT",
+    source_account_id: `${context.bank}:CREDIT_CARD`,
     type: "CREDIT",
     subtype: "CREDIT_CARD",
     name: `${bankLabel} Credit Card`,
@@ -288,6 +299,30 @@ async function ensureStatementAccount(
     connectionId: connectionRow.id,
     accountId: accountRow.id,
   };
+}
+
+async function loadStatementCategoryRules(
+  config: SupabaseRestConfig,
+  userId: string,
+): Promise<StatementCategoryRule[]> {
+  const params = new URLSearchParams({
+    select: "rule_type,rule_value,target_category_id,priority",
+    user_id: `eq.${userId}`,
+    is_active: "eq.true",
+    order: "priority.asc,created_at.asc",
+  });
+  const rows = await supabaseRest<UserCategoryRuleRow[]>(
+    config,
+    `/rest/v1/user_category_rules?${params.toString()}`,
+    { method: "GET" },
+  );
+
+  return rows.map((rule) => ({
+    ruleType: rule.rule_type,
+    ruleValue: rule.rule_value,
+    targetCategoryId: rule.target_category_id,
+    priority: rule.priority,
+  }));
 }
 
 async function createImportBatch(
@@ -381,13 +416,15 @@ function buildImportedTransaction(
     bank: StatementBank;
     fingerprint: string;
     now: string;
+    categoryRules: readonly StatementCategoryRule[];
   },
 ): StatementTransactionUpsert {
   return {
     user_id: context.userId,
     connection_id: context.connectionId,
     account_id: context.accountId,
-    pluggy_transaction_id: `statement:${context.bank.toLowerCase()}:${context.fingerprint}`,
+    source_provider: "CARD_STATEMENT",
+    source_transaction_id: `${context.bank}:${context.fingerprint}`,
     provider_created_at: context.now,
     provider_updated_at: context.now,
     posted_at: transaction.postedAt,
@@ -398,12 +435,13 @@ function buildImportedTransaction(
     currency_code: transaction.currencyCode,
     status: "POSTED",
     direction: transaction.direction,
-    pluggy_category_id: null,
-    pluggy_category_name: null,
     merchant_name: null,
     merchant_legal_name: null,
     merchant_cnpj: null,
-    internal_category_id: null,
+    internal_category_id: resolveStatementCategory(
+      transaction.description,
+      context.categoryRules,
+    ),
     impact_type: transaction.impactType,
     is_internal_transfer: false,
     is_hidden_from_budget: transaction.defaultImportMode !== "IMPORT",
@@ -436,6 +474,7 @@ async function buildImportedTransactions(
     batchId: string;
     bank: StatementBank;
     now: string;
+    categoryRules: readonly StatementCategoryRule[];
   },
 ): Promise<StatementTransactionUpsert[]> {
   const transactions: StatementTransactionUpsert[] = [];
@@ -467,7 +506,7 @@ async function upsertStatementTransactions(
 
   const rows = await supabaseRest<Array<{ id: string }>>(
     config,
-    "/rest/v1/imported_transactions?on_conflict=pluggy_transaction_id&select=id",
+    "/rest/v1/imported_transactions?on_conflict=user_id,source_provider,source_transaction_id&select=id",
     {
       method: "POST",
       headers: {
@@ -567,11 +606,13 @@ Deno.serve(async (request) => {
       bank: importRequest.bank,
       now,
     });
+    const categoryRules = await loadStatementCategoryRules(config, user.id);
     const transactions = await buildImportedTransactions(parsed, {
       userId: user.id,
       bank: importRequest.bank,
       batchId,
       now,
+      categoryRules,
       ...accountContext,
     });
     const existingFingerprints = await findExistingFingerprints(config, {

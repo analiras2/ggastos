@@ -16,10 +16,11 @@ mas a origem ativa é CSV de fatura. A migration
 parcelas. O índice único por usuário, banco e fingerprint garante reimportação
 idempotente.
 
-`financial_connections` e `financial_accounts` recebem identificadores
-`statement:*` para representar a origem de cartão sem exigir conexão Pluggy.
-Uma migração de nomes neutros será planejada separadamente; até lá, nomes
-legados não indicam integração Pluggy ativa.
+`financial_connections`, `financial_accounts` e `imported_transactions` usam
+agora `source_provider` com `source_connection_id`, `source_account_id` e
+`source_transaction_id` como identidade ativa. As colunas `pluggy_*` ficaram
+opcionais e existem somente para compatibilidade histórica; novos imports CSV
+não as preenchem.
 
 ## Objetivo
 Definir o contrato de dados interno do GGastos v2 para suportar:

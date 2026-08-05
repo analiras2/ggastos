@@ -10,8 +10,8 @@ export type ConnectionStatus =
 
 export type FinancialConnectionUpsert = {
   user_id: string;
-  pluggy_item_id: string;
-  pluggy_connector_id: string;
+  source_provider: "PLUGGY" | "CARD_STATEMENT" | "LEGACY";
+  source_connection_id: string;
   institution_name: string;
   status: ConnectionStatus;
   last_synced_at: string | null;
@@ -22,7 +22,8 @@ export type FinancialConnectionUpsert = {
 export type FinancialAccountUpsert = {
   user_id: string;
   connection_id: string;
-  pluggy_account_id: string;
+  source_provider: "PLUGGY" | "CARD_STATEMENT" | "LEGACY";
+  source_account_id: string;
   type: "BANK" | "CREDIT";
   subtype: "CHECKING_ACCOUNT" | "SAVINGS_ACCOUNT" | "CREDIT_CARD" | "OTHER";
   name: string;
@@ -67,12 +68,22 @@ export function upsertFinancialConnection(
   config: SupabaseRestConfig,
   connection: FinancialConnectionUpsert,
 ): Promise<{ id: string }> {
-  return upsertOne(config, "financial_connections", "pluggy_item_id", connection);
+  return upsertOne(
+    config,
+    "financial_connections",
+    "user_id,source_provider,source_connection_id",
+    connection,
+  );
 }
 
 export function upsertFinancialAccount(
   config: SupabaseRestConfig,
   account: FinancialAccountUpsert,
 ): Promise<{ id: string }> {
-  return upsertOne(config, "financial_accounts", "pluggy_account_id", account);
+  return upsertOne(
+    config,
+    "financial_accounts",
+    "user_id,source_provider,source_account_id",
+    account,
+  );
 }

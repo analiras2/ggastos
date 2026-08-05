@@ -1,7 +1,7 @@
 # State
 
 **Last Updated:** 2026-08-05
-**Current Work:** Branch `card-statement-import`, fluxo de importação CSV concluído. T1-T16, hardening de dependências e validação ponta a ponta foram concluídos: importação/reimportação Nubank e Bradesco, reconciliação, RLS (17/17), lint, typecheck, auditoria npm sem vulnerabilidades e exportação iOS. A documentação ativa foi consolidada em `docs/card-statement-import.md`; Pluggy permanece apenas como histórico.
+**Current Work:** Branch `card-statement-import`, fluxo de importação CSV concluído e resetado localmente. T1-T16, hardening de dependências e validação ponta a ponta foram concluídos: importação/reimportação Nubank e Bradesco, regras de categoria, atribuição por conciliação, identidade de origem neutra, RLS (17/17), lint, typecheck, auditoria npm sem vulnerabilidades e exportação iOS. A documentação ativa foi consolidada em `docs/card-statement-import.md`; Pluggy permanece apenas como histórico.
 
 ---
 
@@ -232,6 +232,23 @@ ativos de implementação.
 
 ---
 
+### AD-031: Origem neutra e categoria de CSV sem inferência enganosa (2026-08-05)
+
+**Decision:** A identidade de conexões, contas e transações passou a usar
+`source_provider` e `source_*_id`; os campos `pluggy_*` são legados e
+opcionais. A importação aplica regras `DESCRIPTION_CONTAINS` do usuário e o
+dashboard usa a categoria do planejamento quando uma transação sem categoria
+própria tiver match ativo.
+**Reason:** IDs sintéticos em colunas Pluggy confundiam a origem real. Além
+disso, deixar CSV sem categoria fora do breakdown tornava invisível o realizado
+de parcelas planejadas.
+**Trade-off:** Uma linha sem regra e sem conciliação continua sem categoria,
+evitando inventar classificação. A UI de gestão das regras é uma evolução P2.
+**Impact:** Reimportação continua idempotente pela identidade de origem; o
+dashboard mostra o realizado na categoria planejada sem dupla contagem.
+
+---
+
 ## Active Blockers
 
 None.
@@ -324,10 +341,10 @@ None.
 ## Deferred Ideas
 
 - [ ] `@react-native-community/datetimepicker` (usado em `mobile/src/features/planning/date-field.tsx`) não renderiza nada no `Platform.OS === 'web'` — o campo "Data" do formulário "Adicionar planejamento" fica impossível de preencher via UI no build web (funciona normalmente em iOS/Android). Precisa de um fallback web (ex.: `<input type="date">` condicional por plataforma) — Captured during: validação `T10`
-- [ ] Renomear/desacoplar colunas herdadas da Pluggy (`pluggy_item_id`, `pluggy_account_id`, `pluggy_transaction_id`, `pluggy_category_*`) para identificadores neutros de fonte/importação depois que o fluxo CSV estiver estável — Captured during: T15 `card-statement-import`
+- [x] ~~Renomear/desacoplar colunas herdadas da Pluggy (`pluggy_item_id`, `pluggy_account_id`, `pluggy_transaction_id`, `pluggy_category_*`) para identificadores neutros de fonte/importação~~ — Resolvido em 2026-08-05: `source_provider` e `source_*_id` são a identidade ativa; colunas `pluggy_*` são compatibilidade legada opcional.
 - [x] ~~Revisar documentação histórica e decisões antigas que ainda descrevem Pluggy como estratégia ativa~~ — Resolvido em 2026-08-05: `README`, `mobile/README`, `docs/card-statement-import.md`, PRD, TDD, stack, contrato de dados e roadmap agora identificam CSV Nubank/Bradesco como fluxo ativo e Pluggy como histórico/snapshot.
-- [ ] Reavaliar o breakdown por categoria para transações de fatura CSV: hoje a importação grava `internal_category_id: null`, então totais gerais funcionam, mas análises por categoria dependem de match/manual category posterior — Captured during: T12/T15 `card-statement-import`
-- [ ] Trocar o uso de identificadores sintéticos `statement:*` dentro de campos legados por um modelo mais explícito (`source_provider`, `source_account_id`, `source_transaction_id`) quando houver uma migration de compatibilidade planejada — Captured during: T15 `card-statement-import`
+- [x] ~~Reavaliar o breakdown por categoria para transações de fatura CSV~~ — Resolvido em 2026-08-05: regras `DESCRIPTION_CONTAINS` categorizam novos imports e a RPC do dashboard usa a categoria do planejamento para matches ativos sem categoria própria.
+- [x] ~~Trocar o uso de identificadores sintéticos `statement:*` dentro de campos legados por um modelo mais explícito~~ — Resolvido em 2026-08-05 pela migration `20260805140000_add_source_identifiers.sql`.
 - [x] ~~`useCloseMonth` nunca foi conectado a nenhum botão/tela~~ — Resolvido em 2026-07-28: botão "Fechar mês" adicionado ao `QuickActionRow` do dashboard (`dashboard-screen.tsx`), com banner de loading/erro/sucesso reaproveitando `SyncStatusBanner`. Verificado ao vivo via browser real (signup → clique → `200` → snapshot persistido no banco).
 - [ ] Mapear `pluggy_category_name` (inglês) para as categorias internas (português) antes do score de conciliação, ou remover/reponderar o componente de categoria — sem isso, `AUTO_MATCH_THRESHOLD` (0.9) é praticamente inatingível para transações reais da Pluggy (teto de 0.85 comprovado em `T12`, ver L-003) — Captured during: validação `T12`
 - [ ] `internal_category_id` de `imported_transactions` nunca é preenchido automaticamente a partir do `pluggy_category_name`/`user_category_rules`, então o breakdown por categoria do dashboard mensal mostra `actualCents: 0` mesmo com transações reais sincronizadas (os totais gerais do resumo continuam corretos) — Captured during: validação `T12`

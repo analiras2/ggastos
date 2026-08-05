@@ -194,6 +194,8 @@ async function seedFixturesForUserA(request, userAId, userBId) {
 
   const [connection] = await request("POST", "financial_connections", {
     user_id: userAId,
+    source_provider: "LEGACY",
+    source_connection_id: `rls-connection-${runId}`,
     institution_name: "RLS Test Bank",
     status: "UPDATED",
   });
@@ -201,7 +203,8 @@ async function seedFixturesForUserA(request, userAId, userBId) {
   const [account] = await request("POST", "financial_accounts", {
     user_id: userAId,
     connection_id: connection.id,
-    pluggy_account_id: `rls-account-${runId}`,
+    source_provider: "LEGACY",
+    source_account_id: `rls-account-${runId}`,
     type: "BANK",
     subtype: "CHECKING_ACCOUNT",
     name: "RLS Test Checking",
@@ -212,7 +215,8 @@ async function seedFixturesForUserA(request, userAId, userBId) {
     user_id: userAId,
     connection_id: connection.id,
     account_id: account.id,
-    pluggy_transaction_id: `rls-transaction-${runId}`,
+    source_provider: "LEGACY",
+    source_transaction_id: `rls-transaction-${runId}`,
     posted_at: `${month}-10T12:00:00Z`,
     competency_month: month,
     description: "RLS test salary deposit",

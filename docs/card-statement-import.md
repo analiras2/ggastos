@@ -44,8 +44,11 @@ sintéticas em [`.specs/features/card-statement-import/fixtures/`](/Users/analir
   como compras.
 - `Lançamentos programados` do Bradesco são processados separadamente das linhas
   da fatura atual.
-- Linhas sem categoria interna ainda são importadas; a categorização assistida
-  continua como evolução posterior.
+- Regras ativas `DESCRIPTION_CONTAINS` preenchem `internal_category_id` na
+  importação, respeitando a menor prioridade numérica.
+- Quando uma linha não tiver categoria própria, mas tiver match ativo, o
+  dashboard usa a categoria do planejamento conciliado. Linhas sem regra e sem
+  match continuam importadas sem uma categoria inventada.
 
 ## Limites atuais
 
