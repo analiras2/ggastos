@@ -366,12 +366,12 @@ None.
 ## Todos
 
 - [x] Executar T16: remover login/cadastro/sign-out da UX mantendo owner auto sign-in, tokens válidos para RPC/Edge Functions e estado de erro quando `EXPO_PUBLIC_OWNER_EMAIL/PASSWORD` estiverem ausentes.
-- [ ] Resolver/confirmar a falha recorrente do `postinstall` em `mobile/patches/expo-modules-jsi+57.0.4.patch`: `npm install` saiu com código 0 em T14, mas `patch-package` reportou que o patch não aplica em `node_modules/expo-modules-jsi`.
-- [ ] Rodar `supabase db reset` quando o Postgres local estiver ativo para validar a sequência completa de migrations, incluindo `20260805123000_unschedule_sync_pluggy_cron.sql`.
+- [x] ~~Resolver/confirmar a falha recorrente do `postinstall` em `mobile/patches/expo-modules-jsi+57.0.4.patch`~~ — Resolvido em 2026-08-05: patch incompatível removido; instalação e validações do Expo passaram sem `patch-package`.
+- [x] ~~Rodar `supabase db reset` quando o Postgres local estiver ativo para validar a sequência completa de migrations, incluindo `20260805123000_unschedule_sync_pluggy_cron.sql`~~ — Resolvido em 2026-08-05: reset completo aplicou todas as migrations e seed em banco limpo.
 - [ ] Instalar/configurar `deno` ou padronizar um comando de typecheck para Edge Functions; em T15 a validação foi feita com `tsc` local e `allowImportingTsExtensions` porque `deno` não estava disponível.
-- [ ] Reexecutar a bateria das Phases 1-4 após T16, usando a porta 8081 liberada e Supabase local ativo, cobrindo import Nubank/Bradesco, idempotência, match de parcelas, dashboard e inbox.
-- [ ] Confirmar que os CSV brutos dos bancos continuam fora do repositório; manter apenas fixtures sanitizadas em `.specs/features/card-statement-import/fixtures/`.
-- [ ] Depois da limpeza de login, revisar se o app ainda precisa de telas/estados de auth fallback ou se podem virar setup-only fora do fluxo principal.
+- [x] ~~Reexecutar a bateria das Phases 1-4 após T16, usando a porta 8081 liberada e Supabase local ativo, cobrindo import Nubank/Bradesco, idempotência, match de parcelas, dashboard e inbox~~ — Resolvido em 2026-08-05: importações, reimportação idempotente, conciliação, dashboard, inbox e RLS foram revalidados ponta a ponta.
+- [x] ~~Confirmar que os CSV brutos dos bancos continuam fora do repositório; manter apenas fixtures sanitizadas em `.specs/features/card-statement-import/fixtures/`~~ — Resolvido em 2026-08-05: o Git contém somente as fixtures sanitizadas Nubank e Bradesco.
+- [x] ~~Depois da limpeza de login, revisar se o app ainda precisa de telas/estados de auth fallback ou se podem virar setup-only fora do fluxo principal~~ — Resolvido em 2026-08-05: `AuthProvider` e `AuthBootstrapScreen` permanecem necessários para o owner auto sign-in e erros de configuração; não há tela de login/cadastro/sign-out no fluxo principal.
 
 ## Preferences
 
