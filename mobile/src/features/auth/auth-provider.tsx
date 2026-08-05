@@ -5,76 +5,28 @@ import {
   useState,
   type PropsWithChildren,
 } from 'react';
-import type { Session, User } from '@supabase/supabase-js';
+import type { Session } from '@supabase/supabase-js';
 
-import { missingSupabaseEnv, ownerCredentials, supabase } from '@/lib/supabase/client';
+import { missingOwnerEnv, missingSupabaseEnv, ownerCredentials, supabase } from '@/lib/supabase/client';
+import { ensureOwnerSession, ensureProfile } from '@/features/auth/auth-service';
 
 type AuthContextValue = {
-  isConfigured: boolean;
   isLoading: boolean;
   session: Session | null;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
   missingEnv: string[];
+  bootstrapError: string | null;
 };
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
-async function ensureProfile(user: User) {
-  if (!supabase) {
-    return;
-  }
-
-  const displayNameSource =
-    typeof user.user_metadata?.display_name === 'string'
-      ? user.user_metadata.display_name
-      : typeof user.user_metadata?.name === 'string'
-        ? user.user_metadata.name
-        : null;
-
-  const { error } = await supabase.from('profiles').upsert(
-    {
-      id: user.id,
-      email: user.email ?? `${user.id}@users.ggastos.local`,
-      display_name: displayNameSource,
-    },
-    { onConflict: 'id' }
-  );
-
-  if (error) {
-    console.warn('Unable to sync profile after auth event.', error.message);
-  }
-}
-
-async function attemptOwnerAutoSignIn() {
-  if (!supabase || !ownerCredentials) {
-    return;
-  }
-
-  const { error: signInError } = await supabase.auth.signInWithPassword(
-    ownerCredentials
-  );
-  if (!signInError) {
-    return;
-  }
-
-  // First launch against this Supabase project: the owner account doesn't
-  // exist yet, so create it.
-  const { error: signUpError } = await supabase.auth.signUp(ownerCredentials);
-  if (signUpError) {
-    throw signUpError;
-  }
-}
-
 export function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(supabase !== null);
+  const [isLoading, setIsLoading] = useState(supabase !== null && ownerCredentials !== null);
+  const [bootstrapError, setBootstrapError] = useState<string | null>(null);
   const lastProfileSyncUserId = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!supabase) {
-      setIsLoading(false);
+    if (!supabase || !ownerCredentials) {
       return;
     }
 
@@ -99,18 +51,21 @@ export function AuthProvider({ children }: PropsWithChildren) {
           return;
         }
 
-        if (!ownerCredentials) {
-          setIsLoading(false);
-          return;
-        }
-
         try {
-          await attemptOwnerAutoSignIn();
+          const ownerSession = await ensureOwnerSession();
+          if (!isMounted) {
+            return;
+          }
+
+          setSession(ownerSession);
+          lastProfileSyncUserId.current = ownerSession.user.id;
+          void ensureProfile(ownerSession.user);
         } catch (autoSignInError) {
-          console.warn(
-            'Automatic owner sign-in failed; falling back to manual login.',
-            autoSignInError
-          );
+          const message = autoSignInError instanceof Error
+            ? autoSignInError.message
+            : 'Unknown owner sign-in error.';
+          console.warn('Automatic owner sign-in failed.', message);
+          setBootstrapError(message);
         } finally {
           if (isMounted) {
             setIsLoading(false);
@@ -149,61 +104,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
     };
   }, []);
 
-  async function signIn(email: string, password: string) {
-    if (!supabase) {
-      throw new Error(
-        `Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`
-      );
-    }
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      throw error;
-    }
-  }
-
-  async function signUp(email: string, password: string) {
-    if (!supabase) {
-      throw new Error(
-        `Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`
-      );
-    }
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) {
-      throw error;
-    }
-  }
-
-  async function signOut() {
-    if (!supabase) {
-      return;
-    }
-
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      throw error;
-    }
-  }
-
   return (
     <AuthContext.Provider
       value={{
-        isConfigured: supabase !== null,
         isLoading,
         session,
-        signIn,
-        signUp,
-        signOut,
-        missingEnv: missingSupabaseEnv,
+        missingEnv: [...missingSupabaseEnv, ...missingOwnerEnv],
+        bootstrapError,
       }}
     >
       {children}

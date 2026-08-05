@@ -266,7 +266,7 @@ Raw samples were provided on 2026-08-03 and inspected locally only. They contain
 | CSV-06 | P2: Categorizacao assistida por regras | Tasks | In Tasks |
 | CSV-07 | P2: Historico de lotes importados | Tasks | In Tasks |
 | CSV-08 | P1: Remover Pluggy da rota ativa do app | Tasks | In Tasks |
-| CSV-09 | P1: Remover login manual da experiencia pessoal | Tasks | In Tasks |
+| CSV-09 | P1: Remover login manual da experiencia pessoal | Tasks | Done |
 
 **Coverage:** 9 total, 9 mapped to tasks, 0 unmapped.
 

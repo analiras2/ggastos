@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-08-05T13:06:08-04:00
-**Current Work:** Branch `card-statement-import`, Phase 4 em andamento. T13-T15 concluídas: UI/dependências mobile Pluggy removidas e Edge Functions Pluggy ativas apagadas. Próximo passo natural é T16, removendo a experiência manual de login sem remover Supabase Auth/RLS.
+**Last Updated:** 2026-08-05T13:14:52-04:00
+**Current Work:** Branch `card-statement-import`, Phase 4 em andamento. T13-T16 concluídas: UI/dependências mobile Pluggy e a UX manual de autenticação foram removidas, mantendo auto sign-in do owner e Supabase Auth/RLS. Próximo passo natural é reexecutar a bateria de validação das Phases 1-4.
 
 ---
 
@@ -331,7 +331,7 @@ None.
 
 ## Todos
 
-- [ ] Executar T16: remover login/cadastro/sign-out da UX mantendo owner auto sign-in, tokens válidos para RPC/Edge Functions e estado de erro quando `EXPO_PUBLIC_OWNER_EMAIL/PASSWORD` estiverem ausentes.
+- [x] Executar T16: remover login/cadastro/sign-out da UX mantendo owner auto sign-in, tokens válidos para RPC/Edge Functions e estado de erro quando `EXPO_PUBLIC_OWNER_EMAIL/PASSWORD` estiverem ausentes.
 - [ ] Resolver/confirmar a falha recorrente do `postinstall` em `mobile/patches/expo-modules-jsi+57.0.4.patch`: `npm install` saiu com código 0 em T14, mas `patch-package` reportou que o patch não aplica em `node_modules/expo-modules-jsi`.
 - [ ] Rodar `supabase db reset` quando o Postgres local estiver ativo para validar a sequência completa de migrations, incluindo `20260805123000_unschedule_sync_pluggy_cron.sql`.
 - [ ] Instalar/configurar `deno` ou padronizar um comando de typecheck para Edge Functions; em T15 a validação foi feita com `tsc` local e `allowImportingTsExtensions` porque `deno` não estava disponível.

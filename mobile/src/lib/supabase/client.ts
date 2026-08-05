@@ -12,12 +12,13 @@ export const missingSupabaseEnv = [
   !supabasePublishableKey ? 'EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY' : null,
 ].filter((value): value is string => value !== null);
 
-// GGastos is a single-user personal app — there is no real sign-up flow in
-// production. Setting these lets the app authenticate silently on launch
-// instead of showing the login form (AuthScreen stays as a manual fallback
-// if these are unset or the auto sign-in fails).
 const ownerEmail = process.env.EXPO_PUBLIC_OWNER_EMAIL?.trim() ?? '';
 const ownerPassword = process.env.EXPO_PUBLIC_OWNER_PASSWORD ?? '';
+
+export const missingOwnerEnv = [
+  !ownerEmail ? 'EXPO_PUBLIC_OWNER_EMAIL' : null,
+  !ownerPassword ? 'EXPO_PUBLIC_OWNER_PASSWORD' : null,
+].filter((value): value is string => value !== null);
 
 export const ownerCredentials =
   ownerEmail.length > 0 && ownerPassword.length > 0

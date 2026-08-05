@@ -1,13 +1,17 @@
-import { AuthScreen } from '@/features/auth/auth-screen';
-import { useAuth } from '@/features/auth/use-auth';
+import { AuthBootstrapScreen } from '@/features/auth/auth-bootstrap-screen';
+import { useAppBootstrapViewModel } from '@/features/auth/use-app-bootstrap-view-model';
 import { AppShell } from '@/features/app-shell/app-shell';
 
 export default function IndexScreen() {
-  const { session } = useAuth();
+  const { isAppReady, isLoading, setupError } = useAppBootstrapViewModel();
 
-  if (session) {
-    return <AppShell />;
+  if (isLoading) {
+    return <AuthBootstrapScreen />;
   }
 
-  return <AuthScreen />;
+  if (!isAppReady) {
+    return <AuthBootstrapScreen errorMessage={setupError} />;
+  }
+
+  return <AppShell />;
 }

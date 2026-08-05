@@ -347,11 +347,11 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] `IndexScreen` renders `AppShell` after owner session bootstrap, never `AuthScreen`.
-- [ ] Manual `AuthScreen` and unused sign-in/sign-up methods are removed or isolated from production flow.
-- [ ] Settings no longer shows sign out.
-- [ ] Missing owner env vars show a setup error state, not a login form.
-- [ ] Existing authenticated RPC/Edge Function calls still receive valid bearer tokens.
+- [x] `IndexScreen` renders `AppShell` after owner session bootstrap, never `AuthScreen`.
+- [x] Manual `AuthScreen` and unused sign-in/sign-up methods are removed or isolated from production flow.
+- [x] Settings no longer shows sign out.
+- [x] Missing owner env vars show a setup error state, not a login form.
+- [x] Existing authenticated RPC/Edge Function calls still receive valid bearer tokens.
 
 **Commit**: `refactor(auth): remove manual login flow`
 
