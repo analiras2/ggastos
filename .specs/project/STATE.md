@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-08-03T00:00:00-04:00
-**Current Work:** Pivot de estratégia iniciado na branch `card-statement-import`: Pluggy foi preservado na branch `pluggy-integration-snapshot`, e o produto passa a mirar importação de faturas CSV de cartão de crédito começando por Nubank e Bradesco. O núcleo mensal, planejamento, dashboard, conciliação e fechamento continuam como base reutilizável.
+**Last Updated:** 2026-08-05T13:06:08-04:00
+**Current Work:** Branch `card-statement-import`, Phase 4 em andamento. T13-T15 concluídas: UI/dependências mobile Pluggy removidas e Edge Functions Pluggy ativas apagadas. Próximo passo natural é T16, removendo a experiência manual de login sem remover Supabase Auth/RLS.
 
 ---
 
@@ -307,6 +307,10 @@ None.
 ## Deferred Ideas
 
 - [ ] `@react-native-community/datetimepicker` (usado em `mobile/src/features/planning/date-field.tsx`) não renderiza nada no `Platform.OS === 'web'` — o campo "Data" do formulário "Adicionar planejamento" fica impossível de preencher via UI no build web (funciona normalmente em iOS/Android). Precisa de um fallback web (ex.: `<input type="date">` condicional por plataforma) — Captured during: validação `T10`
+- [ ] Renomear/desacoplar colunas herdadas da Pluggy (`pluggy_item_id`, `pluggy_account_id`, `pluggy_transaction_id`, `pluggy_category_*`) para identificadores neutros de fonte/importação depois que o fluxo CSV estiver estável — Captured during: T15 `card-statement-import`
+- [ ] Revisar documentação histórica e decisões antigas que ainda descrevem Pluggy como estratégia ativa (`docs/stack-tecnica-supabase-mvp.md`, AD-002/004/009/017/023/025) para deixar claro o que virou histórico/snapshot — Captured during: T15 `card-statement-import`
+- [ ] Reavaliar o breakdown por categoria para transações de fatura CSV: hoje a importação grava `internal_category_id: null`, então totais gerais funcionam, mas análises por categoria dependem de match/manual category posterior — Captured during: T12/T15 `card-statement-import`
+- [ ] Trocar o uso de identificadores sintéticos `statement:*` dentro de campos legados por um modelo mais explícito (`source_provider`, `source_account_id`, `source_transaction_id`) quando houver uma migration de compatibilidade planejada — Captured during: T15 `card-statement-import`
 - [x] ~~`useCloseMonth` nunca foi conectado a nenhum botão/tela~~ — Resolvido em 2026-07-28: botão "Fechar mês" adicionado ao `QuickActionRow` do dashboard (`dashboard-screen.tsx`), com banner de loading/erro/sucesso reaproveitando `SyncStatusBanner`. Verificado ao vivo via browser real (signup → clique → `200` → snapshot persistido no banco).
 - [ ] Mapear `pluggy_category_name` (inglês) para as categorias internas (português) antes do score de conciliação, ou remover/reponderar o componente de categoria — sem isso, `AUTO_MATCH_THRESHOLD` (0.9) é praticamente inatingível para transações reais da Pluggy (teto de 0.85 comprovado em `T12`, ver L-003) — Captured during: validação `T12`
 - [ ] `internal_category_id` de `imported_transactions` nunca é preenchido automaticamente a partir do `pluggy_category_name`/`user_category_rules`, então o breakdown por categoria do dashboard mensal mostra `actualCents: 0` mesmo com transações reais sincronizadas (os totais gerais do resumo continuam corretos) — Captured during: validação `T12`
@@ -326,6 +330,14 @@ None.
 ---
 
 ## Todos
+
+- [ ] Executar T16: remover login/cadastro/sign-out da UX mantendo owner auto sign-in, tokens válidos para RPC/Edge Functions e estado de erro quando `EXPO_PUBLIC_OWNER_EMAIL/PASSWORD` estiverem ausentes.
+- [ ] Resolver/confirmar a falha recorrente do `postinstall` em `mobile/patches/expo-modules-jsi+57.0.4.patch`: `npm install` saiu com código 0 em T14, mas `patch-package` reportou que o patch não aplica em `node_modules/expo-modules-jsi`.
+- [ ] Rodar `supabase db reset` quando o Postgres local estiver ativo para validar a sequência completa de migrations, incluindo `20260805123000_unschedule_sync_pluggy_cron.sql`.
+- [ ] Instalar/configurar `deno` ou padronizar um comando de typecheck para Edge Functions; em T15 a validação foi feita com `tsc` local e `allowImportingTsExtensions` porque `deno` não estava disponível.
+- [ ] Reexecutar a bateria das Phases 1-4 após T16, usando a porta 8081 liberada e Supabase local ativo, cobrindo import Nubank/Bradesco, idempotência, match de parcelas, dashboard e inbox.
+- [ ] Confirmar que os CSV brutos dos bancos continuam fora do repositório; manter apenas fixtures sanitizadas em `.specs/features/card-statement-import/fixtures/`.
+- [ ] Depois da limpeza de login, revisar se o app ainda precisa de telas/estados de auth fallback ou se podem virar setup-only fora do fluxo principal.
 
 ## Preferences
 
