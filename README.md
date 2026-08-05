@@ -9,7 +9,6 @@ planejamento e mantém dashboard, inbox de revisão e fechamento mensal.
 - [`supabase/`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/supabase): schema, Edge Functions e testes de RLS.
 - [`docs/`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs): documentação ativa de produto, arquitetura e operação.
 - [`.specs/`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/.specs): especificações e histórico de decisões.
-- [`legacy/`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/legacy): app React Native antigo arquivado para referência.
 
 ## Documentos principais
 - [PRD](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/prd-ggastos-v2.md)
@@ -34,5 +33,4 @@ A integração Pluggy foi preservada apenas como histórico na branch
 ## Diretriz
 O desenvolvimento novo deve partir de `docs/` e da spec
 [`card-statement-import`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/.specs/features/card-statement-import/spec.md).
-O conteúdo de `legacy/` e as seções de Pluggy nos documentos históricos existem
-apenas para consulta.
+As seções de Pluggy nos documentos históricos existem apenas para consulta.

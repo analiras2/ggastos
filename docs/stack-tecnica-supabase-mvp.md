@@ -250,7 +250,6 @@ Registrar:
 
 ```text
 docs/
-legacy/
 mobile/
 supabase/
   migrations/
