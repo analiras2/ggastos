@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import { useAuth } from '@/features/auth/use-auth';
-import { ConnectionsSection } from '@/features/settings/connections-section';
 
 export function SettingsScreen() {
   const { session, signOut } = useAuth();
@@ -34,8 +33,6 @@ export function SettingsScreen() {
         <Text style={styles.label}>Conta</Text>
         <Text style={styles.email}>{session?.user.email ?? session?.user.id}</Text>
       </View>
-
-      <ConnectionsSection />
 
       {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 

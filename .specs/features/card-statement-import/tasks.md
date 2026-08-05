@@ -287,10 +287,10 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] Settings no longer imports connection components.
-- [ ] Connect/reconnect Pluggy UI files are removed.
-- [ ] No active mobile route references Pluggy connection status.
-- [ ] TypeScript check passes.
+- [x] Settings no longer imports connection components.
+- [x] Connect/reconnect Pluggy UI files are removed.
+- [x] No active mobile route references Pluggy connection status.
+- [x] TypeScript check passes.
 
 **Commit**: `refactor(settings): remove Pluggy connection UI`
 
