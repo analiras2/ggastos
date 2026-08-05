@@ -11,6 +11,8 @@ type TransactionRow = {
   competency_month: string;
   account_id: string;
   pluggy_category_name: string | null;
+  statement_installment_index: number | null;
+  statement_installment_total: number | null;
 };
 
 type PlannedEntryRow = {
@@ -22,6 +24,8 @@ type PlannedEntryRow = {
   month: string;
   expected_account_id: string | null;
   category_id: string;
+  installment_index: number | null;
+  installment_total: number | null;
 };
 
 type ReconciliationMatchRow = {
@@ -59,7 +63,7 @@ async function fetchCandidateTransactions(
 ): Promise<TransactionRow[]> {
   const params = new URLSearchParams({
     select:
-      "id,description,merchant_name,impact_type,amount_cents,posted_at,competency_month,account_id,pluggy_category_name",
+      "id,description,merchant_name,impact_type,amount_cents,posted_at,competency_month,account_id,pluggy_category_name,statement_installment_index,statement_installment_total",
     account_id: `eq.${accountId}`,
     deleted_at: "is.null",
     is_hidden_from_budget: "eq.false",
@@ -86,7 +90,8 @@ async function fetchCandidatePlannedEntries(
   }
 
   const params = new URLSearchParams({
-    select: "id,title,impact_type,amount_cents,due_date,month,expected_account_id,category_id",
+    select:
+      "id,title,impact_type,amount_cents,due_date,month,expected_account_id,category_id,installment_index,installment_total",
     user_id: `eq.${userId}`,
     month: `in.(${months.join(",")})`,
     status: "in.(PLANNED,PROJECTED)",
@@ -221,6 +226,8 @@ export async function runAutoMatch(
           competencyMonth: transaction.competency_month,
           accountId: transaction.account_id,
           pluggyCategoryName: transaction.pluggy_category_name,
+          statementInstallmentIndex: transaction.statement_installment_index,
+          statementInstallmentTotal: transaction.statement_installment_total,
         },
         {
           id: plannedEntry.id,
@@ -231,6 +238,8 @@ export async function runAutoMatch(
           month: plannedEntry.month,
           expectedAccountId: plannedEntry.expected_account_id,
           categoryName: categoryNames.get(plannedEntry.category_id) ?? "",
+          installmentIndex: plannedEntry.installment_index,
+          installmentTotal: plannedEntry.installment_total,
         },
       );
 

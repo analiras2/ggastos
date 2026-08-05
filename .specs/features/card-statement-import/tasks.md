@@ -247,10 +247,10 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] Matching considers amount, date/month, description and installment markers.
-- [ ] Exact planned installment fixture reaches auto-match threshold.
-- [ ] Ambiguous fixture lands in inbox, not auto-match.
-- [ ] Existing reconciliation behavior remains compatible.
+- [x] Matching considers amount, date/month, description and installment markers.
+- [x] Exact planned installment fixture reaches auto-match threshold.
+- [x] Ambiguous fixture lands in inbox, not auto-match.
+- [x] Existing reconciliation behavior remains compatible.
 
 **Commit**: `feat(reconciliation): score card installments`
 

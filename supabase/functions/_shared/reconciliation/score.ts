@@ -9,6 +9,8 @@ export type PlannedEntryForScoring = {
   month: string;
   expectedAccountId: string | null;
   categoryName: string;
+  installmentIndex?: number | null;
+  installmentTotal?: number | null;
 };
 
 export type TransactionForScoring = {
@@ -21,6 +23,8 @@ export type TransactionForScoring = {
   competencyMonth: string;
   accountId: string;
   pluggyCategoryName: string | null;
+  statementInstallmentIndex?: number | null;
+  statementInstallmentTotal?: number | null;
 };
 
 export type MatchScore = {
@@ -33,6 +37,7 @@ export type MatchScore = {
     category: number;
     account: number;
     description: number;
+    installment: number;
   };
 };
 
@@ -46,6 +51,7 @@ const WEIGHTS = {
   category: 0.15,
   account: 0.1,
   description: 0.1,
+  installment: 0.15,
 };
 
 const AMOUNT_TOLERANCE_RATIO = 0.2; // 20% off the planned amount zeroes the amount score.
@@ -66,6 +72,10 @@ function tokenize(text: string): Set<string> {
   );
 }
 
+function stripInstallmentMarkers(text: string): string {
+  return text.replace(/\b\d{1,2}\/\d{1,2}\b/g, " ");
+}
+
 function jaccardSimilarity(a: string, b: string): number {
   const setA = tokenize(a);
   const setB = tokenize(b);
@@ -82,6 +92,13 @@ function jaccardSimilarity(a: string, b: string): number {
 
   const union = setA.size + setB.size - intersection;
   return union === 0 ? 0 : intersection / union;
+}
+
+function descriptionSimilarity(a: string, b: string): number {
+  return Math.max(
+    jaccardSimilarity(a, b),
+    jaccardSimilarity(stripInstallmentMarkers(a), stripInstallmentMarkers(b)),
+  );
 }
 
 function daysBetween(isoA: string, isoB: string): number {
@@ -108,8 +125,80 @@ const zeroScore = (amountDeltaCents: number): MatchScore => ({
   score: 0,
   amountDeltaCents,
   dateDeltaDays: 0,
-  rationale: { amount: 0, date: 0, category: 0, account: 0, description: 0 },
+  rationale: { amount: 0, date: 0, category: 0, account: 0, description: 0, installment: 0 },
 });
+
+type InstallmentSignal = {
+  index: number;
+  total: number;
+};
+
+function installmentFromText(text: string): InstallmentSignal | null {
+  const match = text.match(/\b(\d{1,2})\/(\d{1,2})\b/);
+  if (!match) {
+    return null;
+  }
+
+  const index = Number(match[1]);
+  const total = Number(match[2]);
+  if (!Number.isInteger(index) || !Number.isInteger(total) || index <= 0 || total <= 0) {
+    return null;
+  }
+  if (index > total) {
+    return null;
+  }
+
+  return { index, total };
+}
+
+function installmentFromFields(
+  index: number | null | undefined,
+  total: number | null | undefined,
+): InstallmentSignal | null {
+  if (!index || !total) {
+    return null;
+  }
+  if (index <= 0 || total <= 0 || index > total) {
+    return null;
+  }
+
+  return { index, total };
+}
+
+function installmentScore(
+  transaction: TransactionForScoring,
+  plannedEntry: PlannedEntryForScoring,
+): { available: boolean; value: number } {
+  const transactionInstallment =
+    installmentFromFields(
+      transaction.statementInstallmentIndex,
+      transaction.statementInstallmentTotal,
+    ) ?? installmentFromText(transaction.description);
+  const plannedInstallment =
+    installmentFromFields(plannedEntry.installmentIndex, plannedEntry.installmentTotal) ??
+      installmentFromText(plannedEntry.title);
+
+  if (!transactionInstallment && !plannedInstallment) {
+    return { available: false, value: 0 };
+  }
+
+  if (!transactionInstallment || !plannedInstallment) {
+    return { available: true, value: 0 };
+  }
+
+  if (
+    transactionInstallment.index === plannedInstallment.index &&
+    transactionInstallment.total === plannedInstallment.total
+  ) {
+    return { available: true, value: 1 };
+  }
+
+  if (transactionInstallment.total === plannedInstallment.total) {
+    return { available: true, value: 0.35 };
+  }
+
+  return { available: true, value: 0 };
+}
 
 /**
  * Deterministic score in [0, 1]. Dimensions with no available signal (e.g. no
@@ -148,10 +237,11 @@ export function scoreMatch(
     ? (plannedEntry.expectedAccountId === transaction.accountId ? 1 : 0)
     : 0;
 
-  const descriptionScore = jaccardSimilarity(
+  const descriptionScore = descriptionSimilarity(
     transaction.merchantName ?? transaction.description,
     plannedEntry.title,
   );
+  const installment = installmentScore(transaction, plannedEntry);
 
   const score = weightedAverage([
     { weight: WEIGHTS.amount, value: amountScore, available: true },
@@ -159,6 +249,7 @@ export function scoreMatch(
     { weight: WEIGHTS.category, value: categoryScore, available: categoryAvailable },
     { weight: WEIGHTS.account, value: accountScore, available: accountAvailable },
     { weight: WEIGHTS.description, value: descriptionScore, available: true },
+    { weight: WEIGHTS.installment, value: installment.value, available: installment.available },
   ]);
 
   return {
@@ -171,6 +262,7 @@ export function scoreMatch(
       category: categoryScore,
       account: accountScore,
       description: descriptionScore,
+      installment: installment.value,
     },
   };
 }
