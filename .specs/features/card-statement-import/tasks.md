@@ -327,10 +327,10 @@ T15 -> T16
 
 **Done when**:
 
-- [ ] `sync-pluggy`, `pluggy-connect-token`, `connect-pluggy-item` are not active deploy targets.
-- [ ] Pluggy client and sync-error helpers are removed if unreferenced.
-- [ ] Cron job for `sync-pluggy` is unscheduled by a new migration or removed from reset flow.
-- [ ] `rg "sync-pluggy|pluggy-connect|PluggyClient"` returns only docs/history.
+- [x] `sync-pluggy`, `pluggy-connect-token`, `connect-pluggy-item` are not active deploy targets.
+- [x] Pluggy client and sync-error helpers are removed if unreferenced.
+- [x] Cron job for `sync-pluggy` is unscheduled by a new migration or removed from reset flow.
+- [x] `rg "sync-pluggy|pluggy-connect|PluggyClient"` returns only docs/history.
 
 **Commit**: `refactor(supabase): remove active Pluggy backend`
 

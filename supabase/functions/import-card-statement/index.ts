@@ -12,9 +12,9 @@ import { supabaseRest, type SupabaseRestConfig } from "../_shared/supabase-rest.
 import {
   upsertFinancialAccount,
   upsertFinancialConnection,
+  type FinancialAccountUpsert,
   type FinancialConnectionUpsert,
 } from "../_shared/upsert.ts";
-import type { FinancialAccountUpsert } from "../_shared/normalizers/normalize-account.ts";
 import { runAutoMatch } from "../_shared/reconciliation/auto-match.ts";
 
 declare const Deno: {

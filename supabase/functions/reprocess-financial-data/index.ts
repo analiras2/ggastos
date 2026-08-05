@@ -4,7 +4,6 @@ import {
   upsertMonthSnapshot,
 } from "../_shared/closing/snapshot.ts";
 import { runAutoMatch } from "../_shared/reconciliation/auto-match.ts";
-import { sanitizeConnectionSyncError } from "../_shared/sync-error.ts";
 import { supabaseRest, type SupabaseRestConfig } from "../_shared/supabase-rest.ts";
 
 type JsonValue =
@@ -14,6 +13,13 @@ type JsonValue =
   | null
   | { [key: string]: JsonValue }
   | JsonValue[];
+
+declare const Deno: {
+  env: {
+    get(name: string): string | undefined;
+  };
+  serve(handler: (request: Request) => Response | Promise<Response>): void;
+};
 
 type ReprocessScope = "SNAPSHOT" | "MATCHING" | "SYNC_EVENT";
 
@@ -101,6 +107,12 @@ function isUuid(value: string): boolean {
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
+}
+
+function sanitizeReprocessError(error: unknown): string {
+  return error instanceof Error && isNonEmptyString(error.message)
+    ? error.message
+    : "Unexpected error while reprocessing financial data.";
 }
 
 async function parseReprocessRequestBody(request: Request): Promise<ReprocessRequestBody> {
@@ -491,7 +503,7 @@ Deno.serve(async (request) => {
         ...resultSummary,
       });
     } catch (workError) {
-      const errorMessage = sanitizeConnectionSyncError(workError);
+      const errorMessage = sanitizeReprocessError(workError);
       await patchSyncEventFailed(restConfig, syncEvent.id, basePayload, errorMessage).catch(() => {});
 
       console.error("reprocess-financial-data work failed", workError);
