@@ -13,6 +13,9 @@ export type CategoryOption = {
 };
 
 export const categoriesKey = ['categories'];
+export const categoryNamesKey = ['category-names'];
+
+export type CategoryName = { id: string; name: string };
 
 async function listCategories(): Promise<CategoryOption[]> {
   if (!supabase) {
@@ -43,6 +46,20 @@ export function useCategories(): UseQueryResult<CategoryOption[], Error> {
   return useQuery({ queryKey: categoriesKey, queryFn: listCategories });
 }
 
+async function listCategoryNames(): Promise<CategoryName[]> {
+  if (!supabase) {
+    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
+  }
+
+  const { data, error } = await supabase.from('categories').select('id,name');
+  if (error) throw error;
+  return (data ?? []).map((row) => ({ id: row.id as string, name: row.name as string }));
+}
+
+export function useCategoryNames(): UseQueryResult<CategoryName[], Error> {
+  return useQuery({ queryKey: categoryNamesKey, queryFn: listCategoryNames });
+}
+
 type CreateCategoryInput = { name: string; impactType: ImpactType };
 
 export function useCreatePersonalCategory() {
@@ -65,6 +82,11 @@ export function useCreatePersonalCategory() {
 
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: categoriesKey }),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: categoriesKey }),
+        queryClient.invalidateQueries({ queryKey: categoryNamesKey }),
+      ]);
+    },
   });
 }

@@ -55,12 +55,23 @@ const { response: profileResponse, body: profile } = await json(`${supabaseUrl}/
 });
 assert.equal(profileResponse.status, 201, JSON.stringify(profile));
 
-const { response: categoryResponse, body: categories } = await json(
-  `${supabaseUrl}/rest/v1/categories?select=id&code=eq.food`,
+const { body: expenseRoots } = await json(
+  `${supabaseUrl}/rest/v1/categories?select=id&code=eq.expense`,
   { headers: headers(serviceRoleKey) },
 );
-assert.equal(categoryResponse.status, 200, JSON.stringify(categories));
-assert.equal(categories.length, 1);
+assert.equal(expenseRoots.length, 1);
+const { response: categoryResponse, body: categories } = await json(`${supabaseUrl}/rest/v1/categories`, {
+  method: "POST",
+  headers: { ...headers(serviceRoleKey), Prefer: "return=representation" },
+  body: JSON.stringify({
+    code: `test-food-${suffix}`,
+    name: "Alimentação de teste",
+    impact_type: "EXPENSE",
+    parent_id: expenseRoots[0].id,
+    user_id: userId,
+  }),
+});
+assert.equal(categoryResponse.status, 201, JSON.stringify(categories));
 
 const { response: ruleResponse, body: rule } = await json(`${supabaseUrl}/rest/v1/user_category_rules`, {
   method: "POST",

@@ -48,8 +48,8 @@ export function CategoryField({ categories, isLoading, selectedCategoryId, onSel
       const category = await createCategory.mutateAsync({ name: search, impactType });
       handleSelect((category as { id: string }).id);
       setSearch('');
-    } catch {
-      setCreationError('Já existe uma categoria pessoal com esse nome e tipo.');
+    } catch (error) {
+      setCreationError(error instanceof Error ? error.message : 'Não foi possível criar a categoria.');
     }
   }
 

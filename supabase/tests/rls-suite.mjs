@@ -186,11 +186,17 @@ async function seedFixturesForUserA(request, userAId, userBId) {
   await request("POST", "profiles", { id: userAId, email: `rls-a-${runId}@example.com`, display_name: "RLS Test User A" });
   await request("POST", "profiles", { id: userBId, email: `rls-b-${runId}@example.com`, display_name: "RLS Test User B" });
 
-  const [salaryCategory] = await request("GET", "categories?select=id&code=eq.salary");
-  const [housingCategory] = await request("GET", "categories?select=id&code=eq.housing");
-  if (!salaryCategory || !housingCategory) {
-    throw new Error("Expected seeded categories 'salary' and 'housing' to exist. Run `supabase db reset` first.");
-  }
+  const [incomeRoot] = await request("GET", "categories?select=id&code=eq.income");
+  const [expenseRoot] = await request("GET", "categories?select=id&code=eq.expense");
+  if (!incomeRoot || !expenseRoot) throw new Error("Expected the four root categories after db reset.");
+  const [salaryCategory] = await request("POST", "categories", {
+    code: `rls-salary-${runId}`, name: "Salário de teste", impact_type: "INCOME",
+    parent_id: incomeRoot.id, user_id: userAId,
+  });
+  const [housingCategory] = await request("POST", "categories", {
+    code: `rls-housing-${runId}`, name: "Moradia de teste", impact_type: "EXPENSE",
+    parent_id: expenseRoot.id, user_id: userAId,
+  });
 
   const [connection] = await request("POST", "financial_connections", {
     user_id: userAId,

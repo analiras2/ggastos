@@ -93,6 +93,8 @@ type UserCategoryRuleRow = {
   priority: number;
 };
 
+type ActiveCategoryRow = { id: string };
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -317,12 +319,31 @@ async function loadStatementCategoryRules(
     { method: "GET" },
   );
 
-  return rows.map((rule) => ({
-    ruleType: rule.rule_type,
-    ruleValue: rule.rule_value,
-    targetCategoryId: rule.target_category_id,
-    priority: rule.priority,
-  }));
+  if (rows.length === 0) {
+    return [];
+  }
+
+  const categoryIds = [...new Set(rows.map((rule) => rule.target_category_id))];
+  const activeCategoryParams = new URLSearchParams({
+    select: "id",
+    id: `in.(${categoryIds.join(",")})`,
+    is_active: "eq.true",
+  });
+  const activeCategories = await supabaseRest<ActiveCategoryRow[]>(
+    config,
+    `/rest/v1/categories?${activeCategoryParams.toString()}`,
+    { method: "GET" },
+  );
+  const activeCategoryIds = new Set(activeCategories.map((category) => category.id));
+
+  return rows
+    .filter((rule) => activeCategoryIds.has(rule.target_category_id))
+    .map((rule) => ({
+      ruleType: rule.rule_type,
+      ruleValue: rule.rule_value,
+      targetCategoryId: rule.target_category_id,
+      priority: rule.priority,
+    }));
 }
 
 async function createImportBatch(

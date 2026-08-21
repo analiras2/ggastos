@@ -2,13 +2,14 @@ import { useCallback, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { impactTypeSchema, type ImpactType } from '@/features/planning/planning-schema';
-import { categoriesKey, type CategoryOption } from '@/features/planning/use-categories';
+import { categoriesKey, categoryNamesKey, type CategoryOption } from '@/features/planning/use-categories';
 import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
 
 type CategoryManagementViewModel = {
   categories: CategoryOption[];
   isLoading: boolean;
   errorMessage: string | null;
+  actionErrorMessage: string | null;
   editingCategory: CategoryOption | null;
   editingName: string;
   setEditingName: (value: string) => void;
@@ -52,6 +53,7 @@ export function useCategoryManagementViewModel(): CategoryManagementViewModel {
   const categoriesQuery = useQuery({ queryKey: managementKey, queryFn: listManagedCategories });
   const [editingCategory, setEditingCategory] = useState<CategoryOption | null>(null);
   const [editingName, setEditingName] = useState('');
+  const [actionErrorMessage, setActionErrorMessage] = useState<string | null>(null);
 
   const updateCategory = useMutation({
     mutationFn: async ({ id, name, isActive }: { id: string; name?: string; isActive?: boolean }) => {
@@ -67,6 +69,7 @@ export function useCategoryManagementViewModel(): CategoryManagementViewModel {
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: categoriesKey }),
+        queryClient.invalidateQueries({ queryKey: categoryNamesKey }),
         queryClient.invalidateQueries({ queryKey: managementKey }),
       ]);
     },
@@ -76,29 +79,40 @@ export function useCategoryManagementViewModel(): CategoryManagementViewModel {
     if (!category.isPersonal) return;
     setEditingCategory(category);
     setEditingName(category.name);
+    setActionErrorMessage(null);
   }, []);
 
   const closeEditor = useCallback(() => {
     setEditingCategory(null);
     setEditingName('');
+    setActionErrorMessage(null);
   }, []);
 
   const save = useCallback(async () => {
     if (!editingCategory || !editingName.trim()) return;
-    await updateCategory.mutateAsync({ id: editingCategory.id, name: editingName });
-    closeEditor();
+    try {
+      await updateCategory.mutateAsync({ id: editingCategory.id, name: editingName });
+      closeEditor();
+    } catch (error) {
+      setActionErrorMessage(error instanceof Error ? error.message : 'Não foi possível salvar a categoria.');
+    }
   }, [closeEditor, editingCategory, editingName, updateCategory]);
 
   const toggleVisibility = useCallback(async () => {
     if (!editingCategory) return;
-    await updateCategory.mutateAsync({ id: editingCategory.id, isActive: !editingCategory.isActive });
-    closeEditor();
+    try {
+      await updateCategory.mutateAsync({ id: editingCategory.id, isActive: !editingCategory.isActive });
+      closeEditor();
+    } catch (error) {
+      setActionErrorMessage(error instanceof Error ? error.message : 'Não foi possível atualizar a categoria.');
+    }
   }, [closeEditor, editingCategory, updateCategory]);
 
   return useMemo(() => ({
     categories: categoriesQuery.data ?? [],
     isLoading: categoriesQuery.isLoading,
     errorMessage: categoriesQuery.isError ? 'Não foi possível carregar as categorias.' : null,
+    actionErrorMessage,
     editingCategory,
     editingName,
     setEditingName,
@@ -107,5 +121,5 @@ export function useCategoryManagementViewModel(): CategoryManagementViewModel {
     save,
     toggleVisibility,
     isSaving: updateCategory.isPending,
-  }), [categoriesQuery.data, categoriesQuery.isError, categoriesQuery.isLoading, closeEditor, editingCategory, editingName, openEditor, save, toggleVisibility, updateCategory.isPending]);
+  }), [actionErrorMessage, categoriesQuery.data, categoriesQuery.isError, categoriesQuery.isLoading, closeEditor, editingCategory, editingName, openEditor, save, toggleVisibility, updateCategory.isPending]);
 }

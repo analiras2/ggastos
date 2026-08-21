@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
 import { currentMonthKey, monthLabel, shiftMonthKey } from '@/features/dashboard/month-utils';
-import type { CategoryOption } from '@/features/planning/use-categories';
+import type { CategoryName } from '@/features/planning/use-categories';
 import {
   useCancelPlannedEntry,
   useConfirmPlannedEntryManually,
@@ -11,7 +11,7 @@ import {
   useUndoManualConfirmation,
 } from '@/features/planning/use-planned-entries';
 import { useArchivePlanningTemplate, usePlanningTemplates } from '@/features/planning/use-planning-templates';
-import { useCategories } from '@/features/planning/use-categories';
+import { useCategoryNames } from '@/features/planning/use-categories';
 import type { ImpactType, PlannedEntry, PlanningTemplate } from '@/features/planning/planning-schema';
 
 type EntryKind = 'despesa' | 'receita' | 'investimento' | 'transferencia';
@@ -41,7 +41,7 @@ function formatDueDate(dueDate: string | null): string {
   return `${day}/${month}/${year}`;
 }
 
-function mapEntry(entry: PlannedEntry, categories: CategoryOption[]): PlanningEntryView {
+function mapEntry(entry: PlannedEntry, categories: CategoryName[]): PlanningEntryView {
   const category = categories.find((item) => item.id === entry.categoryId)?.name ?? 'Sem categoria';
   const isReconciled = entry.status === 'RECONCILED';
   const isCancelled = entry.status === 'CANCELLED';
@@ -66,7 +66,7 @@ export function usePlanningViewModel() {
   const [selectedTemplate, setSelectedTemplate] = useState<PlanningTemplate | null>(null);
   const [updatingEntryId, setUpdatingEntryId] = useState<string | null>(null);
   const entriesQuery = usePlannedEntries(month);
-  const categoriesQuery = useCategories();
+  const categoryNamesQuery = useCategoryNames();
   const templatesQuery = usePlanningTemplates(month);
   const cancelEntry = useCancelPlannedEntry(month);
   const confirmEntry = useConfirmPlannedEntryManually();
@@ -74,8 +74,8 @@ export function usePlanningViewModel() {
   const archiveTemplate = useArchivePlanningTemplate();
 
   const entries = useMemo(
-    () => (entriesQuery.data ?? []).map((entry) => mapEntry(entry, categoriesQuery.data ?? [])),
-    [categoriesQuery.data, entriesQuery.data]
+    () => (entriesQuery.data ?? []).map((entry) => mapEntry(entry, categoryNamesQuery.data ?? [])),
+    [categoryNamesQuery.data, entriesQuery.data]
   );
 
   const handleToggleEntryStatus = useCallback((entry: PlanningEntryView) => {
@@ -117,8 +117,8 @@ export function usePlanningViewModel() {
     isCurrentMonth: month === currentMonthKey(),
     entries,
     templates: templatesQuery.data ?? [],
-    isLoading: entriesQuery.isLoading || categoriesQuery.isLoading,
-    isError: entriesQuery.isError || categoriesQuery.isError,
+    isLoading: entriesQuery.isLoading || categoryNamesQuery.isLoading,
+    isError: entriesQuery.isError || categoryNamesQuery.isError,
     isAddPlanVisible,
     isAddTemplateVisible,
     selectedTemplate,
