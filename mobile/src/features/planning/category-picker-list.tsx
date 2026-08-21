@@ -8,9 +8,14 @@ type CategoryPickerListProps = {
   categories: CategoryOption[];
   selectedCategoryId: string | null;
   onSelect: (id: string) => void;
+  emptyMessage?: string;
 };
 
-export function CategoryPickerList({ categories, selectedCategoryId, onSelect }: CategoryPickerListProps) {
+export function CategoryPickerList({ categories, selectedCategoryId, onSelect, emptyMessage }: CategoryPickerListProps) {
+  if (categories.length === 0) {
+    return <Text style={styles.empty}>{emptyMessage ?? 'Nenhuma categoria encontrada.'}</Text>;
+  }
+
   return (
     <View style={styles.list}>
       {categories.map((category) => {
@@ -59,5 +64,11 @@ const styles = StyleSheet.create({
   nameSelected: {
     fontWeight: '700',
     color: GgastosColors.brandPrimary,
+  },
+  empty: {
+    ...GgastosType.bodyMd,
+    color: GgastosColors.inkSoft,
+    textAlign: 'center',
+    paddingVertical: GgastosSpacing.space5,
   },
 });

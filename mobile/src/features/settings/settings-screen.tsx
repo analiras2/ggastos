@@ -1,11 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import { useSettingsViewModel } from '@/features/settings/use-settings-view-model';
+import { Icon } from '@/components/ggastos/core/icon';
+import { CategoryManagementSheet } from '@/features/settings/category-management-sheet';
 
 export function SettingsScreen() {
   const { accountLabel } = useSettingsViewModel();
+  const [isCategoriesVisible, setIsCategoriesVisible] = useState(false);
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -15,6 +19,10 @@ export function SettingsScreen() {
         <Text style={styles.label}>Conta</Text>
         <Text style={styles.email}>{accountLabel}</Text>
       </View>
+      <Pressable accessibilityRole="button" onPress={() => setIsCategoriesVisible(true)} style={styles.categoriesButton}>
+        <View><Text style={styles.categoriesTitle}>Categorias</Text><Text style={styles.categoriesSubtitle}>Criar, editar e ocultar categorias pessoais</Text></View><Icon name="chevron-right" size={20} />
+      </Pressable>
+      <CategoryManagementSheet visible={isCategoriesVisible} onClose={() => setIsCategoriesVisible(false)} />
     </SafeAreaView>
   );
 }
@@ -47,4 +55,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: GgastosColors.inkStrong,
   },
+  categoriesButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: GgastosRadius.lg, borderWidth: 1, borderColor: GgastosColors.lineSofter, padding: GgastosSpacing.space4, backgroundColor: GgastosColors.bgSurfaceRaised },
+  categoriesTitle: { ...GgastosType.bodyMd, fontWeight: '700', color: GgastosColors.inkStrong },
+  categoriesSubtitle: { ...GgastosType.bodySm, color: GgastosColors.inkSoft },
 });

@@ -41,10 +41,12 @@ export function SegmentedToggle<TValue extends string>({
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
   },
   option: {
     flex: 1,
+    minWidth: '46%',
     alignItems: 'center',
     paddingVertical: 10,
     borderRadius: GgastosRadius.md,
