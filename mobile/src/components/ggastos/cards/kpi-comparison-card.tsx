@@ -28,8 +28,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: GgastosColors.lineSofter,
     borderRadius: GgastosRadius.md,
-    paddingVertical: 16,
-    paddingHorizontal: 18,
+    padding: 16,
     gap: 6,
   },
   label: {
@@ -37,7 +36,7 @@ const styles = StyleSheet.create({
     color: GgastosColors.inkSoft,
   },
   value: {
-    ...GgastosType.displayMd,
+    ...GgastosType.displaySm,
   },
   caption: {
     ...GgastosType.micro,

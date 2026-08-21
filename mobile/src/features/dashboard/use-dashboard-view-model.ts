@@ -11,6 +11,7 @@ import { useCategoryDetails } from '@/features/dashboard/use-category-details';
 import { useMonthDashboard } from '@/features/dashboard/use-month-dashboard';
 import { usePlannedEntryStatusToggle } from '@/features/dashboard/use-planned-entry-status-toggle';
 import { getFormattedCloseMonthError, useCloseMonth } from '@/features/closing/use-close-month';
+import { useMonthSnapshot } from '@/features/closing/use-month-snapshot';
 
 interface CategoryDetailsPanel {
   visible: boolean;
@@ -32,7 +33,9 @@ interface DashboardViewModel {
   isAddPlanVisible: boolean;
   isAddTemplateVisible: boolean;
   isStatementImportVisible: boolean;
+  categoryReviewBatchId: string | null;
   isCurrentMonth: boolean;
+  isMonthClosed: boolean;
   isClosingMonth: boolean;
   closeMonthBanner: { state: 'ok' | 'pending' | 'error'; message: string } | null;
   handlePrevMonth: () => void;
@@ -46,6 +49,8 @@ interface DashboardViewModel {
   handleCloseAddTemplate: () => void;
   handleOpenStatementImport: () => void;
   handleCloseStatementImport: () => void;
+  handleOpenCategoryReview: (batchId: string) => void;
+  handleCloseCategoryReview: () => void;
   handleCloseMonth: () => void;
 }
 
@@ -55,8 +60,10 @@ export function useDashboardViewModel(): DashboardViewModel {
   const [isAddPlanVisible, setIsAddPlanVisible] = useState(false);
   const [isAddTemplateVisible, setIsAddTemplateVisible] = useState(false);
   const [isStatementImportVisible, setIsStatementImportVisible] = useState(false);
+  const [categoryReviewBatchId, setCategoryReviewBatchId] = useState<string | null>(null);
   const monthDashboardQuery = useMonthDashboard(monthKey);
   const closeMonthMutation = useCloseMonth();
+  const monthSnapshotQuery = useMonthSnapshot(monthKey);
   const categoryDetailsQuery = useCategoryDetails(monthKey, selectedCategory?.categoryId ?? null);
   const { togglingEntryId, handleToggleStatus } = usePlannedEntryStatusToggle(
     monthKey,
@@ -176,6 +183,15 @@ export function useDashboardViewModel(): DashboardViewModel {
     setIsStatementImportVisible(false);
   }, []);
 
+  const handleOpenCategoryReview = useCallback((batchId: string) => {
+    setIsStatementImportVisible(false);
+    setCategoryReviewBatchId(batchId);
+  }, []);
+
+  const handleCloseCategoryReview = useCallback(() => {
+    setCategoryReviewBatchId(null);
+  }, []);
+
   return {
     data,
     importBanner,
@@ -183,7 +199,9 @@ export function useDashboardViewModel(): DashboardViewModel {
     isAddPlanVisible,
     isAddTemplateVisible,
     isStatementImportVisible,
+    categoryReviewBatchId,
     isCurrentMonth: monthKey === currentMonthKey(),
+    isMonthClosed: monthSnapshotQuery.data?.status === 'CLOSED',
     isClosingMonth: closeMonthMutation.isPending,
     closeMonthBanner,
     handlePrevMonth,
@@ -197,6 +215,8 @@ export function useDashboardViewModel(): DashboardViewModel {
     handleCloseAddTemplate,
     handleOpenStatementImport,
     handleCloseStatementImport,
+    handleOpenCategoryReview,
+    handleCloseCategoryReview,
     handleCloseMonth,
   };
 }

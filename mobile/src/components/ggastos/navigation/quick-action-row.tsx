@@ -11,11 +11,17 @@ export type QuickAction = {
 
 type QuickActionRowProps = {
   actions: QuickAction[];
+  edgePadding?: number;
 };
 
-export function QuickActionRow({ actions }: QuickActionRowProps) {
+export function QuickActionRow({ actions, edgePadding = 0 }: QuickActionRowProps) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={[styles.row, { paddingHorizontal: edgePadding }]}
+      style={edgePadding > 0 ? { marginHorizontal: -edgePadding } : undefined}
+    >
       {actions.map((action) => (
         <Pressable key={action.label} accessibilityRole="button" onPress={action.onPress} style={styles.chip}>
           <Icon name={action.icon} size={16} />

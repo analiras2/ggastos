@@ -29,7 +29,7 @@ export function useAnnualReportViewModel(): AnnualReportViewModel {
   );
 
   const categories = useMemo(
-    () => (summaryQuery.data?.categories ?? []).map(toAnnualCategoryView),
+    () => (summaryQuery.data?.categories ?? []).filter((category) => category.impactType === 'EXPENSE').map(toAnnualCategoryView),
     [summaryQuery.data]
   );
 

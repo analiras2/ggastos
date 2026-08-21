@@ -33,10 +33,7 @@ export type AnnualMonthRowView = {
 export type AnnualCategoryView = {
   categoryId: string;
   name: string;
-  planned: string;
-  actual: string;
-  delta: string;
-  deltaTone: 'neutral' | 'over' | 'under';
+  actualCents: number;
 };
 
 function monthShortLabel(monthKey: string): string {
@@ -44,12 +41,6 @@ function monthShortLabel(monthKey: string): string {
   const index = Number(monthPart) - 1;
   const fullName = FULL_MONTH_NAMES[index] ?? monthKey;
   return fullName.slice(0, 3);
-}
-
-function formatSignedDelta(deltaCents: number): string {
-  if (deltaCents === 0) return 'No previsto';
-  const formatted = formatCurrencyCents(Math.abs(deltaCents));
-  return deltaCents > 0 ? `+${formatted}` : `-${formatted}`;
 }
 
 export function toAnnualMonthRow(month: AnnualMonth): AnnualMonthRowView {
@@ -66,15 +57,9 @@ export function toAnnualMonthRow(month: AnnualMonth): AnnualMonthRowView {
 }
 
 export function toAnnualCategoryView(category: AnnualCategory): AnnualCategoryView {
-  const deltaTone: AnnualCategoryView['deltaTone'] =
-    category.deltaCents > 0 ? 'over' : category.deltaCents < 0 ? 'under' : 'neutral';
-
   return {
     categoryId: category.categoryId,
     name: category.name,
-    planned: formatCurrencyCents(category.plannedCents),
-    actual: formatCurrencyCents(category.actualCents),
-    delta: formatSignedDelta(category.deltaCents),
-    deltaTone,
+    actualCents: category.actualCents,
   };
 }

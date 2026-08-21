@@ -20,10 +20,8 @@ export type DashboardData = {
     status: 'healthy' | 'tight';
   };
   previsto: string;
-  atual: string;
   commitment: {
     value: string;
-    level: 'normal' | 'high';
   };
   categories: CategoryBudget[];
   pendingReviewCount: number;

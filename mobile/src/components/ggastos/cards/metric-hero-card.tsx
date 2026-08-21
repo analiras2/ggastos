@@ -18,11 +18,6 @@ export function MetricHeroCard({ label, value, delta, deltaLabel, status = 'heal
     <View style={[styles.card, GgastosShadow.card, { backgroundColor: accentSoft }]}>
       <Text style={[styles.eyebrow, { color: accent }]}>{label}</Text>
       <Text style={styles.value}>{value}</Text>
-      {delta ? (
-        <Text style={styles.delta}>
-          {delta} <Text style={styles.deltaLabel}>{deltaLabel}</Text>
-        </Text>
-      ) : null}
     </View>
   );
 }
@@ -30,16 +25,14 @@ export function MetricHeroCard({ label, value, delta, deltaLabel, status = 'heal
 const styles = StyleSheet.create({
   card: {
     borderRadius: GgastosRadius.lg,
-    paddingTop: 24,
-    paddingHorizontal: 24,
-    paddingBottom: 26,
+    padding: 16,
     gap: 10,
   },
   eyebrow: {
     ...GgastosType.labelCaps,
   },
   value: {
-    ...GgastosType.displayXl,
+    ...GgastosType.displayLg,
     color: GgastosColors.inkStrong,
   },
   delta: {

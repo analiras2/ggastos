@@ -3,9 +3,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { EmptyStateCard } from '@/components/ggastos/cards/empty-state-card';
 import { Icon } from '@/components/ggastos/core/icon';
-import { CategoryBudgetRow } from '@/components/ggastos/rows/category-budget-row';
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import { AnnualMonthRow } from '@/features/reports/annual-month-row';
+import { AnnualCategoryDonut } from '@/features/reports/annual-category-donut';
 import { useAnnualReportViewModel } from '@/features/reports/use-annual-report-view-model';
 
 export function AnnualReportScreen() {
@@ -73,16 +73,7 @@ export function AnnualReportScreen() {
         {!isLoading && !isError && categories.length > 0 ? (
           <View>
             <Text style={styles.sectionTitle}>Categorias</Text>
-            {categories.map((category) => (
-              <CategoryBudgetRow
-                key={category.categoryId}
-                name={category.name}
-                planned={category.planned}
-                actual={category.actual}
-                delta={category.delta}
-                deltaTone={category.deltaTone}
-              />
-            ))}
+            <AnnualCategoryDonut categories={categories} />
           </View>
         ) : null}
       </ScrollView>

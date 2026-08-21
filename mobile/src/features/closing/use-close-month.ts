@@ -12,6 +12,8 @@ import {
 import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
 import { monthDashboardKey } from '@/features/dashboard/use-month-dashboard';
 
+export const monthSnapshotKey = (month: string) => ['month-snapshot', month];
+
 export type MonthSnapshotResult = {
   id: string;
   month: string;
@@ -88,6 +90,7 @@ export function useCloseMonth(): UseMutationResult<
     onSuccess: async (_data, month) => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: monthDashboardKey(month) }),
+        queryClient.invalidateQueries({ queryKey: monthSnapshotKey(month) }),
         queryClient.invalidateQueries({ queryKey: annualSummaryKeyPrefix }),
       ]);
     },

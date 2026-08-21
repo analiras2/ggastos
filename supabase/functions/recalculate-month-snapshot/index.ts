@@ -1,5 +1,6 @@
 import { getBearerToken, readAuthenticatedUser } from "../_shared/auth.ts";
 import {
+  closeMonthSnapshot,
   fetchMonthDashboardAsUser,
   upsertMonthSnapshot,
 } from "../_shared/closing/snapshot.ts";
@@ -86,12 +87,13 @@ Deno.serve(async (request) => {
       month,
     );
     const snapshot = await upsertMonthSnapshot(restConfig, user.id, dashboard);
+    const closedSnapshot = await closeMonthSnapshot(restConfig, snapshot.id);
 
     return jsonResponse(200, {
-      id: snapshot.id,
-      month: snapshot.month,
-      status: snapshot.status,
-      computedAt: snapshot.computed_at,
+      id: closedSnapshot.id,
+      month: closedSnapshot.month,
+      status: closedSnapshot.status,
+      computedAt: closedSnapshot.computed_at,
     });
   } catch (error) {
     console.error("recalculate-month-snapshot failed", error);

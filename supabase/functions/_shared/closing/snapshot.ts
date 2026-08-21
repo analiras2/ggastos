@@ -100,3 +100,27 @@ export async function upsertMonthSnapshot(
 
   return rows[0];
 }
+
+export async function closeMonthSnapshot(
+  config: SupabaseRestConfig,
+  snapshotId: string,
+): Promise<MonthSnapshotRow> {
+  const rows = await supabaseRest<MonthSnapshotRow[]>(
+    config,
+    `/rest/v1/month_snapshots?id=eq.${snapshotId}&select=id,month,status,computed_at`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Prefer: "return=representation",
+      },
+      body: JSON.stringify({ status: "CLOSED" }),
+    },
+  );
+
+  if (rows.length !== 1) {
+    throw new Error("Expected exactly one month_snapshots row while closing.");
+  }
+
+  return rows[0];
+}

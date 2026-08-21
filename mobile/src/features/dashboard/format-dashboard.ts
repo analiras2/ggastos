@@ -67,26 +67,20 @@ function toCategoryBudget(category: MonthDashboard['categories'][number]): Categ
 
 export function formatDashboardData(monthDashboard: MonthDashboard): DashboardData {
   const { summary } = monthDashboard;
-  const totalPlanned =
-    summary.plannedIncomeCents + summary.plannedExpenseCents + summary.plannedInvestmentCents;
   const totalActual =
-    summary.actualIncomeCents + summary.actualExpenseCents + summary.actualInvestmentCents;
-  const heroDeltaCents = summary.expectedBalanceCents - summary.currentBalanceCents;
+    summary.actualIncomeCents - summary.actualExpenseCents - summary.actualInvestmentCents;
+  const heroDeltaCents = summary.expectedBalanceCents - totalActual;
 
   return {
     month: monthLabel(monthDashboard.month),
     hero: {
-      value: formatCurrencyCents(summary.expectedBalanceCents),
+      value: formatCurrencyCents(totalActual),
       delta: formatSignedCurrencyCents(heroDeltaCents),
-      deltaLabel: 'vs. realizado até agora',
-      status: summary.expectedBalanceCents >= 0 ? 'healthy' : 'tight',
+      deltaLabel: 'até o momento',
+      status: totalActual >= 0 ? 'healthy' : 'tight',
     },
-    previsto: formatCurrencyCents(totalPlanned),
-    atual: formatCurrencyCents(totalActual),
-    commitment: {
-      value: formatCurrencyCents(summary.committedRemainingCents),
-      level: summary.committedRemainingCents > summary.expectedBalanceCents ? 'high' : 'normal',
-    },
+    previsto: formatCurrencyCents(summary.expectedBalanceCents),
+    commitment: { value: formatCurrencyCents(summary.committedRemainingCents) },
     categories: monthDashboard.categories.map(toCategoryBudget),
     pendingReviewCount: 0,
   };
@@ -102,8 +96,7 @@ export function emptyDashboardData(monthKey: string): DashboardData {
       status: 'healthy',
     },
     previsto: formatCurrencyCents(0),
-    atual: formatCurrencyCents(0),
-    commitment: { value: formatCurrencyCents(0), level: 'normal' },
+    commitment: { value: formatCurrencyCents(0) },
     categories: [],
     pendingReviewCount: 0,
   };
