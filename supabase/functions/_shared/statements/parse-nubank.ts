@@ -78,8 +78,12 @@ function parseCsvRows(text: string): CsvRow[] {
     .filter((row) => row.fields.some((field) => field.trim().length > 0));
 }
 
+function normalizeAmount(rawAmount: string): string {
+  return rawAmount.trim().replace(/^-\s+/, "-");
+}
+
 function parseAmountCents(rawAmount: string): number | null {
-  const normalized = rawAmount.trim().replace(/\./g, "").replace(",", ".");
+  const normalized = normalizeAmount(rawAmount).replace(/\./g, "").replace(",", ".");
   if (!/^-?\d+(\.\d{1,2})?$/.test(normalized)) {
     return null;
   }
@@ -88,7 +92,7 @@ function parseAmountCents(rawAmount: string): number | null {
 }
 
 function parseDirection(rawAmount: string): "DEBIT" | "CREDIT" {
-  return rawAmount.trim().startsWith("-") ? "CREDIT" : "DEBIT";
+  return normalizeAmount(rawAmount).startsWith("-") ? "CREDIT" : "DEBIT";
 }
 
 function parseInstallment(description: string): StatementInstallment | null {

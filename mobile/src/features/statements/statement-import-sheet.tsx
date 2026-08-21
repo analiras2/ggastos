@@ -10,6 +10,7 @@ import { useStatementImportViewModel } from '@/features/statements/use-statement
 type StatementImportSheetProps = {
   visible: boolean;
   onClose: () => void;
+  onReviewUncategorized: (batchId: string) => void;
 };
 
 const BANK_OPTIONS = [
@@ -17,7 +18,7 @@ const BANK_OPTIONS = [
   { label: 'Bradesco', value: 'BRADESCO' },
 ];
 
-export function StatementImportSheet({ visible, onClose }: StatementImportSheetProps) {
+export function StatementImportSheet({ visible, onClose, onReviewUncategorized }: StatementImportSheetProps) {
   const viewModel = useStatementImportViewModel();
 
   function handleClose() {
@@ -54,20 +55,38 @@ export function StatementImportSheet({ visible, onClose }: StatementImportSheetP
 
             <View style={styles.field}>
               <Text style={styles.label}>CSV</Text>
-              <Pressable
-                accessibilityRole="button"
-                disabled={viewModel.isPickingFile || viewModel.isSubmitting}
-                onPress={viewModel.handlePickFile}
-                style={styles.fileButton}
-              >
-                <Icon name="file-up" size={20} />
-                <View style={styles.fileTextGroup}>
-                  <Text style={styles.fileTitle}>
-                    {viewModel.selectedFileName ?? 'Selecionar arquivo'}
-                  </Text>
-                  <Text style={styles.fileCaption}>Nubank ou Bradesco em .csv</Text>
-                </View>
-              </Pressable>
+              <View style={styles.fileButton}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={viewModel.selectedFileName ? 'Trocar arquivo CSV' : 'Selecionar arquivo CSV'}
+                  disabled={viewModel.isPickingFile || viewModel.isSubmitting}
+                  onPress={viewModel.handlePickFile}
+                  style={styles.filePickerTrigger}
+                >
+                  <Icon name="file-up" size={20} />
+                  <View style={styles.fileTextGroup}>
+                    <Text style={styles.fileTitle}>
+                      {viewModel.selectedFileName ?? 'Selecionar arquivo'}
+                    </Text>
+                    <Text style={styles.fileCaption}>
+                      {viewModel.selectedFileName ? 'Toque para trocar o arquivo' : 'Nubank ou Bradesco em .csv'}
+                    </Text>
+                  </View>
+                </Pressable>
+
+                {viewModel.selectedFileName ? (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Remover arquivo selecionado"
+                    disabled={viewModel.isPickingFile || viewModel.isSubmitting}
+                    hitSlop={12}
+                    onPress={viewModel.clearSelectedFile}
+                    style={styles.removeFileButton}
+                  >
+                    <Icon name="x" size={18} />
+                  </Pressable>
+                ) : null}
+              </View>
             </View>
 
             {viewModel.errorMessage ? (
@@ -93,6 +112,17 @@ export function StatementImportSheet({ visible, onClose }: StatementImportSheetP
                   </View>
                 ))}
               </View>
+            ) : null}
+
+            {viewModel.importBatchId ? (
+              <Button
+                fullWidth
+                variant="secondary"
+                icon={<Icon name="tags" size={18} />}
+                onPress={() => onReviewUncategorized(viewModel.importBatchId as string)}
+              >
+                Revisar categorias
+              </Button>
             ) : null}
 
             <Button
@@ -145,13 +175,21 @@ const styles = StyleSheet.create({
   fileButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: GgastosSpacing.space3,
     borderWidth: 1,
     borderColor: GgastosColors.lineSoft,
     borderRadius: GgastosRadius.md,
     paddingHorizontal: GgastosSpacing.space4,
     paddingVertical: GgastosSpacing.space4,
     backgroundColor: GgastosColors.bgSurface,
+  },
+  filePickerTrigger: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: GgastosSpacing.space3,
+  },
+  removeFileButton: {
+    padding: GgastosSpacing.space2,
   },
   fileTextGroup: {
     flex: 1,

@@ -11,7 +11,8 @@ import {
 
 type SelectedStatementFile = {
   name: string;
-  contents: string;
+  bytes: ArrayBuffer;
+  fallbackContents: string | null;
 };
 
 type ImportSummaryRow = {
@@ -23,6 +24,7 @@ interface StatementImportViewModel {
   selectedBank: StatementBank;
   setSelectedBank: (bank: string) => void;
   selectedFileName: string | null;
+  importBatchId: string | null;
   errorMessage: string | null;
   successMessage: string | null;
   importSummary: ImportSummaryRow[];
@@ -30,6 +32,7 @@ interface StatementImportViewModel {
   isSubmitting: boolean;
   canSubmit: boolean;
   handlePickFile: () => Promise<void>;
+  clearSelectedFile: () => void;
   handleSubmit: () => Promise<void>;
   reset: () => void;
 }
@@ -41,6 +44,7 @@ const CSV_MIME_TYPES = [
   'application/vnd.ms-excel',
   'text/plain',
 ];
+const LATIN_1_CHUNK_SIZE = 8_192;
 
 function isStatementBank(value: string): value is StatementBank {
   return value === 'NUBANK' || value === 'BRADESCO';
@@ -50,24 +54,39 @@ function formatBankName(bank: StatementBank): string {
   return bank === 'NUBANK' ? 'Nubank' : 'Bradesco';
 }
 
+function decodeLatin1(bytes: ArrayBuffer): string {
+  const characters = new Uint8Array(bytes);
+  let contents = '';
+
+  for (let offset = 0; offset < characters.length; offset += LATIN_1_CHUNK_SIZE) {
+    const chunk = characters.subarray(offset, offset + LATIN_1_CHUNK_SIZE);
+    contents += String.fromCharCode(...chunk);
+  }
+
+  return contents;
+}
+
 function decodeBytes(bytes: ArrayBuffer, bank: StatementBank): string | null {
+  if (bank === 'BRADESCO') {
+    return decodeLatin1(bytes);
+  }
+
   if (typeof TextDecoder === 'undefined') {
     return null;
   }
 
-  const encoding = bank === 'BRADESCO' ? 'iso-8859-1' : 'utf-8';
-  return new TextDecoder(encoding).decode(bytes);
+  return new TextDecoder('utf-8').decode(bytes);
 }
 
 async function readPickedAsset(
-  asset: DocumentPicker.DocumentPickerAsset,
-  bank: StatementBank
+  asset: DocumentPicker.DocumentPickerAsset
 ): Promise<SelectedStatementFile> {
   if (asset.file) {
     const bytes = await asset.file.arrayBuffer();
     return {
       name: asset.name,
-      contents: decodeBytes(bytes, bank) ?? await asset.file.text(),
+      bytes,
+      fallbackContents: decodeBytes(bytes, 'NUBANK') ?? await asset.file.text(),
     };
   }
 
@@ -75,7 +94,8 @@ async function readPickedAsset(
   const bytes = await file.arrayBuffer();
   return {
     name: asset.name,
-    contents: decodeBytes(bytes, bank) ?? await file.text(),
+    bytes,
+    fallbackContents: decodeBytes(bytes, 'NUBANK') ?? await file.text(),
   };
 }
 
@@ -108,6 +128,11 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
     }
 
     setSelectedBankState(bank);
+    setLastResult(null);
+    setErrorMessage(null);
+  }, []);
+
+  const clearSelectedFile = useCallback(() => {
     setSelectedFile(null);
     setLastResult(null);
     setErrorMessage(null);
@@ -143,13 +168,13 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
         return;
       }
 
-      const file = await readPickedAsset(asset, selectedBank);
+      const file = await readPickedAsset(asset);
       if (!file.name.toLowerCase().endsWith('.csv')) {
         setErrorMessage('Selecione um arquivo CSV.');
         return;
       }
 
-      if (file.contents.trim().length === 0) {
+      if (file.bytes.byteLength === 0) {
         setErrorMessage('O arquivo CSV está vazio.');
         return;
       }
@@ -161,7 +186,7 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
     } finally {
       setIsPickingFile(false);
     }
-  }, [selectedBank]);
+  }, []);
 
   const handleSubmit = useCallback(async () => {
     setErrorMessage(null);
@@ -172,11 +197,17 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
       return;
     }
 
+    const contents = decodeBytes(selectedFile.bytes, selectedBank) ?? selectedFile.fallbackContents;
+    if (!contents) {
+      setErrorMessage('Não foi possível ler o conteúdo do CSV.');
+      return;
+    }
+
     try {
       const result = await importMutation.mutateAsync({
         bank: selectedBank,
         fileName: selectedFile.name,
-        contents: selectedFile.contents,
+        contents,
       });
       setLastResult(result);
       onSuccess?.();
@@ -194,6 +225,7 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
     selectedBank,
     setSelectedBank,
     selectedFileName: selectedFile?.name ?? null,
+    importBatchId: lastResult?.batchId ?? null,
     errorMessage,
     successMessage,
     importSummary,
@@ -201,6 +233,7 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
     isSubmitting: importMutation.isPending,
     canSubmit: selectedFile !== null && !importMutation.isPending && !isPickingFile,
     handlePickFile,
+    clearSelectedFile,
     handleSubmit,
     reset,
   };

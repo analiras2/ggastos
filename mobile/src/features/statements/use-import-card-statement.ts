@@ -36,6 +36,36 @@ export type ImportCardStatementResult = {
 const monthDashboardKeyPrefix = ['month-dashboard'];
 const reconciliationInboxKeyPrefix = ['reconciliation-inbox'];
 
+type HttpErrorResponse = {
+  json: () => Promise<unknown>;
+};
+
+function isHttpErrorResponse(value: unknown): value is HttpErrorResponse {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  return 'json' in value && typeof value.json === 'function';
+}
+
+function getHttpErrorMessage(error: FunctionsHttpError): Promise<string | null> {
+  const response = error.context;
+  if (!isHttpErrorResponse(response)) {
+    return Promise.resolve(null);
+  }
+
+  return response.json()
+    .then((body: unknown) => {
+      if (!body || typeof body !== 'object' || !('message' in body)) {
+        return null;
+      }
+
+      const { message } = body;
+      return typeof message === 'string' && message.trim().length > 0 ? message : null;
+    })
+    .catch(() => null);
+}
+
 function formatImportError(error: unknown): string {
   if (error instanceof FunctionsRelayError) {
     return 'A relay do Supabase não conseguiu encaminhar a importação.';
@@ -82,6 +112,13 @@ async function invokeImportCardStatement(
   );
 
   if (error) {
+    if (error instanceof FunctionsHttpError) {
+      const message = await getHttpErrorMessage(error);
+      if (message) {
+        throw new Error(message);
+      }
+    }
+
     throw error;
   }
 
