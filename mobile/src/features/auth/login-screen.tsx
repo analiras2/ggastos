@@ -17,6 +17,8 @@ export function LoginScreen() {
         <TextInput
           autoCapitalize="none"
           autoComplete="email"
+          autoCorrect={false}
+          spellCheck={false}
           inputMode="email"
           keyboardType="email-address"
           onChangeText={viewModel.setEmail}
@@ -29,6 +31,8 @@ export function LoginScreen() {
         <TextInput
           autoCapitalize="none"
           autoComplete="current-password"
+          autoCorrect={false}
+          spellCheck={false}
           onChangeText={viewModel.setPassword}
           onSubmitEditing={viewModel.handleSubmit}
           placeholder="Senha"

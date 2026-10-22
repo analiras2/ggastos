@@ -1,6 +1,23 @@
 import { useCallback, useState } from 'react';
 
+import { AuthApiError } from '@supabase/supabase-js';
+
 import { signInWithPassword } from '@/features/auth/auth-service';
+
+const INVALID_CREDENTIALS_MESSAGE = 'E-mail ou senha inválidos.';
+const UNKNOWN_ERROR_MESSAGE = 'Não foi possível entrar. Tente novamente.';
+
+function describeLoginError(error: unknown): string {
+  if (error instanceof AuthApiError && error.code === 'invalid_credentials') {
+    return INVALID_CREDENTIALS_MESSAGE;
+  }
+
+  if (error instanceof Error && error.message) {
+    return `Não foi possível entrar: ${error.message}`;
+  }
+
+  return UNKNOWN_ERROR_MESSAGE;
+}
 
 interface LoginViewModel {
   email: string;
@@ -31,8 +48,8 @@ export function useLoginViewModel(): LoginViewModel {
 
     try {
       await signInWithPassword(email.trim(), password);
-    } catch {
-      setErrorMessage('E-mail ou senha inválidos.');
+    } catch (error) {
+      setErrorMessage(describeLoginError(error));
     } finally {
       setIsSubmitting(false);
     }
