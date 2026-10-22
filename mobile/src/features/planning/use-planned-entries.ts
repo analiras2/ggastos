@@ -46,6 +46,7 @@ function mapPlannedEntryRow(row: Record<string, unknown>): PlannedEntry {
     installmentIndex: row.installment_index,
     installmentTotal: row.installment_total,
     note: row.note,
+    tags: Array.isArray(row.tags) ? row.tags : [],
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     cancelledAt: row.cancelled_at,
@@ -85,13 +86,15 @@ async function createPlannedEntry(input: CreatePlannedEntryInput): Promise<Plann
     .insert({
       user_id: user.id,
       month: parsedInput.month,
-      title: parsedInput.title,
+      title: parsedInput.title ?? null,
+      is_title_manual: parsedInput.title != null,
       impact_type: parsedInput.impactType,
       category_id: parsedInput.categoryId,
       expected_account_id: parsedInput.expectedAccountId ?? null,
       amount_cents: parsedInput.amountCents,
       due_date: parsedInput.dueDate ?? null,
       note: parsedInput.note ?? null,
+      tags: parsedInput.tags ?? [],
     })
     .select('*')
     .single();

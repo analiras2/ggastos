@@ -90,7 +90,7 @@ export function UncategorizedTransactionReviewSheet({
                 <Button
                   fullWidth
                   disabled={viewModel.isSaving || viewModel.selectedCategoryId === null}
-                  icon={<Icon name="check" size={18} />}
+                  icon={<Icon name="check" size={18} color={GgastosColors.bgBase} />}
                   onPress={viewModel.handleSave}
                 >
                   {viewModel.isSaving ? 'Salvando...' : 'Salvar e continuar'}

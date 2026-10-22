@@ -108,7 +108,6 @@ export function useDashboardViewModel(): DashboardViewModel {
       return {
         state: 'error' as const,
         message: 'Não foi possível carregar os dados do mês.',
-        actionLabel: 'Tentar de novo',
       };
     }
 

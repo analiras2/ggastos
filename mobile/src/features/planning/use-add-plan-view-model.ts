@@ -13,6 +13,8 @@ import {
 interface AddPlanViewModel {
   title: string;
   setTitle: (value: string) => void;
+  tagsInput: string;
+  setTagsInput: (value: string) => void;
   selectedDate: Date | null;
   setSelectedDate: (date: Date) => void;
   amountCents: number;
@@ -33,14 +35,16 @@ export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
   const createPlannedEntry = useCreatePlannedEntry();
 
   const [title, setTitle] = useState('');
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [tagsInput, setTagsInput] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [amountCents, setAmountCents] = useState(0);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const reset = useCallback(() => {
     setTitle('');
-    setSelectedDate(null);
+    setTagsInput('');
+    setSelectedDate(new Date());
     setAmountCents(0);
     setSelectedCategoryId(null);
     setErrorMessage(null);
@@ -54,10 +58,6 @@ export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
     setErrorMessage(null);
 
     const trimmedTitle = title.trim();
-    if (!trimmedTitle) {
-      setErrorMessage('Informe um título.');
-      return;
-    }
 
     if (!selectedCategoryId) {
       setErrorMessage('Selecione uma categoria.');
@@ -84,7 +84,8 @@ export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
 
     try {
       await createPlannedEntry.mutateAsync({
-        title: trimmedTitle,
+        title: trimmedTitle || null,
+        tags: tagsInput.split(/\s+/).filter((tag) => /^#[\p{L}\p{N}_-]+$/u.test(tag)),
         impactType: category.impactType,
         categoryId: category.id,
         amountCents,
@@ -103,6 +104,7 @@ export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
     }
   }, [
     title,
+    tagsInput,
     selectedCategoryId,
     categoriesQuery.data,
     selectedDate,
@@ -116,6 +118,8 @@ export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
   return {
     title,
     setTitle,
+    tagsInput,
+    setTagsInput,
     selectedDate,
     setSelectedDate,
     amountCents,

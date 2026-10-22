@@ -48,7 +48,7 @@ function mapEntry(entry: PlannedEntry, categories: CategoryName[]): PlanningEntr
 
   return {
     id: entry.id,
-    title: entry.title,
+    title: entry.title || 'Aguardando importação',
     category,
     amount: formatCurrencyCents(entry.amountCents),
     kind: ENTRY_KIND[entry.impactType],

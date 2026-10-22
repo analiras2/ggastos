@@ -31,7 +31,7 @@ const amountCentsSchema = z
 
 export const createPlannedEntrySchema = z.object({
   month: monthSchema,
-  title: z.string().trim().min(1, 'Informe um título.'),
+  title: z.string().trim().nullable().optional(),
   impactType: impactTypeSchema,
   categoryId: uuidSchema,
   amountCents: amountCentsSchema,
@@ -42,6 +42,7 @@ export const createPlannedEntrySchema = z.object({
     .nullable()
     .optional(),
   note: z.string().trim().nullable().optional(),
+  tags: z.array(z.string()).default([]),
 });
 export type CreatePlannedEntryInput = z.infer<typeof createPlannedEntrySchema>;
 
@@ -89,7 +90,7 @@ export const plannedEntrySchema = z.object({
   id: z.string().uuid(),
   templateId: z.string().uuid().nullable(),
   month: monthSchema,
-  title: z.string(),
+  title: z.string().nullable(),
   impactType: impactTypeSchema,
   categoryId: z.string().uuid(),
   expectedAccountId: z.string().uuid().nullable(),
@@ -99,6 +100,7 @@ export const plannedEntrySchema = z.object({
   installmentIndex: z.number().int().nullable(),
   installmentTotal: z.number().int().nullable(),
   note: z.string().nullable(),
+  tags: z.array(z.string()),
   createdAt: z.string(),
   updatedAt: z.string(),
   cancelledAt: z.string().nullable(),

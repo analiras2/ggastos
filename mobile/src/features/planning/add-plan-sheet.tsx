@@ -17,6 +17,8 @@ export function AddPlanSheet({ visible, onClose }: AddPlanSheetProps) {
   const {
     title,
     setTitle,
+    tagsInput,
+    setTagsInput,
     selectedDate,
     setSelectedDate,
     amountCents,
@@ -52,7 +54,7 @@ export function AddPlanSheet({ visible, onClose }: AddPlanSheetProps) {
               <Text style={styles.label}>Título</Text>
               <TextInput
                 onChangeText={setTitle}
-                placeholder="Ex: Salário, Aluguel..."
+                placeholder="Opcional — será preenchido pela importação"
                 placeholderTextColor={GgastosColors.inkFaint}
                 style={styles.input}
                 value={title}
@@ -62,6 +64,11 @@ export function AddPlanSheet({ visible, onClose }: AddPlanSheetProps) {
             <View style={styles.field}>
               <Text style={styles.label}>Data</Text>
               <DateField value={selectedDate} onChange={setSelectedDate} />
+            </View>
+
+            <View style={styles.field}>
+              <Text style={styles.label}>Tags</Text>
+              <TextInput onChangeText={setTagsInput} placeholder="#irmã #eletronico" placeholderTextColor={GgastosColors.inkFaint} style={styles.input} value={tagsInput} autoCapitalize="none" />
             </View>
 
             <View style={styles.field}>
