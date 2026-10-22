@@ -15,6 +15,9 @@ const BRADESCO_GENERATED_AT_PATTERN =
 const DATE_WITHOUT_YEAR_PATTERN = /^(\d{2})\/(\d{2})$/;
 const DATE_WITH_YEAR_PATTERN = /^(\d{2})\/(\d{2})\/(\d{4})$/;
 const INSTALLMENT_PATTERN = /\b(\d{1,2})\/(\d{1,2})\b/;
+const INVOICE_MONTH_PATTERN = /^(\d{4})-(\d{2})$/;
+const ISO_DATE_LENGTH = 10;
+const YEAR_LENGTH = 4;
 
 type BradescoRow = {
   sourceRowNumber: number;
@@ -75,14 +78,25 @@ function parseGeneratedAt(text: string): string | null {
   return `${year}-${month}-${day}T${hour}:${minute}:${second}`;
 }
 
-function generatedYear(invoiceGeneratedAt: string | null, invoiceMonth: string | null): string | null {
-  if (invoiceGeneratedAt) {
-    return invoiceGeneratedAt.slice(0, 4);
+function lastDayOfMonth(invoiceMonth: string): string | null {
+  const match = invoiceMonth.match(INVOICE_MONTH_PATTERN);
+  if (!match) {
+    return null;
   }
-  if (invoiceMonth) {
-    return invoiceMonth.slice(0, 4);
+
+  const [, year, month] = match;
+  const lastDay = new Date(Date.UTC(Number(year), Number(month), 0)).getUTCDate();
+  return `${year}-${month}-${String(lastDay).padStart(2, "0")}`;
+}
+
+// Bradesco rows carry only dd/mm. The year is resolved against the latest date the statement
+// can contain: the end of the invoice month when known, otherwise the file generation date.
+function referenceDate(invoiceGeneratedAt: string | null, invoiceMonth: string | null): string | null {
+  const invoiceMonthEnd = invoiceMonth ? lastDayOfMonth(invoiceMonth) : null;
+  if (invoiceMonthEnd) {
+    return invoiceMonthEnd;
   }
-  return null;
+  return invoiceGeneratedAt ? invoiceGeneratedAt.slice(0, ISO_DATE_LENGTH) : null;
 }
 
 function isHeader(fields: string[]): boolean {
@@ -90,7 +104,10 @@ function isHeader(fields: string[]): boolean {
     BRADESCO_HEADER.every((expected, index) => normalizeToken(fields[index]) === expected);
 }
 
-function parseDate(rawDate: string, year: string | null): string | null {
+// Invoice rows are listed from the newest purchase to the oldest, so each date is bounded by the
+// previous one. A dd/mm later than the bound belongs to the year before it (e.g. 10/12 listed after
+// 05/01). Scheduled rows are future dates and keep the bound's year.
+function parseDate(rawDate: string, upperBound: string | null, rollBackYear: boolean): string | null {
   const withYear = rawDate.match(DATE_WITH_YEAR_PATTERN);
   if (withYear) {
     const [, day, month, parsedYear] = withYear;
@@ -98,12 +115,17 @@ function parseDate(rawDate: string, year: string | null): string | null {
   }
 
   const withoutYear = rawDate.match(DATE_WITHOUT_YEAR_PATTERN);
-  if (!withoutYear || !year) {
+  if (!withoutYear || !upperBound) {
     return null;
   }
 
   const [, day, month] = withoutYear;
-  return `${year}-${month}-${day}`;
+  const boundYear = Number(upperBound.slice(0, YEAR_LENGTH));
+  const sameYearDate = `${boundYear}-${month}-${day}`;
+  if (!rollBackYear || sameYearDate <= upperBound) {
+    return sameYearDate;
+  }
+  return `${boundYear - 1}-${month}-${day}`;
 }
 
 function parseAmountCents(rawAmount: string): number | null {
@@ -198,7 +220,7 @@ function shouldReturnSkippedRow(reason: StatementSkippedReason): boolean {
 function toTransaction(
   row: BradescoRow,
   section: StatementSection,
-  year: string | null,
+  upperBound: string | null,
 ): {
   transaction: ParsedStatementTransaction | null;
   skippedRow: ParsedStatementSkippedRow | null;
@@ -215,7 +237,7 @@ function toTransaction(
     };
   }
 
-  const postedAt = parseDate(rawDate.trim(), year);
+  const postedAt = parseDate(rawDate.trim(), upperBound, section === "CURRENT_INVOICE");
   if (!postedAt) {
     return {
       transaction: null,
@@ -278,13 +300,14 @@ export function parseBradescoStatement(input: StatementParserInput): ParsedState
   const text = decodeContents(input.contents);
   const rows = parseRows(text);
   const invoiceGeneratedAt = parseGeneratedAt(text);
-  const year = generatedYear(invoiceGeneratedAt, input.invoiceMonth ?? null);
+  const statementReferenceDate = referenceDate(invoiceGeneratedAt, input.invoiceMonth ?? null);
   const transactions: ParsedStatementTransaction[] = [];
   const skippedRows: ParsedStatementSkippedRow[] = [];
   const errors: StatementParserError[] = [];
   let activeSection: ActiveSection = null;
   let hasHeader = false;
   let nextHeaderIsScheduled = false;
+  let latestPostedAt = statementReferenceDate;
 
   for (const row of rows) {
     const firstField = normalizeToken(row.fields[0] ?? "");
@@ -304,6 +327,7 @@ export function parseBradescoStatement(input: StatementParserInput): ParsedState
       hasHeader = true;
       activeSection = nextHeaderIsScheduled ? "SCHEDULED" : "CURRENT_INVOICE";
       nextHeaderIsScheduled = false;
+      latestPostedAt = statementReferenceDate;
       continue;
     }
 
@@ -323,9 +347,12 @@ export function parseBradescoStatement(input: StatementParserInput): ParsedState
       continue;
     }
 
-    const parsed = toTransaction(row, activeSection, year);
+    const parsed = toTransaction(row, activeSection, latestPostedAt);
     if (parsed.transaction) {
       transactions.push(parsed.transaction);
+      if (activeSection === "CURRENT_INVOICE") {
+        latestPostedAt = parsed.transaction.postedAt;
+      }
     }
     if (parsed.skippedRow) {
       skippedRows.push(parsed.skippedRow);
