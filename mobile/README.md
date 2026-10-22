@@ -9,9 +9,9 @@ registrados.
 - Node.js compatível com a SDK Expo 57.
 - Dependências instaladas com `npm install`.
 - `mobile/.env` configurado com `EXPO_PUBLIC_SUPABASE_URL`,
-  `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `EXPO_PUBLIC_OWNER_EMAIL` e
-  `EXPO_PUBLIC_OWNER_PASSWORD`. O app é pessoal e usa essas credenciais para
-  criar/restaurar a sessão necessária ao Auth/RLS.
+  `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. O login é manual (e-mail e senha) e a
+  sessão fica persistida. Nunca coloque senhas em variáveis `EXPO_PUBLIC_*`: elas
+  são embutidas no bundle.
 
 ## Execução
 
