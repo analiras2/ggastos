@@ -1,0 +1,79 @@
+{
+  "bank": "BRADESCO",
+  "sourceEncoding": "iso-8859-1",
+  "sourceLineEnding": "CR",
+  "storedFixtureEncoding": "utf-8",
+  "delimiter": ";",
+  "invoiceGeneratedAt": "2026-08-03T04:36:36",
+  "currentInvoice": {
+    "rowsRead": 5,
+    "transactions": [
+      {
+        "sourceRowNumber": 7,
+        "postedAt": "2026-07-21",
+        "competencyMonth": "2026-07",
+        "description": "CURSO MODELO 1/3",
+        "amountCents": 12430,
+        "direction": "DEBIT",
+        "impactType": "EXPENSE",
+        "installment": {
+          "index": 1,
+          "total": 3
+        }
+      },
+      {
+        "sourceRowNumber": 8,
+        "postedAt": "2026-07-21",
+        "competencyMonth": "2026-07",
+        "description": "LOJA MODELO",
+        "amountCents": 79000,
+        "direction": "DEBIT",
+        "impactType": "EXPENSE",
+        "installment": null
+      },
+      {
+        "sourceRowNumber": 11,
+        "postedAt": "2026-05-11",
+        "competencyMonth": "2026-05",
+        "description": "COMPRA INTERNACIONAL 3/5",
+        "amountCents": 159968,
+        "direction": "DEBIT",
+        "impactType": "EXPENSE",
+        "installment": {
+          "index": 3,
+          "total": 5
+        }
+      }
+    ],
+    "skippedRows": [
+      {
+        "sourceRowNumber": 9,
+        "reason": "previous_balance"
+      },
+      {
+        "sourceRowNumber": 10,
+        "reason": "payment_or_credit"
+      }
+    ]
+  },
+  "scheduled": {
+    "rowsRead": 1,
+    "transactions": [
+      {
+        "sourceRowNumber": 21,
+        "postedAt": "2026-07-01",
+        "competencyMonth": "2026-07",
+        "description": "COMPRA FUTURA VI 2/3",
+        "amountCents": 7512,
+        "direction": "DEBIT",
+        "impactType": "EXPENSE",
+        "installment": {
+          "index": 2,
+          "total": 3
+        },
+        "defaultImportMode": "PREVIEW_ONLY"
+      }
+    ]
+  },
+  "summaryRowsSkipped": true
+}

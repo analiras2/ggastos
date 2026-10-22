@@ -1,8 +1,0 @@
-node_modules/
-ios/
-android/
-coverage/
-build/
-dist/
-*.config.js
-jest.setup.js

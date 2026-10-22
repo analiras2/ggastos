@@ -1,97 +1,106 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# GGastos
 
-# Getting Started
+App mobile pessoal de finanças centrado em `planejado vs. realizado`. A rota ativa
+do produto importa faturas de cartão em CSV, concilia as linhas com o
+planejamento e mantém dashboard, inbox de revisão e fechamento mensal.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Estrutura
+- [`mobile/`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/mobile): app Expo/React Native.
+- [`supabase/`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/supabase): schema, Edge Functions e testes de RLS.
+- [`docs/`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs): documentação ativa de produto, arquitetura e operação.
+- [`.specs/`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/.specs): especificações e histórico de decisões.
 
-## Step 1: Start Metro
+## Como rodar localmente
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+### Pré-requisitos
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- Node.js compatível com o Expo SDK 57.
+- Docker Desktop em execução (necessário para o Supabase local).
+- [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started) instalada.
+- Para executar no iOS, Xcode e um simulador configurados; para Android, Android Studio e um emulador configurados.
 
-```sh
-# Using npm
+### 1. Inicie o backend
+
+Em um terminal, na raiz do repositório, inicie os serviços locais e aplique o
+schema com os dados de seed:
+
+```bash
+cd supabase
+supabase start
+supabase db reset
+```
+
+O comando `supabase db reset` executa todas as migrations e carrega
+`supabase/seed.sql`. Para consultar a URL e a chave pública usadas pelo app,
+execute:
+
+```bash
+supabase status
+```
+
+Mantenha os serviços do Supabase em execução enquanto utiliza o aplicativo.
+
+### 2. Configure e inicie o app mobile
+
+Em outro terminal, crie o arquivo de ambiente a partir do exemplo:
+
+```bash
+cp mobile/.env.example mobile/.env
+```
+
+Edite `mobile/.env` e preencha `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` com a
+chave **Publishable** exibida por `supabase status`. A URL local padrão já é
+`http://127.0.0.1:54321`. Para o login automático do app pessoal, preencha
+também `EXPO_PUBLIC_OWNER_EMAIL` e `EXPO_PUBLIC_OWNER_PASSWORD`; se deixá-las
+vazias, a tela de login será exibida.
+
+Instale as dependências e escolha uma plataforma:
+
+```bash
+cd mobile
+npm install
 npm start
-
-# OR using Yarn
-yarn start
 ```
 
-## Step 2: Build and run your app
+Com o servidor Expo ativo, use o menu interativo para abrir o simulador ou
+emulador. Você também pode iniciar diretamente:
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+```bash
 npm run ios
-
-# OR using Yarn
-yarn ios
+npm run android
+npm run web
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Verificações úteis
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```bash
+cd mobile
+npm run lint
+npx tsc --noEmit
+npx expo install --check
+```
 
-## Step 3: Modify your app
+## Documentos principais
+- [PRD](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/prd-ggastos-v2.md)
+- [TDD](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/tdd-ggastos-v2.md)
+- [Data Contract / Schema Spec](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/data-contract-schema-spec.md)
+- [Stack Técnica Supabase MVP](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/stack-tecnica-supabase-mvp.md)
+- [Importação de fatura CSV](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/card-statement-import.md)
+- [Roadmap](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/.specs/project/ROADMAP.md)
 
-Now that you have successfully run the app, let's make changes!
+## Estratégia ativa
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+- Importação assistida de faturas CSV de **Nubank** e **Bradesco**.
+- Idempotência por fingerprint de origem: reimportar um arquivo não duplica
+  transações já persistidas.
+- Conciliação 1:1 reaproveitada para que parcelas planejadas não sejam somadas
+  duas vezes quando chegam na fatura.
+- Lançamentos fora dos cartões suportados continuam no fluxo manual.
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+A integração Pluggy foi preservada apenas como histórico na branch
+`pluggy-integration-snapshot`; não é um destino de deploy nem um fluxo ativo.
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## Diretriz
+O desenvolvimento novo deve partir de `docs/` e da spec
+[`card-statement-import`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/.specs/features/card-statement-import/spec.md).
+As seções de Pluggy nos documentos históricos existem apenas para consulta.
