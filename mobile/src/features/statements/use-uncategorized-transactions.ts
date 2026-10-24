@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 
+import { saveCategoryRule } from '@/features/statements/save-category-rule';
 import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
 
 export type UncategorizedTransaction = {
@@ -54,57 +55,6 @@ async function listUncategorizedTransactions(batchId?: string | null): Promise<U
   }));
 }
 
-async function saveCategoryRule(input: CategorizeTransactionInput): Promise<void> {
-  if (!supabase || !input.saveAsRule) {
-    return;
-  }
-
-  const ruleValue = input.description.trim();
-  const { data: existingRule, error: existingRuleError } = await supabase
-    .from('user_category_rules')
-    .select('id')
-    .eq('rule_type', 'DESCRIPTION_CONTAINS')
-    .eq('rule_value', ruleValue)
-    .maybeSingle();
-
-  if (existingRuleError) {
-    throw existingRuleError;
-  }
-
-  if (existingRule) {
-    const { error } = await supabase
-      .from('user_category_rules')
-      .update({ target_category_id: input.categoryId, is_active: true })
-      .eq('id', existingRule.id);
-
-    if (error) {
-      throw error;
-    }
-    return;
-  }
-
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError) {
-    throw userError;
-  }
-  if (!userData.user) {
-    throw new Error('É preciso estar autenticado para salvar uma regra de categoria.');
-  }
-
-  const { error } = await supabase.from('user_category_rules').insert({
-    user_id: userData.user.id,
-    rule_type: 'DESCRIPTION_CONTAINS',
-    rule_value: ruleValue,
-    target_category_id: input.categoryId,
-    priority: 0,
-    is_active: true,
-  });
-
-  if (error) {
-    throw error;
-  }
-}
-
 async function categorizeTransaction(input: CategorizeTransactionInput): Promise<void> {
   if (!supabase) {
     throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
@@ -119,7 +69,9 @@ async function categorizeTransaction(input: CategorizeTransactionInput): Promise
     throw error;
   }
 
-  await saveCategoryRule(input);
+  if (input.saveAsRule) {
+    await saveCategoryRule({ description: input.description, categoryId: input.categoryId });
+  }
 }
 
 export function useUncategorizedTransactions(

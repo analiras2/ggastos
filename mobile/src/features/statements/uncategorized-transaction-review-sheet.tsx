@@ -80,9 +80,17 @@ export function UncategorizedTransactionReviewSheet({
                 <View style={styles.ruleRow}>
                   <View style={styles.ruleTextGroup}>
                     <Text style={styles.ruleTitle}>Usar nas próximas faturas</Text>
-                    <Text style={styles.ruleDescription}>Cria uma regra para este estabelecimento.</Text>
+                    <Text style={styles.ruleDescription}>
+                      {viewModel.canSaveAsRule
+                        ? 'Cria uma regra para este estabelecimento.'
+                        : 'Descrição genérica demais para criar uma regra.'}
+                    </Text>
                   </View>
-                  <Switch value={viewModel.saveAsRule} onValueChange={viewModel.setSaveAsRule} />
+                  <Switch
+                    disabled={!viewModel.canSaveAsRule}
+                    value={viewModel.saveAsRule && viewModel.canSaveAsRule}
+                    onValueChange={viewModel.setSaveAsRule}
+                  />
                 </View>
 
                 {viewModel.errorMessage ? <Text style={styles.error}>{viewModel.errorMessage}</Text> : null}
