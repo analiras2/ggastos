@@ -2,7 +2,13 @@
 
 ## Status
 
-Proposta. Nenhum código foi alterado. Branch: `feature/bulk-categorization`.
+Em andamento. Branch: `feature/bulk-categorization`.
+
+- Fase 1 concluída: `merchantKey`, matcher e gravação de regras pela chave.
+- Fase 2 concluída: migration `20261024120000_bulk_categorization.sql` (função
+  `normalize_rule_value`, índice único parcial em regras ativas e RPC
+  `categorize_imported_transactions`), aplicada no banco remoto. Testes em
+  `supabase/tests/bulk-categorization-suite.mjs` (pilha local).
 
 ## Problema
 
@@ -148,7 +154,7 @@ parcelas) e `resolveStatementCategory` passa a comparar com a chave.
 | Fase | Entrega | Verificação |
 | --- | --- | --- |
 | 1 | `merchantKey` e correção do valor das regras (fluxo individual) | Testes unitários em `supabase/tests`; regras novas sem sufixo de parcela |
-| 2 | Migration, RPC e índice único | Extensão de `supabase/tests/rls-suite.mjs`: um usuário não categoriza linhas de outro; categoria inativa é rejeitada; atomicidade |
+| 2 | Migration, RPC e índice único | Suíte própria `bulk-categorization-suite.mjs`: um usuário não categoriza linhas de outro; categoria inativa, de receita ou alheia é rejeitada; atomicidade; paridade SQL/TypeScript da normalização |
 | 3 | Hook da mutation e ViewModels de seleção | Teste de unidade do estado de seleção; tipagem estrita |
 | 4 | Modo de seleção, barra e `BulkCategorizeSheet` na aba de pendências, com `FlatList` | Verificação no navegador e no iPhone; leva de 20+ itens sem travar |
 | 5 | Busca, ordenação, chips de grupo e intervalo com `Shift` | Verificação manual com os dados reais |
