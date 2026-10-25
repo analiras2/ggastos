@@ -33,6 +33,12 @@ export function useSelectionViewModel(items: readonly SelectableAmount[]): Selec
   const [anchorId, setAnchorId] = useState<string | null>(null);
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
 
+  // Nothing left to select (everything was categorized): leave selection mode so it does not come
+  // back switched on with the next import. State reset during render, not in an effect.
+  if (isSelectionMode && items.length === 0) {
+    setIsSelectionMode(false);
+  }
+
   // Rows that were categorized (or deleted) elsewhere drop out of the selection without an effect.
   const selectedIds = useMemo(() => pruneSelection(rawSelection, itemIds), [rawSelection, itemIds]);
   const selectedTotalCents = useMemo(() => sumSelectedCents(items, selectedIds), [items, selectedIds]);

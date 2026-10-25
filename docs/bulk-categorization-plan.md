@@ -5,6 +5,9 @@
 Em andamento. Branch: `feature/bulk-categorization`.
 
 - Fase 1 concluída: `merchantKey`, matcher e gravação de regras pela chave.
+- Fase 4 concluída: modo de seleção, barra de ações e `BulkCategorizeSheet` na aba de
+  pendências, com `FlatList` de linhas fixas (`getItemLayout`). Verificada no
+  navegador contra a pilha local do Supabase.
 - Fase 3 concluída: hook da mutation (RPC em blocos de 500, atualização otimista com
   reversão), ViewModels de seleção e de categorização em lote, compostos em
   `use-pending-view-model.ts`. Lógica pura testada em
