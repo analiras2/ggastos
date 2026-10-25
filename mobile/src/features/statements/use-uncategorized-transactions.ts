@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 
+import type { TransactionDirection } from '@/features/statements/selection-state';
 import { saveCategoryRule } from '@/features/statements/save-category-rule';
 import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
 
@@ -8,6 +9,7 @@ export type UncategorizedTransaction = {
   batchId: string;
   description: string;
   amountCents: number;
+  direction: TransactionDirection;
   postedAt: string;
 };
 
@@ -19,8 +21,10 @@ export type CategorizeTransactionInput = {
   saveAsRule: boolean;
 };
 
+export const UNCATEGORIZED_TRANSACTIONS_ROOT_KEY = ['uncategorized-transactions'] as const;
+
 export const uncategorizedTransactionsKey = (batchId?: string | null) => [
-  'uncategorized-transactions',
+  ...UNCATEGORIZED_TRANSACTIONS_ROOT_KEY,
   batchId ?? 'all',
 ];
 
@@ -31,7 +35,7 @@ async function listUncategorizedTransactions(batchId?: string | null): Promise<U
 
   let query = supabase
     .from('imported_transactions')
-    .select('id,statement_import_batch_id,description,amount_cents,posted_at')
+    .select('id,statement_import_batch_id,description,amount_cents,direction,posted_at')
     .is('internal_category_id', null)
     .eq('is_hidden_from_budget', false)
     .order('posted_at', { ascending: false });
@@ -51,6 +55,7 @@ async function listUncategorizedTransactions(batchId?: string | null): Promise<U
     batchId: row.statement_import_batch_id as string,
     description: row.description as string,
     amountCents: row.amount_cents as number,
+    direction: row.direction === 'CREDIT' ? 'CREDIT' : 'DEBIT',
     postedAt: row.posted_at as string,
   }));
 }

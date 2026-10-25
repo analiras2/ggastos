@@ -5,6 +5,10 @@
 Em andamento. Branch: `feature/bulk-categorization`.
 
 - Fase 1 concluída: `merchantKey`, matcher e gravação de regras pela chave.
+- Fase 3 concluída: hook da mutation (RPC em blocos de 500, atualização otimista com
+  reversão), ViewModels de seleção e de categorização em lote, compostos em
+  `use-pending-view-model.ts`. Lógica pura testada em
+  `supabase/tests/bulk-selection.test.mjs`.
 - Fase 2 concluída: migration `20261024120000_bulk_categorization.sql` (função
   `normalize_rule_value`, índice único parcial em regras ativas e RPC
   `categorize_imported_transactions`), aplicada no banco remoto. Testes em
