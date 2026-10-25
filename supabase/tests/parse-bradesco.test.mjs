@@ -119,3 +119,79 @@ test("does not change the fingerprint of a transaction", () => {
 
   assert.match(statement.transactions[0].fingerprintInput, /^BRADESCO\|CURRENT_INVOICE\|\d+\|10\/12\|/);
 });
+
+const SALDO_DECEMBER = "15/12;SALDO ANTERIOR;0,00;6240,05";
+const SALDO_SEPTEMBER = "15/09;SALDO ANTERIOR;0,00;6545,71";
+
+function competencyMonths(statement) {
+  return statement.transactions.map((transaction) => transaction.competencyMonth);
+}
+
+test("infers the invoice month from the previous balance date and sends installments there", () => {
+  const statement = parse(
+    buildStatement("22/10/2026 18:07:12", [
+      SALDO_DECEMBER,
+      "05/01;LOJA A;0,00;10,00",
+      "20/12;LOJA C;0,00;20,00",
+      "10/12;LOJA B 6/10;0,00;160,00",
+    ]),
+  );
+
+  assert.equal(statement.metadata.invoiceMonth, "2026-01");
+  assert.deepEqual(competencyMonths(statement), ["2026-01", "2025-12", "2026-01"]);
+  assert.deepEqual(
+    statement.transactions.map((transaction) => transaction.postedAt),
+    ["2026-01-05", "2025-12-20", "2025-12-10"],
+  );
+});
+
+test("keeps single purchases in the month of the purchase", () => {
+  const statement = parse(
+    buildStatement("22/10/2026 18:07:12", [SALDO_SEPTEMBER, "20/09;LOJA A;0,00;10,00", "15/08;LOJA B;0,00;10,00"]),
+  );
+
+  assert.equal(statement.metadata.invoiceMonth, "2026-10");
+  assert.deepEqual(competencyMonths(statement), ["2026-09", "2026-08"]);
+});
+
+test("moves the invoice month into the next year when the previous balance is in December", () => {
+  const statement = parse(buildStatement("20/12/2025 10:00:00", [SALDO_DECEMBER, "10/12;LOJA A 2/3;0,00;10,00"]));
+
+  assert.equal(statement.metadata.invoiceMonth, "2026-01");
+  assert.deepEqual(competencyMonths(statement), ["2026-01"]);
+});
+
+test("rolls the previous balance back a year when it would be after the generation date", () => {
+  const statement = parse(buildStatement("10/01/2026 10:00:00", [SALDO_DECEMBER, "05/01;LOJA A 1/3;0,00;10,00"]));
+
+  assert.equal(statement.metadata.invoiceMonth, "2026-01");
+  assert.deepEqual(competencyMonths(statement), ["2026-01"]);
+});
+
+test("an explicit invoice month wins over the inferred one", () => {
+  const statement = parse(
+    buildStatement("22/10/2026 18:07:12", [SALDO_DECEMBER, "10/12;LOJA B 6/10;0,00;160,00"]),
+    "2026-03",
+  );
+
+  assert.equal(statement.metadata.invoiceMonth, "2026-03");
+  assert.deepEqual(competencyMonths(statement), ["2026-03"]);
+});
+
+test("without an invoice month installments keep the month of their date", () => {
+  const withoutSaldo = parse(buildStatement("22/10/2026 18:07:12", ["10/12;LOJA B 6/10;0,00;160,00"]));
+  const withoutGenerationDate = parse(
+    ["Data;Histórico;Valor(US$);Valor(R$);", SALDO_DECEMBER, "10/12;LOJA B 6/10;0,00;160,00"].join("\n"),
+  );
+
+  assert.equal(withoutSaldo.metadata.invoiceMonth, null);
+  assert.deepEqual(competencyMonths(withoutSaldo), ["2025-12"]);
+  assert.equal(withoutGenerationDate.metadata.invoiceMonth, null);
+});
+
+test("the previous balance row is still skipped and never becomes a transaction", () => {
+  const statement = parse(buildStatement("22/10/2026 18:07:12", [SALDO_DECEMBER, "05/01;LOJA A;0,00;10,00"]));
+
+  assert.equal(statement.transactions.length, 1);
+  assert.equal(statement.skippedRows.filter((row) => row.reason === "previous_balance").length, 1);
+});

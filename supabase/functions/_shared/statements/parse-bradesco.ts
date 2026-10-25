@@ -18,6 +18,8 @@ const INSTALLMENT_PATTERN = /\b(\d{1,2})\/(\d{1,2})\b/;
 const INVOICE_MONTH_PATTERN = /^(\d{4})-(\d{2})$/;
 const ISO_DATE_LENGTH = 10;
 const YEAR_LENGTH = 4;
+const MIN_MONTH = 1;
+const MAX_MONTH = 12;
 
 type BradescoRow = {
   sourceRowNumber: number;
@@ -97,6 +99,41 @@ function referenceDate(invoiceGeneratedAt: string | null, invoiceMonth: string |
     return invoiceMonthEnd;
   }
   return invoiceGeneratedAt ? invoiceGeneratedAt.slice(0, ISO_DATE_LENGTH) : null;
+}
+
+// The invoice month is the month the invoice is paid. The previous balance row is dated with the due
+// date of the previous invoice, so this invoice is due one month after it. The year is resolved
+// against the generation date because the row carries only dd/mm.
+function inferInvoiceMonth(rows: BradescoRow[], invoiceGeneratedAt: string | null): string | null {
+  if (!invoiceGeneratedAt) {
+    return null;
+  }
+
+  const generatedDate = invoiceGeneratedAt.slice(0, ISO_DATE_LENGTH);
+  for (const row of rows) {
+    const rawDate = row.fields[0]?.trim() ?? "";
+    const match = rawDate.match(DATE_WITHOUT_YEAR_PATTERN);
+    if (!match || skippedReason(row.fields[1] ?? "") !== "previous_balance") {
+      continue;
+    }
+
+    const [, day, month] = match;
+    const monthNumber = Number(month);
+    if (monthNumber < MIN_MONTH || monthNumber > MAX_MONTH) {
+      return null;
+    }
+
+    let year = Number(generatedDate.slice(0, YEAR_LENGTH));
+    if (`${year}-${month}-${day}` > generatedDate) {
+      year -= 1;
+    }
+    const isDecember = monthNumber === MAX_MONTH;
+    const invoiceYear = isDecember ? year + 1 : year;
+    const invoiceMonthNumber = isDecember ? MIN_MONTH : monthNumber + 1;
+    return `${invoiceYear}-${String(invoiceMonthNumber).padStart(2, "0")}`;
+  }
+
+  return null;
 }
 
 function isHeader(fields: string[]): boolean {
@@ -300,7 +337,8 @@ export function parseBradescoStatement(input: StatementParserInput): ParsedState
   const text = decodeContents(input.contents);
   const rows = parseRows(text);
   const invoiceGeneratedAt = parseGeneratedAt(text);
-  const statementReferenceDate = referenceDate(invoiceGeneratedAt, input.invoiceMonth ?? null);
+  const invoiceMonth = input.invoiceMonth ?? inferInvoiceMonth(rows, invoiceGeneratedAt);
+  const statementReferenceDate = referenceDate(invoiceGeneratedAt, invoiceMonth);
   const transactions: ParsedStatementTransaction[] = [];
   const skippedRows: ParsedStatementSkippedRow[] = [];
   const errors: StatementParserError[] = [];
@@ -349,7 +387,13 @@ export function parseBradescoStatement(input: StatementParserInput): ParsedState
 
     const parsed = toTransaction(row, activeSection, latestPostedAt);
     if (parsed.transaction) {
-      transactions.push(parsed.transaction);
+      // Installments belong to the invoice that charges them; single purchases keep their own month.
+      const { transaction } = parsed;
+      transactions.push(
+        invoiceMonth !== null && transaction.installment !== null
+          ? { ...transaction, competencyMonth: invoiceMonth }
+          : transaction,
+      );
       if (activeSection === "CURRENT_INVOICE") {
         latestPostedAt = parsed.transaction.postedAt;
       }
@@ -378,7 +422,7 @@ export function parseBradescoStatement(input: StatementParserInput): ParsedState
       delimiter: ";",
       fileName: input.fileName ?? null,
       fileHash: input.fileHash ?? null,
-      invoiceMonth: input.invoiceMonth ?? null,
+      invoiceMonth,
       invoiceGeneratedAt,
     },
     rowsRead: transactions.length + skippedRows.filter((row) => row.section !== null).length,

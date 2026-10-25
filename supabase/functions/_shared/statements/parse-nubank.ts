@@ -9,6 +9,7 @@ import type {
 const NUBANK_HEADER = ["date", "title", "amount"];
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const INSTALLMENT_PATTERN = /\b(\d{1,2})\/(\d{1,2})\b/;
+const FILE_NAME_DUE_DATE_PATTERN = /(\d{4})-(0[1-9]|1[0-2])-\d{2}/;
 
 type CsvRow = {
   sourceRowNumber: number;
@@ -176,7 +177,14 @@ function headerMatches(fields: string[]): boolean {
     fields.every((field, index) => field.trim() === NUBANK_HEADER[index]);
 }
 
+// Nubank exports are named after the invoice due date (Nubank_2027-01-15.csv).
+function invoiceMonthFromFileName(fileName: string | null | undefined): string | null {
+  const match = fileName?.match(FILE_NAME_DUE_DATE_PATTERN);
+  return match ? `${match[1]}-${match[2]}` : null;
+}
+
 export function parseNubankStatement(input: StatementParserInput): ParsedStatement {
+  const invoiceMonth = input.invoiceMonth ?? invoiceMonthFromFileName(input.fileName);
   const text = decodeContents(input.contents).replace(/^\uFEFF/, "");
   const rows = parseCsvRows(text);
   const header = rows[0];
@@ -191,7 +199,7 @@ export function parseNubankStatement(input: StatementParserInput): ParsedStateme
         delimiter: ",",
         fileName: input.fileName ?? null,
         fileHash: input.fileHash ?? null,
-        invoiceMonth: input.invoiceMonth ?? null,
+        invoiceMonth,
         invoiceGeneratedAt: null,
       },
       rowsRead: 0,
@@ -212,7 +220,13 @@ export function parseNubankStatement(input: StatementParserInput): ParsedStateme
   for (const row of rows.slice(1)) {
     const parsed = toTransaction(row);
     if (parsed.transaction) {
-      transactions.push(parsed.transaction);
+      // Installments belong to the invoice that charges them; single purchases keep their own month.
+      const { transaction } = parsed;
+      transactions.push(
+        invoiceMonth !== null && transaction.installment !== null
+          ? { ...transaction, competencyMonth: invoiceMonth }
+          : transaction,
+      );
     }
     if (parsed.error) {
       errors.push(parsed.error);
@@ -227,7 +241,7 @@ export function parseNubankStatement(input: StatementParserInput): ParsedStateme
       delimiter: ",",
       fileName: input.fileName ?? null,
       fileHash: input.fileHash ?? null,
-      invoiceMonth: input.invoiceMonth ?? null,
+      invoiceMonth,
       invoiceGeneratedAt: null,
     },
     rowsRead: rows.length - 1,
