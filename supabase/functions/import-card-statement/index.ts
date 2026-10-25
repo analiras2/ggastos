@@ -20,6 +20,7 @@ import {
   type FinancialConnectionUpsert,
 } from "../_shared/upsert.ts";
 import { runAutoMatch } from "../_shared/reconciliation/auto-match.ts";
+import { preserveUserEdits, type ExistingUserEdits } from "../_shared/statements/preserve-user-edits.ts";
 
 declare const Deno: {
   env: {
@@ -82,8 +83,10 @@ type StatementTransactionUpsert = {
   statement_import_mode: StatementImportMode;
 };
 
-type ExistingFingerprintRow = {
+type ExistingImportedRow = {
   statement_source_fingerprint: string;
+  internal_category_id: string | null;
+  note: string | null;
 };
 
 type UserCategoryRuleRow = {
@@ -94,6 +97,8 @@ type UserCategoryRuleRow = {
 };
 
 type ActiveCategoryRow = { id: string };
+
+const FINGERPRINT_LOOKUP_CHUNK_SIZE = 50;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -404,27 +409,37 @@ async function updateImportBatch(
   );
 }
 
-async function findExistingFingerprints(
+// Rows already stored for these fingerprints, with the columns a user may have edited.
+async function findExistingImportedRows(
   config: SupabaseRestConfig,
   context: { userId: string; bank: StatementBank; fingerprints: string[] },
-): Promise<Set<string>> {
-  if (context.fingerprints.length === 0) {
-    return new Set();
+): Promise<Map<string, ExistingUserEdits>> {
+  const existing = new Map<string, ExistingUserEdits>();
+
+  // Chunked so the fingerprint list never makes the request URL too long.
+  for (let start = 0; start < context.fingerprints.length; start += FINGERPRINT_LOOKUP_CHUNK_SIZE) {
+    const chunk = context.fingerprints.slice(start, start + FINGERPRINT_LOOKUP_CHUNK_SIZE);
+    const params = new URLSearchParams({
+      select: "statement_source_fingerprint,internal_category_id,note",
+      user_id: `eq.${context.userId}`,
+      statement_source_bank: `eq.${context.bank}`,
+      statement_source_fingerprint: `in.(${chunk.join(",")})`,
+    });
+    const rows = await supabaseRest<ExistingImportedRow[]>(
+      config,
+      `/rest/v1/imported_transactions?${params.toString()}`,
+      { method: "GET" },
+    );
+
+    for (const row of rows) {
+      existing.set(row.statement_source_fingerprint, {
+        internal_category_id: row.internal_category_id,
+        note: row.note,
+      });
+    }
   }
 
-  const params = new URLSearchParams({
-    select: "statement_source_fingerprint",
-    user_id: `eq.${context.userId}`,
-    statement_source_bank: `eq.${context.bank}`,
-    statement_source_fingerprint: `in.(${context.fingerprints.join(",")})`,
-  });
-  const rows = await supabaseRest<ExistingFingerprintRow[]>(
-    config,
-    `/rest/v1/imported_transactions?${params.toString()}`,
-    { method: "GET" },
-  );
-
-  return new Set(rows.map((row) => row.statement_source_fingerprint));
+  return existing;
 }
 
 function buildImportedTransaction(
@@ -636,13 +651,14 @@ Deno.serve(async (request) => {
       categoryRules,
       ...accountContext,
     });
-    const existingFingerprints = await findExistingFingerprints(config, {
+    const existingRows = await findExistingImportedRows(config, {
       userId: user.id,
       bank: importRequest.bank,
       fingerprints: transactions.map((transaction) => transaction.statement_source_fingerprint),
     });
-    const rowsDuplicated = existingFingerprints.size;
-    await upsertStatementTransactions(config, transactions);
+    const rowsDuplicated = existingRows.size;
+    // Re-importing must not undo what the user did after the first import.
+    await upsertStatementTransactions(config, preserveUserEdits(transactions, existingRows));
     const matchOutcomes = await runAutoMatch(config, {
       userId: user.id,
       accountId: accountContext.accountId,
