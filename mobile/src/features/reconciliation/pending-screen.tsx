@@ -1,67 +1,119 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useMemo } from 'react';
+import { FlatList, StyleSheet, View, type ListRenderItemInfo } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { EmptyStateCard } from '@/components/ggastos/cards/empty-state-card';
-import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
-import { ReconciliationSuggestionRow } from '@/features/reconciliation/reconciliation-suggestion-row';
+import { GgastosColors, GgastosSpacing } from '@/constants/ggastos-theme';
+import { PendingListHeader } from '@/features/reconciliation/pending-list-header';
+import { ReconciliationSection } from '@/features/reconciliation/reconciliation-section';
 import { usePendingViewModel } from '@/features/reconciliation/use-pending-view-model';
+import { BulkCategorizeSheet } from '@/features/statements/bulk-categorize-sheet';
+import { CategoriesToolbar } from '@/features/statements/categories-toolbar';
+import {
+  SelectableTransactionRow,
+  TRANSACTION_ROW_GAP,
+  getTransactionRowLayout,
+} from '@/features/statements/selectable-transaction-row';
+import { SelectionActionBar } from '@/features/statements/selection-action-bar';
 import { UncategorizedTransactionReviewSheet } from '@/features/statements/uncategorized-transaction-review-sheet';
-import { UncategorizedTransactionRow } from '@/features/statements/uncategorized-transaction-row';
+import type { UncategorizedTransaction } from '@/features/statements/use-uncategorized-transactions';
+
+const LIST_BOTTOM_PADDING = 100;
+
+const keyExtractor = (transaction: UncategorizedTransaction) => transaction.id;
+
+function RowSeparator() {
+  return <View style={styles.separator} />;
+}
 
 export function PendingScreen() {
   const viewModel = usePendingViewModel();
-  const isEmpty = viewModel.reconciliationSuggestions.length === 0 && viewModel.uncategorizedTransactions.length === 0;
+  const { selection, bulkCategorize } = viewModel;
+  const transactions = viewModel.uncategorizedTransactions;
+  const hasTransactions = transactions.length > 0;
+  const isEmpty = viewModel.reconciliationSuggestions.length === 0 && !hasTransactions;
+  const { selectedIds, isSelectionMode, toggle } = selection;
+  const { handleOpenCategoryReview } = viewModel;
+
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<UncategorizedTransaction>) => (
+      <SelectableTransactionRow
+        transaction={item}
+        isSelectionMode={isSelectionMode}
+        isSelected={selectedIds.has(item.id)}
+        onToggle={toggle}
+        onCategorize={handleOpenCategoryReview}
+      />
+    ),
+    [handleOpenCategoryReview, isSelectionMode, selectedIds, toggle]
+  );
+
+  const header = useMemo(
+    () => (
+      <PendingListHeader
+        isLoading={viewModel.isLoading}
+        isError={viewModel.isError}
+        isEmpty={isEmpty}
+        reconciliationErrorMessage={viewModel.reconciliationErrorMessage}
+        lastBulkResult={viewModel.lastBulkResult}
+        onDismissBulkResult={viewModel.dismissBulkResult}
+      />
+    ),
+    [isEmpty, viewModel.dismissBulkResult, viewModel.isError, viewModel.isLoading, viewModel.lastBulkResult, viewModel.reconciliationErrorMessage]
+  );
+
+  const footer = useMemo(
+    () => (
+      <ReconciliationSection
+        suggestions={viewModel.reconciliationSuggestions}
+        pendingTransactionId={viewModel.pendingReconciliationTransactionId}
+        onConfirm={viewModel.handleConfirmReconciliation}
+        onReject={viewModel.handleRejectReconciliation}
+      />
+    ),
+    [viewModel.handleConfirmReconciliation, viewModel.handleRejectReconciliation, viewModel.pendingReconciliationTransactionId, viewModel.reconciliationSuggestions]
+  );
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Pendências</Text>
-          <Text style={styles.subtitle}>Conclua conciliações e classifique os gastos importados.</Text>
-        </View>
+      {hasTransactions ? (
+        <CategoriesToolbar
+          totalCount={transactions.length}
+          isSelectionMode={isSelectionMode}
+          isAllSelected={selection.isAllSelected}
+          onEnterSelection={selection.enterSelectionMode}
+          onExitSelection={selection.exitSelectionMode}
+          onSelectAll={selection.selectAll}
+          onClear={selection.clear}
+        />
+      ) : null}
 
-        {viewModel.isLoading ? <Text style={styles.status}>Carregando pendências...</Text> : null}
-        {viewModel.isError ? <Text style={styles.status}>Não foi possível carregar as pendências.</Text> : null}
-        {viewModel.reconciliationErrorMessage ? <Text style={styles.error}>{viewModel.reconciliationErrorMessage}</Text> : null}
+      <FlatList
+        data={transactions}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        getItemLayout={getTransactionRowLayout}
+        extraData={selectedIds}
+        ItemSeparatorComponent={RowSeparator}
+        ListHeaderComponent={header}
+        ListFooterComponent={footer}
+        contentContainerStyle={styles.content}
+      />
 
-        {!viewModel.isLoading && !viewModel.isError && isEmpty ? (
-          <EmptyStateCard icon="check-check" title="Tudo em dia" description="Não há categorias ou conciliações pendentes." />
-        ) : null}
+      {isSelectionMode && hasTransactions ? (
+        <SelectionActionBar
+          selectedCount={selection.selectedCount}
+          selectedTotalCents={selection.selectedTotalCents}
+          onCategorize={viewModel.openBulkSheet}
+        />
+      ) : null}
 
-        {viewModel.uncategorizedTransactions.length > 0 ? (
-          <View style={styles.section}>
-            <View>
-              <Text style={styles.sectionTitle}>Categorias</Text>
-              <Text style={styles.sectionSubtitle}>Gastos importados que ainda precisam de classificação.</Text>
-            </View>
-            {viewModel.uncategorizedTransactions.map((transaction) => (
-              <UncategorizedTransactionRow
-                key={transaction.id}
-                transaction={transaction}
-                onCategorize={viewModel.handleOpenCategoryReview}
-              />
-            ))}
-          </View>
-        ) : null}
-
-        {viewModel.reconciliationSuggestions.length > 0 ? (
-          <View style={styles.section}>
-            <View>
-              <Text style={styles.sectionTitle}>Conciliações</Text>
-              <Text style={styles.sectionSubtitle}>Confirme ou rejeite as correspondências sugeridas.</Text>
-            </View>
-            {viewModel.reconciliationSuggestions.map((suggestion) => (
-              <ReconciliationSuggestionRow
-                key={suggestion.transactionId}
-                suggestion={suggestion}
-                isPending={viewModel.pendingReconciliationTransactionId === suggestion.transactionId}
-                onConfirm={viewModel.handleConfirmReconciliation}
-                onReject={viewModel.handleRejectReconciliation}
-              />
-            ))}
-          </View>
-        ) : null}
-      </ScrollView>
+      <BulkCategorizeSheet
+        visible={viewModel.isBulkSheetVisible}
+        selectedCount={viewModel.bulkTransactionCount}
+        selectedTotalCents={viewModel.bulkTotalCents}
+        viewModel={bulkCategorize}
+        onClose={viewModel.closeBulkSheet}
+      />
 
       <UncategorizedTransactionReviewSheet
         transactionId={viewModel.selectedTransactionId}
@@ -75,13 +127,9 @@ export function PendingScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: GgastosColors.bgBase },
-  content: { padding: GgastosSpacing.space5, paddingBottom: 100, gap: GgastosSpacing.space5 },
-  header: { gap: 4 },
-  title: { ...GgastosType.displayLg, color: GgastosColors.inkStrong },
-  subtitle: { ...GgastosType.bodyMd, color: GgastosColors.inkSoft },
-  section: { gap: GgastosSpacing.space3 },
-  sectionTitle: { ...GgastosType.displaySm, color: GgastosColors.inkStrong },
-  sectionSubtitle: { ...GgastosType.bodySm, color: GgastosColors.inkSoft },
-  status: { ...GgastosType.bodyMd, color: GgastosColors.inkFaint, textAlign: 'center' },
-  error: { ...GgastosType.bodySm, color: GgastosColors.expense },
+  content: {
+    padding: GgastosSpacing.space5,
+    paddingBottom: LIST_BOTTOM_PADDING,
+  },
+  separator: { height: TRANSACTION_ROW_GAP },
 });

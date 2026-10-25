@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { useCategories, type CategoryOption } from '@/features/planning/use-categories';
+import { merchantKey } from '@/features/statements/merchant-key';
 import {
   useCategorizeTransaction,
   useUncategorizedTransactions,
@@ -13,6 +14,7 @@ interface UncategorizedTransactionReviewViewModel {
   categories: CategoryOption[];
   selectedCategoryId: string | null;
   saveAsRule: boolean;
+  canSaveAsRule: boolean;
   isLoading: boolean;
   isSaving: boolean;
   errorMessage: string | null;
@@ -36,6 +38,8 @@ export function useUncategorizedTransactionReviewViewModel(
     ? transactionsQuery.data?.find((item) => item.id === selectedTransactionId) ?? null
     : transactionsQuery.data?.[0] ?? null;
 
+  const canSaveAsRule = transaction !== null && merchantKey(transaction.description) !== null;
+
   const handleSave = useCallback(async () => {
     if (!transaction || !selectedCategoryId) {
       setErrorMessage('Selecione uma categoria antes de continuar.');
@@ -49,14 +53,14 @@ export function useUncategorizedTransactionReviewViewModel(
         transactionId: transaction.id,
         description: transaction.description,
         categoryId: selectedCategoryId,
-        saveAsRule,
+        saveAsRule: saveAsRule && canSaveAsRule,
       });
       setSelectedCategoryId(null);
       onSaved?.();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Não foi possível salvar a categoria.');
     }
-  }, [categorizeMutation, onSaved, saveAsRule, selectedCategoryId, transaction]);
+  }, [canSaveAsRule, categorizeMutation, onSaved, saveAsRule, selectedCategoryId, transaction]);
 
   const categories = useMemo(
     () => (categoriesQuery.data ?? []).filter((category) => category.impactType === 'EXPENSE'),
@@ -69,6 +73,7 @@ export function useUncategorizedTransactionReviewViewModel(
     categories,
     selectedCategoryId,
     saveAsRule,
+    canSaveAsRule,
     isLoading: transactionsQuery.isLoading || categoriesQuery.isLoading,
     isSaving: categorizeMutation.isPending,
     errorMessage: errorMessage ?? (transactionsQuery.isError ? 'Não foi possível carregar os lançamentos.' : null),
