@@ -4,6 +4,11 @@
 
 Em andamento. Branch: `feature/statement-payment-status`.
 
+- Fase 4 concluída: seção "Faturas" no topo de Pendências (banco, mês, total, etiqueta e
+  botão "Marcar como paga" / "Reabrir", via `set_statement_payment_status`, com data de
+  pagamento igual a agora) e card "Faturas em aberto" no painel quando há despesa aberta no
+  mês. As consultas do painel e do anual são refeitas na hora (`refetchType: 'all'`), porque
+  o app desliga o refetch ao montar a tela.
 - Fase 3 concluída: a folha de importação tem "Situação da fatura: Automático / Paga /
   Em aberto" (padrão Automático, que deixa o arquivo ou o vencimento decidir). Como o app
   não lê o CSV antes de enviar, a situação detectada aparece depois da importação

@@ -4,6 +4,7 @@ import { EmptyStateCard } from '@/components/ggastos/cards/empty-state-card';
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import type { BulkCategorizeResult } from '@/features/statements/bulk-categorization';
 import { BulkResultBanner } from '@/features/statements/bulk-result-banner';
+import { InvoicesSection } from '@/features/statements/invoices-section';
 
 type PendingListHeaderProps = {
   isLoading: boolean;
@@ -33,6 +34,8 @@ export function PendingListHeader({
       {isError ? <Text style={styles.status}>Não foi possível carregar as pendências.</Text> : null}
       {reconciliationErrorMessage ? <Text style={styles.error}>{reconciliationErrorMessage}</Text> : null}
       {lastBulkResult ? <BulkResultBanner result={lastBulkResult} onDismiss={onDismissBulkResult} /> : null}
+
+      <InvoicesSection />
 
       {!isLoading && !isError && isEmpty ? (
         <EmptyStateCard icon="check-check" title="Tudo em dia" description="Não há categorias ou conciliações pendentes." />
