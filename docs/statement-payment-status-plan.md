@@ -4,6 +4,10 @@
 
 Em andamento. Branch: `feature/statement-payment-status`.
 
+- Fase 3 concluída: a folha de importação tem "Situação da fatura: Automático / Paga /
+  Em aberto" (padrão Automático, que deixa o arquivo ou o vencimento decidir). Como o app
+  não lê o CSV antes de enviar, a situação detectada aparece depois da importação
+  ("Fatura em aberto. Sugerida pelo vencimento."), e dá para reimportar com escolha explícita.
 - Fase 2 concluída: parsers detectam a situação (Bradesco: `Situação da Fatura`; Nubank:
   vencimento no nome do arquivo), a importação aceita `paymentStatus`, grava lote e linhas
   e a reimportação nunca reabre uma fatura paga sem escolha explícita. Testes em
