@@ -2,7 +2,11 @@
 
 ## Status
 
-Em andamento. Branch: `feature/statement-payment-status`.
+Concluído (fases 1 a 5), pendente de mesclar na `pwa`. Branch: `feature/statement-payment-status`.
+
+- Fase 5 concluída: o fechamento do mês avisa, após fechar, quando há fatura em aberto no
+  mês; o anual ganhou a nota de que os gastos incluem faturas abertas; documentação em
+  `card-statement-import.md`.
 
 - Fase 4 concluída: seção "Faturas" no topo de Pendências (banco, mês, total, etiqueta e
   botão "Marcar como paga" / "Reabrir", via `set_statement_payment_status`, com data de
