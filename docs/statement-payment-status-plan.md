@@ -2,7 +2,13 @@
 
 ## Status
 
-Proposta, sem código. Branch: `feature/statement-payment-status`.
+Em andamento. Branch: `feature/statement-payment-status`.
+
+- Fase 1 concluída: migration `20261027120000_statement_payment_status.sql` (colunas do
+  lote, função `set_statement_payment_status`, painel lendo `status`), aplicada no banco
+  remoto. O "Saldo atual" do app passou a ler `currentBalanceCents`. O fechamento do mês
+  (`recalculate-month-snapshot`) já usa `get_month_dashboard`, então segue a mesma regra
+  sem mudança de código. Testes em `supabase/tests/statement-payment-status-suite.mjs`.
 
 ## O que se quer
 

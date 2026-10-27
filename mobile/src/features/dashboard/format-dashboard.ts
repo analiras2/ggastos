@@ -67,8 +67,9 @@ function toCategoryBudget(category: MonthDashboard['categories'][number]): Categ
 
 export function formatDashboardData(monthDashboard: MonthDashboard): DashboardData {
   const { summary } = monthDashboard;
-  const totalActual =
-    summary.actualIncomeCents - summary.actualExpenseCents - summary.actualInvestmentCents;
+  // Cash balance: only what was actually paid. Unpaid (open) statements are counted in
+  // committedRemainingCents instead (see get_month_dashboard).
+  const totalActual = summary.currentBalanceCents;
   const heroDeltaCents = summary.expectedBalanceCents - totalActual;
 
   return {
