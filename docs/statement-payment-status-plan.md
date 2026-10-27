@@ -4,6 +4,10 @@
 
 Em andamento. Branch: `feature/statement-payment-status`.
 
+- Fase 2 concluída: parsers detectam a situação (Bradesco: `Situação da Fatura`; Nubank:
+  vencimento no nome do arquivo), a importação aceita `paymentStatus`, grava lote e linhas
+  e a reimportação nunca reabre uma fatura paga sem escolha explícita. Testes em
+  `payment-status.test.mjs` e `reimport-suite.mjs` (integração local).
 - Fase 1 concluída: migration `20261027120000_statement_payment_status.sql` (colunas do
   lote, função `set_statement_payment_status`, painel lendo `status`), aplicada no banco
   remoto. O "Saldo atual" do app passou a ler `currentBalanceCents`. O fechamento do mês

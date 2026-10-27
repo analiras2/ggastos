@@ -74,12 +74,33 @@ async function signUp(email) {
   return { userId: response.body.user.id, accessToken: response.body.access_token };
 }
 
-function importStatement(token) {
+function importStatement(token, overrides = {}) {
   return httpJson(`${SUPABASE_URL}/functions/v1/import-card-statement`, {
     method: "POST",
     headers: userHeaders(token),
-    body: JSON.stringify({ bank: "NUBANK", fileName: "Nubank_2026-10-15.csv", contents: CONTENTS }),
+    body: JSON.stringify({ bank: "NUBANK", fileName: "Nubank_2026-10-15.csv", contents: CONTENTS, ...overrides }),
   });
+}
+
+function nubankContents(merchant) {
+  return ["date,title,amount", `2026-09-10,${merchant} A,"10,00"`, `2026-09-11,${merchant} B,"20,00"`].join("\n");
+}
+
+function bradescoContents(merchant, situation) {
+  return [
+    "Data: 22/10/2026 18:07:12",
+    `Situação da Fatura: ${situation}`,
+    "TITULAR TESTE ;;; 1234",
+    "Data;Histórico;Valor(US$);Valor(R$);",
+    "15/09;SALDO ANTERIOR;0,00;100,00",
+    `20/09;${merchant};0,00;10,00`,
+  ].join("\n");
+}
+
+async function paymentStateOf(batchId, merchant) {
+  const [batch] = await service("GET", `statement_import_batches?select=payment_status&id=eq.${batchId}`);
+  const rows = await service("GET", `imported_transactions?select=status&description=like.${encodeURIComponent(merchant)}*`);
+  return { batch: batch.payment_status, rows: [...new Set(rows.map((row) => row.status))].sort() };
 }
 
 async function readRows(userId) {
@@ -154,6 +175,61 @@ async function main() {
 
   await check("an uncategorized row is still filled by the rules", async () => {
     assertEqual(after.get("Loja Parcelada - Parcela 2/3").internal_category_id, ruleCategory, "Loja Parcelada");
+  });
+
+  // --- payment status -------------------------------------------------------------------------
+  const openFirst = await importStatement(user.accessToken, { contents: nubankContents(`Aberta${runId}`), paymentStatus: "OPEN" });
+  await check("an explicit OPEN beats the due date and leaves the rows pending", async () => {
+    assertEqual([openFirst.status, openFirst.body.paymentStatus, openFirst.body.paymentStatusSource], [202, "OPEN", "USER"], "response");
+    assertEqual(await paymentStateOf(openFirst.body.batchId, `Aberta${runId}`), { batch: "OPEN", rows: ["PENDING"] }, "state");
+  });
+
+  const reimportSuggested = await importStatement(user.accessToken, { contents: nubankContents(`Aberta${runId}`) });
+  await check("importing again without a choice does not pay an open statement", async () => {
+    assertEqual([reimportSuggested.body.paymentStatus, reimportSuggested.body.paymentStatusSource], ["OPEN", "DUE_DATE"], "response");
+    assertEqual(await paymentStateOf(reimportSuggested.body.batchId, `Aberta${runId}`), { batch: "OPEN", rows: ["PENDING"] }, "state");
+  });
+
+  const reimportPaid = await importStatement(user.accessToken, { contents: nubankContents(`Aberta${runId}`), paymentStatus: "PAID" });
+  await check("an explicit PAID pays the rows that already exist", async () => {
+    assertEqual(await paymentStateOf(reimportPaid.body.batchId, `Aberta${runId}`), { batch: "PAID", rows: ["POSTED"] }, "state");
+  });
+
+  const reimportQuiet = await importStatement(user.accessToken, { contents: nubankContents(`Aberta${runId}`) });
+  await check("importing a paid statement again without a choice never reopens it", async () => {
+    assertEqual(await paymentStateOf(reimportQuiet.body.batchId, `Aberta${runId}`), { batch: "PAID", rows: ["POSTED"] }, "state");
+  });
+
+  const reimportReopen = await importStatement(user.accessToken, { contents: nubankContents(`Aberta${runId}`), paymentStatus: "OPEN" });
+  await check("an explicit OPEN reopens a paid statement", async () => {
+    assertEqual(await paymentStateOf(reimportReopen.body.batchId, `Aberta${runId}`), { batch: "OPEN", rows: ["PENDING"] }, "state");
+  });
+
+  const future = await importStatement(user.accessToken, { fileName: "Nubank_2027-01-15.csv", contents: nubankContents(`Futura${runId}`) });
+  await check("a Nubank file with a future due date is suggested as open", async () => {
+    assertEqual([future.body.paymentStatus, future.body.paymentStatusSource], ["OPEN", "DUE_DATE"], "response");
+    assertEqual(await paymentStateOf(future.body.batchId, `Futura${runId}`), { batch: "OPEN", rows: ["PENDING"] }, "state");
+  });
+
+  const bradescoPaid = await importStatement(user.accessToken, { bank: "BRADESCO", fileName: "Bradesco_x.csv", contents: bradescoContents(`Pago${runId}`, "PAGO") });
+  await check("a Bradesco file that says PAGO is imported as paid", async () => {
+    assertEqual([bradescoPaid.status, bradescoPaid.body.paymentStatus, bradescoPaid.body.paymentStatusSource], [202, "PAID", "FILE"], "response");
+    assertEqual(await paymentStateOf(bradescoPaid.body.batchId, `Pago${runId}`), { batch: "PAID", rows: ["POSTED"] }, "state");
+  });
+
+  const bradescoOpen = await importStatement(user.accessToken, { bank: "BRADESCO", fileName: "Bradesco_y.csv", contents: bradescoContents(`Fechada${runId}`, "ABERTA") });
+  await check("a Bradesco file that is not paid is imported as open", async () => {
+    assertEqual([bradescoOpen.body.paymentStatus, bradescoOpen.body.paymentStatusSource], ["OPEN", "FILE"], "response");
+  });
+
+  const bradescoNowPaid = await importStatement(user.accessToken, { bank: "BRADESCO", fileName: "Bradesco_y.csv", contents: bradescoContents(`Fechada${runId}`, "PAGO") });
+  await check("downloading the Bradesco file again after paying it pays the open rows", async () => {
+    assertEqual(await paymentStateOf(bradescoNowPaid.body.batchId, `Fechada${runId}`), { batch: "PAID", rows: ["POSTED"] }, "state");
+  });
+
+  const invalid = await importStatement(user.accessToken, { contents: nubankContents(`Invalida${runId}`), paymentStatus: "MAYBE" });
+  await check("an invalid paymentStatus is rejected", async () => {
+    assertEqual([invalid.status, invalid.body.error], [400, "invalid_payment_status"], "response");
   });
 
   const failed = results.filter((passed) => !passed).length;

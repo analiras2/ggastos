@@ -195,3 +195,29 @@ test("the previous balance row is still skipped and never becomes a transaction"
   assert.equal(statement.transactions.length, 1);
   assert.equal(statement.skippedRows.filter((row) => row.reason === "previous_balance").length, 1);
 });
+
+function withSituation(situation, lineEnding = "\n") {
+  return ["Data: 22/10/2026 18:07:12", `Situação da Fatura: ${situation}`, "TITULAR TESTE ;;; 1234", "Data;Histórico;Valor(US$);Valor(R$);", "05/01;LOJA A;0,00;10,00"].join(lineEnding);
+}
+
+test("detects a paid statement from the situation line", () => {
+  assert.equal(parse(withSituation("PAGO")).metadata.detectedPaymentStatus, "PAID");
+  assert.equal(parse(withSituation("pago")).metadata.detectedPaymentStatus, "PAID");
+});
+
+test("detects the situation with every line ending used by the bank", () => {
+  for (const lineEnding of ["\r\n", "\r", "\n"]) {
+    assert.equal(parse(withSituation("PAGO", lineEnding)).metadata.detectedPaymentStatus, "PAID");
+  }
+});
+
+test("any other situation means the statement is still open", () => {
+  for (const situation of ["ABERTA", "EM ABERTO", "FECHADA"]) {
+    assert.equal(parse(withSituation(situation)).metadata.detectedPaymentStatus, "OPEN");
+  }
+});
+
+test("does not guess the situation when the line is missing or empty", () => {
+  assert.equal(parse(buildStatement("22/10/2026 18:07:12", ["05/01;LOJA A;0,00;10,00"]).replace("Situação da Fatura: PAGO\n", "")).metadata.detectedPaymentStatus, null);
+  assert.equal(parse(withSituation("")).metadata.detectedPaymentStatus, null);
+});

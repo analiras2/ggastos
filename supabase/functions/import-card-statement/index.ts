@@ -20,6 +20,15 @@ import {
   type FinancialConnectionUpsert,
 } from "../_shared/upsert.ts";
 import { runAutoMatch } from "../_shared/reconciliation/auto-match.ts";
+import {
+  applyPaymentStatus,
+  batchPaymentStatus,
+  parsePaymentStatus,
+  resolvePaymentStatus,
+  rowStatusFor,
+  type ImportedRowStatus,
+  type PaymentStatus,
+} from "../_shared/statements/payment-status.ts";
 import { preserveUserEdits, type ExistingUserEdits } from "../_shared/statements/preserve-user-edits.ts";
 
 declare const Deno: {
@@ -43,6 +52,7 @@ type ImportRequest = {
   contents: string;
   invoiceMonth: string | null;
   fileHash: string | null;
+  paymentStatus: PaymentStatus | null;
 };
 
 type StatementBatchRow = {
@@ -87,7 +97,10 @@ type ExistingImportedRow = {
   statement_source_fingerprint: string;
   internal_category_id: string | null;
   note: string | null;
+  status: ImportedRowStatus;
 };
+
+type StoredImportedRow = ExistingUserEdits & { status: ImportedRowStatus };
 
 type UserCategoryRuleRow = {
   rule_type: string;
@@ -99,6 +112,13 @@ type UserCategoryRuleRow = {
 type ActiveCategoryRow = { id: string };
 
 const FINGERPRINT_LOOKUP_CHUNK_SIZE = 50;
+const STATEMENT_TIME_ZONE = "America/Sao_Paulo";
+
+// Today as YYYY-MM-DD in the time zone of the statements, so a due date is compared with the
+// local calendar day and not with the UTC one.
+function todayInStatementTimeZone(): string {
+  return new Date().toLocaleDateString("en-CA", { timeZone: STATEMENT_TIME_ZONE });
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -187,6 +207,18 @@ async function parseImportRequest(request: Request): Promise<ImportRequest> {
     });
   }
 
+  const paymentStatus = parsePaymentStatus(candidate.paymentStatus);
+  if (
+    candidate.paymentStatus !== undefined &&
+    candidate.paymentStatus !== null &&
+    paymentStatus === null
+  ) {
+    throw jsonResponse(400, {
+      error: "invalid_payment_status",
+      message: "paymentStatus must be either PAID or OPEN.",
+    });
+  }
+
   if (invoiceMonth !== null && !INVOICE_MONTH_PATTERN.test(invoiceMonth)) {
     throw jsonResponse(400, {
       error: "invalid_invoice_month",
@@ -200,6 +232,7 @@ async function parseImportRequest(request: Request): Promise<ImportRequest> {
     contents,
     invoiceMonth,
     fileHash,
+    paymentStatus,
   };
 }
 
@@ -359,6 +392,7 @@ async function createImportBatch(
     fileName: string;
     fileHash: string;
     invoiceMonth: string | null;
+    paymentStatus: PaymentStatus;
     payload: Record<string, unknown>;
   },
 ): Promise<string> {
@@ -377,6 +411,7 @@ async function createImportBatch(
         file_name: batch.fileName,
         file_hash: batch.fileHash,
         invoice_month: batch.invoiceMonth,
+        payment_status: batch.paymentStatus,
         status: "RECEIVED",
         payload: batch.payload,
       }),
@@ -413,14 +448,14 @@ async function updateImportBatch(
 async function findExistingImportedRows(
   config: SupabaseRestConfig,
   context: { userId: string; bank: StatementBank; fingerprints: string[] },
-): Promise<Map<string, ExistingUserEdits>> {
-  const existing = new Map<string, ExistingUserEdits>();
+): Promise<Map<string, StoredImportedRow>> {
+  const existing = new Map<string, StoredImportedRow>();
 
   // Chunked so the fingerprint list never makes the request URL too long.
   for (let start = 0; start < context.fingerprints.length; start += FINGERPRINT_LOOKUP_CHUNK_SIZE) {
     const chunk = context.fingerprints.slice(start, start + FINGERPRINT_LOOKUP_CHUNK_SIZE);
     const params = new URLSearchParams({
-      select: "statement_source_fingerprint,internal_category_id,note",
+      select: "statement_source_fingerprint,internal_category_id,note,status",
       user_id: `eq.${context.userId}`,
       statement_source_bank: `eq.${context.bank}`,
       statement_source_fingerprint: `in.(${chunk.join(",")})`,
@@ -435,6 +470,7 @@ async function findExistingImportedRows(
       existing.set(row.statement_source_fingerprint, {
         internal_category_id: row.internal_category_id,
         note: row.note,
+        status: row.status,
       });
     }
   }
@@ -452,6 +488,7 @@ function buildImportedTransaction(
     bank: StatementBank;
     fingerprint: string;
     now: string;
+    rowStatus: ImportedRowStatus;
     categoryRules: readonly StatementCategoryRule[];
   },
 ): StatementTransactionUpsert {
@@ -469,7 +506,7 @@ function buildImportedTransaction(
     description_raw: transaction.descriptionRaw,
     amount_cents: transaction.amountCents,
     currency_code: transaction.currencyCode,
-    status: "POSTED",
+    status: context.rowStatus,
     direction: transaction.direction,
     merchant_name: null,
     merchant_legal_name: null,
@@ -510,6 +547,7 @@ async function buildImportedTransactions(
     batchId: string;
     bank: StatementBank;
     now: string;
+    rowStatus: ImportedRowStatus;
     categoryRules: readonly StatementCategoryRule[];
   },
 ): Promise<StatementTransactionUpsert[]> {
@@ -596,6 +634,13 @@ Deno.serve(async (request) => {
     const parsed = parseStatement(requestWithHash);
     const now = new Date().toISOString();
 
+    const resolvedPaymentStatus = resolvePaymentStatus({
+      requested: importRequest.paymentStatus,
+      detected: parsed.metadata.detectedPaymentStatus,
+      dueDate: parsed.metadata.invoiceDueDate,
+      today: todayInStatementTimeZone(),
+    });
+
     await ensureProfile(config, user);
     const batchId = await createImportBatch(config, {
       userId: user.id,
@@ -603,6 +648,7 @@ Deno.serve(async (request) => {
       fileName: importRequest.fileName,
       fileHash,
       invoiceMonth: parsed.metadata.invoiceMonth,
+      paymentStatus: resolvedPaymentStatus.status,
       payload: {
         source: "CARD_STATEMENT",
         metadata: parsed.metadata,
@@ -648,6 +694,7 @@ Deno.serve(async (request) => {
       bank: importRequest.bank,
       batchId,
       now,
+      rowStatus: rowStatusFor(resolvedPaymentStatus.status),
       categoryRules,
       ...accountContext,
     });
@@ -657,8 +704,21 @@ Deno.serve(async (request) => {
       fingerprints: transactions.map((transaction) => transaction.statement_source_fingerprint),
     });
     const rowsDuplicated = existingRows.size;
-    // Re-importing must not undo what the user did after the first import.
-    await upsertStatementTransactions(config, preserveUserEdits(transactions, existingRows));
+    // Re-importing must not undo what the user did after the first import: categories and notes are
+    // kept, and a paid row is only reopened when the user explicitly asks for it.
+    const existingStatuses = new Map(
+      [...existingRows].map(([fingerprint, row]) => [fingerprint, row.status] as const),
+    );
+    const rowsToUpsert = applyPaymentStatus(
+      preserveUserEdits(transactions, existingRows),
+      existingStatuses,
+      resolvedPaymentStatus,
+    );
+    await upsertStatementTransactions(config, rowsToUpsert);
+    const paymentStatus = batchPaymentStatus(
+      rowsToUpsert.map((row) => row.status),
+      resolvedPaymentStatus.status,
+    );
     const matchOutcomes = await runAutoMatch(config, {
       userId: user.id,
       accountId: accountContext.accountId,
@@ -667,6 +727,7 @@ Deno.serve(async (request) => {
     const rowsImported = transactions.length - rowsDuplicated;
     await updateImportBatch(config, batchId, {
       status: "PROCESSED",
+      payment_status: paymentStatus,
       rows_read: parsed.rowsRead,
       rows_imported: rowsImported,
       rows_duplicated: rowsDuplicated,
@@ -691,6 +752,8 @@ Deno.serve(async (request) => {
       rowsSkipped: parsed.skippedRows.length,
       rowsFailed: 0,
       matchesCreated: matchOutcomes.length,
+      paymentStatus,
+      paymentStatusSource: resolvedPaymentStatus.source,
     });
   } catch (error) {
     if (error instanceof Response) {
