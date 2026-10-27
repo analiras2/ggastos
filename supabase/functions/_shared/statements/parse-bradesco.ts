@@ -5,6 +5,7 @@ import type {
   StatementInstallment,
   StatementParserError,
   StatementParserInput,
+  StatementPaymentStatus,
   StatementSection,
   StatementSkippedReason,
 } from "./types.ts";
@@ -18,6 +19,8 @@ const INSTALLMENT_PATTERN = /\b(\d{1,2})\/(\d{1,2})\b/;
 const INVOICE_MONTH_PATTERN = /^(\d{4})-(\d{2})$/;
 const ISO_DATE_LENGTH = 10;
 const YEAR_LENGTH = 4;
+const SITUATION_PATTERN = /situacao da fatura:[ \t]*([^\r\n;]*)/i;
+const PAID_SITUATION = "PAGO";
 const MIN_MONTH = 1;
 const MAX_MONTH = 12;
 
@@ -78,6 +81,17 @@ function parseGeneratedAt(text: string): string | null {
 
   const [, day, month, year, hour, minute, second] = match;
   return `${year}-${month}-${day}T${hour}:${minute}:${second}`;
+}
+
+// "Situação da Fatura: PAGO" is printed at the top of the file. Anything other than PAGO means the
+// statement is still open; a missing or empty line tells nothing.
+function detectPaymentStatus(text: string): StatementPaymentStatus | null {
+  const match = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").match(SITUATION_PATTERN);
+  const situation = match?.[1]?.trim().toUpperCase() ?? "";
+  if (situation.length === 0) {
+    return null;
+  }
+  return situation === PAID_SITUATION ? "PAID" : "OPEN";
 }
 
 function lastDayOfMonth(invoiceMonth: string): string | null {
@@ -424,6 +438,8 @@ export function parseBradescoStatement(input: StatementParserInput): ParsedState
       fileHash: input.fileHash ?? null,
       invoiceMonth,
       invoiceGeneratedAt,
+      invoiceDueDate: null,
+      detectedPaymentStatus: detectPaymentStatus(text),
     },
     rowsRead: transactions.length + skippedRows.filter((row) => row.section !== null).length,
     transactions,

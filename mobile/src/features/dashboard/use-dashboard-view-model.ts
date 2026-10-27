@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import type { CategoryBudget, DashboardData } from '@/features/dashboard/dashboard-data';
-import { emptyDashboardData, formatDashboardData } from '@/features/dashboard/format-dashboard';
+import { emptyDashboardData, formatCurrencyCents, formatDashboardData } from '@/features/dashboard/format-dashboard';
 import {
   formatCategoryDetails,
   type CategoryDetailsView,
@@ -118,6 +118,8 @@ export function useDashboardViewModel(): DashboardViewModel {
     };
   }, [monthDashboardQuery.isError, monthDashboardQuery.isLoading]);
 
+  const openExpenseCents = monthDashboardQuery.data?.summary.openExpenseCents ?? 0;
+
   const closeMonthBanner = useMemo(() => {
     if (closeMonthMutation.isPending) {
       return { state: 'pending' as const, message: 'Fechando o mês...' };
@@ -128,11 +130,18 @@ export function useDashboardViewModel(): DashboardViewModel {
     }
 
     if (closeMonthMutation.isSuccess) {
-      return { state: 'ok' as const, message: 'Mês fechado. O snapshot pode ser recalculado a qualquer momento.' };
+      const closedMessage = 'Mês fechado. O snapshot pode ser recalculado a qualquer momento.';
+      if (openExpenseCents > 0) {
+        return {
+          state: 'pending' as const,
+          message: `${closedMessage} Atenção: ${formatCurrencyCents(openExpenseCents)} em faturas ainda em aberto. Marque como paga em Pendências e recalcule o mês.`,
+        };
+      }
+      return { state: 'ok' as const, message: closedMessage };
     }
 
     return null;
-  }, [closeMonthMutation.isPending, closeMonthMutation.isError, closeMonthMutation.error, closeMonthMutation.isSuccess]);
+  }, [closeMonthMutation.isPending, closeMonthMutation.isError, closeMonthMutation.error, closeMonthMutation.isSuccess, openExpenseCents]);
 
   const handleCloseMonth = useCallback(() => {
     closeMonthMutation.mutate(monthKey);

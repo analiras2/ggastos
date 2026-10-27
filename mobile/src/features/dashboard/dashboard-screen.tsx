@@ -82,6 +82,16 @@ export function DashboardScreen() {
           <KpiComparisonCard label="Comprometido restante" value={data.commitment.value} />
         </View>
 
+        {data.openInvoices ? (
+          <View style={styles.kpiRow}>
+            <KpiComparisonCard
+              label="Faturas em aberto"
+              value={data.openInvoices.value}
+              caption="Já contam em Comprometido restante. Pague em Pendências."
+            />
+          </View>
+        ) : null}
+
         <DashboardCategoriesSection categories={data.categories} onOpenCategory={handleOpenCategory} />
 
         <SyncStatusBanner

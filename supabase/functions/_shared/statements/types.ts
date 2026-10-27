@@ -1,5 +1,7 @@
 export type StatementBank = "NUBANK" | "BRADESCO";
 
+export type StatementPaymentStatus = "PAID" | "OPEN";
+
 export type StatementSection = "CURRENT_INVOICE" | "SCHEDULED";
 
 export type StatementDirection = "DEBIT" | "CREDIT";
@@ -70,6 +72,8 @@ export type ParsedStatementMetadata = {
   fileHash: string | null;
   invoiceMonth: string | null;
   invoiceGeneratedAt: string | null;
+  invoiceDueDate: string | null;
+  detectedPaymentStatus: StatementPaymentStatus | null;
 };
 
 export type ParsedStatement = {

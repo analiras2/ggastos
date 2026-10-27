@@ -55,3 +55,18 @@ test("ignores file names with an impossible month", () => {
 
   assert.equal(statement.metadata.invoiceMonth, null);
 });
+
+test("takes the invoice due date from the file name", () => {
+  assert.equal(parse({ fileName: "Nubank_2027-01-15.csv" }).metadata.invoiceDueDate, "2027-01-15");
+  assert.equal(parse({ fileName: "fatura 2026-10-05 (1).csv" }).metadata.invoiceDueDate, "2026-10-05");
+});
+
+test("has no due date without a usable file name", () => {
+  for (const fileName of [undefined, null, "fatura.csv", "Nubank_2027-13-15.csv", "Nubank_2027-01-45.csv"]) {
+    assert.equal(parse({ fileName }).metadata.invoiceDueDate, null);
+  }
+});
+
+test("never claims to know the payment status of a Nubank file", () => {
+  assert.equal(parse({ fileName: "Nubank_2027-01-15.csv" }).metadata.detectedPaymentStatus, null);
+});

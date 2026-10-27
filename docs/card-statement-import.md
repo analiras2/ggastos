@@ -50,6 +50,28 @@ sintéticas em [`.specs/features/card-statement-import/fixtures/`](/Users/analir
   dashboard usa a categoria do planejamento conciliado. Linhas sem regra e sem
   match continuam importadas sem uma categoria inventada.
 
+## Situação de pagamento da fatura
+
+Cada fatura (lote) é **paga** (`PAID`, linhas `POSTED`) ou **em aberto** (`OPEN`, linhas
+`PENDING`).
+
+- **Ao importar:** a folha tem "Situação da fatura": Automático, Paga ou Em aberto.
+  Automático decide pela ordem: o arquivo (Bradesco, `Situação da Fatura`), o vencimento
+  no nome do arquivo (Nubank, `Nubank_AAAA-MM-DD.csv`: vencimento passado é paga, hoje ou
+  futuro é em aberto) e, sem informação, paga.
+- **Reimportação:** só uma escolha explícita reabre uma fatura paga. Um arquivo que diz
+  "pago" paga linhas em aberto. Sugestões não mudam linhas já existentes.
+- **Depois:** em Pendências, a seção "Faturas" tem **Marcar como paga** e **Reabrir**
+  (função `set_statement_payment_status`, que atualiza lote e linhas juntos).
+- **Painel:** fatura em aberto sai do "Saldo atual" e entra em "Comprometido restante"
+  (exceto despesas já conciliadas com um planejamento, para não contar em dobro); o card
+  "Faturas em aberto" mostra o total. Categorias e relatório anual continuam contando
+  tudo, e a tela anual avisa isso.
+- **Fechar o mês:** não é bloqueado com fatura em aberto; o aviso aparece depois de
+  fechar. Pague a fatura e use "Recalcular mês" para atualizar o fechamento.
+
+Detalhes e decisões: [plano](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/statement-payment-status-plan.md).
+
 ## Limites atuais
 
 - Apenas Nubank e Bradesco são suportados.

@@ -7,9 +7,10 @@ import type {
 } from "./types.ts";
 
 const NUBANK_HEADER = ["date", "title", "amount"];
+const INVOICE_MONTH_LENGTH = 7;
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const INSTALLMENT_PATTERN = /\b(\d{1,2})\/(\d{1,2})\b/;
-const FILE_NAME_DUE_DATE_PATTERN = /(\d{4})-(0[1-9]|1[0-2])-\d{2}/;
+const FILE_NAME_DUE_DATE_PATTERN = /(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])/;
 
 type CsvRow = {
   sourceRowNumber: number;
@@ -178,13 +179,14 @@ function headerMatches(fields: string[]): boolean {
 }
 
 // Nubank exports are named after the invoice due date (Nubank_2027-01-15.csv).
-function invoiceMonthFromFileName(fileName: string | null | undefined): string | null {
+function dueDateFromFileName(fileName: string | null | undefined): string | null {
   const match = fileName?.match(FILE_NAME_DUE_DATE_PATTERN);
-  return match ? `${match[1]}-${match[2]}` : null;
+  return match ? `${match[1]}-${match[2]}-${match[3]}` : null;
 }
 
 export function parseNubankStatement(input: StatementParserInput): ParsedStatement {
-  const invoiceMonth = input.invoiceMonth ?? invoiceMonthFromFileName(input.fileName);
+  const invoiceDueDate = dueDateFromFileName(input.fileName);
+  const invoiceMonth = input.invoiceMonth ?? invoiceDueDate?.slice(0, INVOICE_MONTH_LENGTH) ?? null;
   const text = decodeContents(input.contents).replace(/^\uFEFF/, "");
   const rows = parseCsvRows(text);
   const header = rows[0];
@@ -201,6 +203,8 @@ export function parseNubankStatement(input: StatementParserInput): ParsedStateme
         fileHash: input.fileHash ?? null,
         invoiceMonth,
         invoiceGeneratedAt: null,
+        invoiceDueDate,
+        detectedPaymentStatus: null,
       },
       rowsRead: 0,
       transactions: [],
@@ -243,6 +247,8 @@ export function parseNubankStatement(input: StatementParserInput): ParsedStateme
       fileHash: input.fileHash ?? null,
       invoiceMonth,
       invoiceGeneratedAt: null,
+      invoiceDueDate,
+      detectedPaymentStatus: null,
     },
     rowsRead: rows.length - 1,
     transactions,

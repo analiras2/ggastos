@@ -5,6 +5,7 @@ import { Button } from '@/components/ggastos/core/button';
 import { Icon } from '@/components/ggastos/core/icon';
 import { SegmentedControl } from '@/components/ggastos/forms/segmented-control';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { PaymentStatusField } from '@/features/statements/payment-status-field';
 import { useStatementImportViewModel } from '@/features/statements/use-statement-import-view-model';
 
 type StatementImportSheetProps = {
@@ -53,6 +54,8 @@ export function StatementImportSheet({ visible, onClose, onReviewUncategorized }
               />
             </View>
 
+            <PaymentStatusField value={viewModel.paymentChoice} onChange={viewModel.setPaymentChoice} />
+
             <View style={styles.field}>
               <Text style={styles.label}>CSV</Text>
               <View style={styles.fileButton}>
@@ -99,7 +102,9 @@ export function StatementImportSheet({ visible, onClose, onReviewUncategorized }
             {viewModel.successMessage ? (
               <View style={styles.successBanner}>
                 <Icon name="check" size={18} />
-                <Text style={styles.successText}>{viewModel.successMessage}</Text>
+                <Text style={styles.successText}>
+                  {viewModel.successMessage} {viewModel.paymentStatusMessage}
+                </Text>
               </View>
             ) : null}
 

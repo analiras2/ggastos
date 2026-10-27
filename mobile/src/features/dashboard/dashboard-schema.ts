@@ -16,6 +16,7 @@ export const monthDashboardSchema = z.object({
     expectedBalanceCents: centsSchema,
     currentBalanceCents: centsSchema,
     committedRemainingCents: centsSchema,
+    openExpenseCents: centsSchema.default(0),
   }),
   categories: z.array(
     z.object({
