@@ -4,6 +4,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { monthDashboardKey } from '@/features/dashboard/use-month-dashboard';
 import { useCategories, type CategoryOption } from '@/features/planning/use-categories';
 import { useCreatePlannedEntry } from '@/features/planning/use-planned-entries';
+import { resolveEntryTitle } from '@/features/planning/paid-entry-rules';
+import { usePaidEntryState, type PaidEntryState } from '@/features/planning/use-paid-entry-state';
 import {
   centsFromMaskedInput,
   formatDateToIso,
@@ -23,6 +25,7 @@ interface AddPlanViewModel {
   isLoadingCategories: boolean;
   selectedCategoryId: string | null;
   setSelectedCategoryId: (id: string) => void;
+  paidEntry: PaidEntryState;
   errorMessage: string | null;
   isSubmitting: boolean;
   handleSubmit: () => Promise<void>;
@@ -41,14 +44,19 @@ export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const selectedCategory = categoriesQuery.data?.find((item) => item.id === selectedCategoryId);
+  const paidEntry = usePaidEntryState(selectedCategory?.impactType, selectedDate);
+  const { settlement, paymentMethod, reset: resetPaidEntry } = paidEntry;
+
   const reset = useCallback(() => {
     setTitle('');
     setTagsInput('');
     setSelectedDate(new Date());
     setAmountCents(0);
     setSelectedCategoryId(null);
+    resetPaidEntry();
     setErrorMessage(null);
-  }, []);
+  }, [resetPaidEntry]);
 
   const handleAmountChange = useCallback((text: string) => {
     setAmountCents(centsFromMaskedInput(text));
@@ -56,8 +64,6 @@ export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
 
   const handleSubmit = useCallback(async () => {
     setErrorMessage(null);
-
-    const trimmedTitle = title.trim();
 
     if (!selectedCategoryId) {
       setErrorMessage('Selecione uma categoria.');
@@ -84,13 +90,15 @@ export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
 
     try {
       await createPlannedEntry.mutateAsync({
-        title: trimmedTitle || null,
+        title: resolveEntryTitle(title, category.name, settlement),
         tags: tagsInput.split(/\s+/).filter((tag) => /^#[\p{L}\p{N}_-]+$/u.test(tag)),
         impactType: category.impactType,
         categoryId: category.id,
         amountCents,
         dueDate,
         month: monthKeyFromIsoDate(dueDate),
+        settlement,
+        paymentMethod: settlement === 'PAID' ? paymentMethod : null,
       });
 
       await queryClient.invalidateQueries({ queryKey: monthDashboardKey(monthKeyFromIsoDate(dueDate)) });
@@ -109,6 +117,8 @@ export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
     categoriesQuery.data,
     selectedDate,
     amountCents,
+    settlement,
+    paymentMethod,
     createPlannedEntry,
     queryClient,
     reset,
@@ -128,6 +138,7 @@ export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
     isLoadingCategories: categoriesQuery.isLoading,
     selectedCategoryId,
     setSelectedCategoryId,
+    paidEntry,
     errorMessage,
     isSubmitting: createPlannedEntry.isPending,
     handleSubmit,

@@ -19,7 +19,7 @@ async function fetchCategoryDetails(month: string, categoryId: string): Promise<
     supabase
       .from('planned_entries')
       .select(
-        'id,title,amount_cents,status,due_date,installment_index,installment_total,manually_confirmed_at'
+        'id,title,amount_cents,status,due_date,installment_index,installment_total,manually_confirmed_at,payment_method'
       )
       .eq('month', month)
       .eq('category_id', categoryId)
@@ -27,7 +27,7 @@ async function fetchCategoryDetails(month: string, categoryId: string): Promise<
       .order('created_at', { ascending: true }),
     supabase
       .from('imported_transactions')
-      .select('id,description,amount_cents,posted_at,merchant_name')
+      .select('id,description,amount_cents,posted_at,merchant_name,payment_method')
       .eq('competency_month', month)
       .eq('internal_category_id', categoryId)
       .is('deleted_at', null)
@@ -59,6 +59,7 @@ async function fetchCategoryDetails(month: string, categoryId: string): Promise<
       installmentIndex: row.installment_index,
       installmentTotal: row.installment_total,
       manuallyConfirmedAt: row.manually_confirmed_at,
+      paymentMethod: row.payment_method,
     })),
     importedTransactions: (transactionsResult.data ?? []).map((row) => ({
       id: row.id,
@@ -66,6 +67,7 @@ async function fetchCategoryDetails(month: string, categoryId: string): Promise<
       amountCents: row.amount_cents,
       postedAt: row.posted_at,
       merchantName: row.merchant_name,
+      paymentMethod: row.payment_method,
     })),
   });
 }

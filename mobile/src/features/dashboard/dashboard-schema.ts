@@ -57,6 +57,7 @@ export const categoryDetailsSchema = z.object({
       installmentIndex: z.number().int().nullable(),
       installmentTotal: z.number().int().nullable(),
       manuallyConfirmedAt: z.string().nullable(),
+      paymentMethod: z.string().nullable().default(null),
     })
   ),
   importedTransactions: z.array(
@@ -66,6 +67,7 @@ export const categoryDetailsSchema = z.object({
       amountCents: centsSchema,
       postedAt: z.string(),
       merchantName: z.string().nullable(),
+      paymentMethod: z.string().nullable().default(null),
     })
   ),
 });

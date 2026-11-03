@@ -106,7 +106,7 @@ async function paymentStateOf(batchId, merchant) {
 async function readRows(userId) {
   const rows = await service(
     "GET",
-    `imported_transactions?select=description,internal_category_id,note,competency_month,statement_installment_index&user_id=eq.${userId}&order=posted_at`,
+    `imported_transactions?select=description,internal_category_id,note,competency_month,statement_installment_index,payment_method&user_id=eq.${userId}&order=posted_at`,
   );
   return new Map(rows.map((row) => [row.description, row]));
 }
@@ -139,6 +139,11 @@ async function main() {
   await check("first import creates the rows", async () => {
     assertEqual(first.status, 202, "status");
     assertEqual([first.body.rowsImported, first.body.rowsDuplicated], [3, 0], "[imported, duplicated]");
+  });
+
+  await check("every imported row is marked as paid with a credit card", async () => {
+    const rows = [...(await readRows(user.userId)).values()];
+    assertEqual([...new Set(rows.map((row) => row.payment_method))], ["CREDIT_CARD"], "payment methods");
   });
 
   await check("installments use the invoice month and single purchases keep their own", async () => {

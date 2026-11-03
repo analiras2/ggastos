@@ -84,6 +84,7 @@ type StatementTransactionUpsert = {
   is_hidden_from_budget: boolean;
   note: string | null;
   provider_payload: Record<string, unknown>;
+  payment_method: "CREDIT_CARD";
   statement_import_batch_id: string;
   statement_source_bank: StatementBank;
   statement_source_fingerprint: string;
@@ -528,6 +529,7 @@ function buildImportedTransaction(
       sourceRowNumber: transaction.sourceRowNumber,
       installment: transaction.installment,
     },
+    payment_method: "CREDIT_CARD",
     statement_import_batch_id: context.batchId,
     statement_source_bank: context.bank,
     statement_source_fingerprint: context.fingerprint,
