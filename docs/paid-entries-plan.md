@@ -4,6 +4,10 @@
 
 Plano aprovado. Branch: `feature/paid-entries`.
 
+- Fase 3 concluída: o formulário virou "Novo lançamento" (e o atalho do painel também), com
+  Situação (Planejado / Já paguei ou Já recebi), Forma de pagamento (sem cartão), nota sobre o
+  cartão e aviso de data futura. Verificado no navegador: lançar R$ 45,50 em Pix levou o saldo
+  atual a -R$ 45,50 e gravou `RECONCILED` com `PIX`.
 - Fase 2 concluída: `paid-entry-rules.ts` (regras puras, 10 testes em `paid-entry-rules.test.mjs`),
   `use-paid-entry-state.ts` e o ViewModel do formulário (`paidEntry`: situação, forma, rótulo
   "Já paguei/Já recebi" e aviso de data futura), com gravação em um passo. Título vazio vira o nome

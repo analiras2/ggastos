@@ -65,7 +65,7 @@ export function DashboardScreen() {
           edgePadding={GgastosSpacing.space5}
           actions={[
             { label: 'Importar fatura', icon: 'upload', onPress: handleOpenStatementImport },
-            { label: 'Adicionar planejamento', icon: 'plus', onPress: handleAddPlan },
+            { label: 'Novo lançamento', icon: 'plus', onPress: handleAddPlan },
             { label: 'Template', icon: 'repeat', onPress: handleAddTemplate },
             {
               label: isClosingMonth ? 'Fechando...' : isMonthClosed ? 'Recalcular mês' : 'Fechar mês',
