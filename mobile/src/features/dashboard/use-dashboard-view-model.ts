@@ -34,6 +34,7 @@ interface DashboardViewModel {
   isAddTemplateVisible: boolean;
   isStatementImportVisible: boolean;
   categoryReviewBatchId: string | null;
+  monthKey: string;
   isCurrentMonth: boolean;
   isMonthClosed: boolean;
   isClosingMonth: boolean;
@@ -41,6 +42,7 @@ interface DashboardViewModel {
   handlePrevMonth: () => void;
   handleNextMonth: () => void;
   handleGoToCurrentMonth: () => void;
+  handleSelectMonth: (monthKey: string) => void;
   handleOpenCategory: (category: CategoryBudget) => void;
   handleCloseCategoryDetails: () => void;
   handleAddPlan: () => void;
@@ -150,6 +152,10 @@ export function useDashboardViewModel(): DashboardViewModel {
     setMonthKey(currentMonthKey());
   }, []);
 
+  const handleSelectMonth = useCallback((selectedMonthKey: string) => {
+    setMonthKey(selectedMonthKey);
+  }, []);
+
   const handleOpenCategory = useCallback((category: CategoryBudget) => {
     setSelectedCategory(category);
   }, []);
@@ -193,6 +199,7 @@ export function useDashboardViewModel(): DashboardViewModel {
 
   return {
     data,
+    monthKey,
     importBanner,
     categoryDetails,
     isAddPlanVisible,
@@ -206,6 +213,7 @@ export function useDashboardViewModel(): DashboardViewModel {
     handlePrevMonth,
     handleNextMonth,
     handleGoToCurrentMonth,
+    handleSelectMonth,
     handleOpenCategory,
     handleCloseCategoryDetails,
     handleAddPlan,

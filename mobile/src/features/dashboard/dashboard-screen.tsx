@@ -24,6 +24,7 @@ export function DashboardScreen() {
     isAddTemplateVisible,
     isStatementImportVisible,
     categoryReviewBatchId,
+    monthKey,
     isCurrentMonth,
     isMonthClosed,
     isClosingMonth,
@@ -31,6 +32,7 @@ export function DashboardScreen() {
     handlePrevMonth,
     handleNextMonth,
     handleGoToCurrentMonth,
+    handleSelectMonth,
     handleOpenCategory,
     handleCloseCategoryDetails,
     handleAddPlan,
@@ -49,6 +51,8 @@ export function DashboardScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <MonthHeader
           month={data.month}
+          monthKey={monthKey}
+          onSelectMonth={handleSelectMonth}
           isCurrentMonth={isCurrentMonth}
           onPrev={handlePrevMonth}
           onNext={handleNextMonth}

@@ -127,6 +127,7 @@ export function usePlanningViewModel() {
     handlePreviousMonth: () => setMonth((value) => shiftMonthKey(value, -1)),
     handleNextMonth: () => setMonth((value) => shiftMonthKey(value, 1)),
     handleCurrentMonth: () => setMonth(currentMonthKey()),
+    handleSelectMonth: setMonth,
     handleOpenAddPlan: () => setIsAddPlanVisible(true),
     handleCloseAddPlan: () => setIsAddPlanVisible(false),
     handleOpenAddTemplate: () => setIsAddTemplateVisible(true),

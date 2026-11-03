@@ -14,6 +14,7 @@ export function Icon({ name, size = 20, color = GgastosColors.inkStrong }: IconP
       {name === 'check' ? <Polyline {...common} points="20 6 9 17 4 12" /> : null}
       {name === 'check-check' ? <><Polyline {...common} points="18 6 7 17 2 12" /><Polyline {...common} points="22 10 15 17 13 15" /></> : null}
       {name === 'chevron-left' ? <Polyline {...common} points="15 18 9 12 15 6" /> : null}
+      {name === 'chevron-down' ? <Polyline {...common} points="6 9 12 15 18 9" /> : null}
       {name === 'chevron-right' ? <Polyline {...common} points="9 18 15 12 9 6" /> : null}
       {name === 'circle' ? <Circle {...common} cx="12" cy="12" r="9" /> : null}
       {name === 'check-circle-2' ? <><Circle {...common} cx="12" cy="12" r="10" /><Polyline {...common} points="8 12 11 15 16 9" /></> : null}
@@ -31,7 +32,7 @@ export function Icon({ name, size = 20, color = GgastosColors.inkStrong }: IconP
       {name === 'file-up' ? <><Path {...common} d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><Polyline {...common} points="14 2 14 8 20 8" /><Polyline {...common} points="12 18 12 12" /><Polyline {...common} points="9 15 12 12 15 15" /></> : null}
       {name === 'upload' ? <><Path {...common} d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><Polyline {...common} points="17 8 12 3 7 8" /><Line {...common} x1="12" y1="3" x2="12" y2="15" /></> : null}
       {name === 'tags' ? <><Path {...common} d="m15 5 4 4-8.5 8.5a2.1 2.1 0 0 1-3 0L3 13V5z" /><Circle {...common} cx="7" cy="9" r="1" /><Path {...common} d="m10 2 12 12" /></> : null}
-      {!['plus', 'x', 'check', 'check-check', 'chevron-left', 'chevron-right', 'circle', 'check-circle-2', 'circle-alert', 'clock', 'calendar', 'calendar-check', 'calendar-range', 'calendar-plus', 'list-checks', 'list-todo', 'repeat', 'settings', 'inbox', 'file-up', 'upload', 'tags'].includes(name) ? <Circle {...common} cx="12" cy="12" r="8" /> : null}
+      {!['plus', 'x', 'check', 'check-check', 'chevron-left', 'chevron-right', 'chevron-down', 'circle', 'check-circle-2', 'circle-alert', 'clock', 'calendar', 'calendar-check', 'calendar-range', 'calendar-plus', 'list-checks', 'list-todo', 'repeat', 'settings', 'inbox', 'file-up', 'upload', 'tags'].includes(name) ? <Circle {...common} cx="12" cy="12" r="8" /> : null}
     </Svg>
   );
 }
