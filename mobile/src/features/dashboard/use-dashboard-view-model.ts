@@ -8,6 +8,7 @@ import {
 } from '@/features/dashboard/format-category-details';
 import { currentMonthKey, shiftMonthKey } from '@/features/dashboard/month-utils';
 import { useCategoryDetails } from '@/features/dashboard/use-category-details';
+import { useMonthOpeningBalance } from '@/features/opening-balance/use-month-opening-balance';
 import { useMonthDashboard } from '@/features/dashboard/use-month-dashboard';
 import { usePlannedEntryStatusToggle } from '@/features/dashboard/use-planned-entry-status-toggle';
 import { getFormattedCloseMonthError, useCloseMonth } from '@/features/closing/use-close-month';
@@ -64,6 +65,7 @@ export function useDashboardViewModel(): DashboardViewModel {
   const [isStatementImportVisible, setIsStatementImportVisible] = useState(false);
   const [categoryReviewBatchId, setCategoryReviewBatchId] = useState<string | null>(null);
   const monthDashboardQuery = useMonthDashboard(monthKey);
+  const openingBalanceQuery = useMonthOpeningBalance(monthKey);
   const closeMonthMutation = useCloseMonth();
   const monthSnapshotQuery = useMonthSnapshot(monthKey);
   const categoryDetailsQuery = useCategoryDetails(monthKey, selectedCategory?.categoryId ?? null);
@@ -93,10 +95,13 @@ export function useDashboardViewModel(): DashboardViewModel {
 
   const data = useMemo<DashboardData>(() => {
     if (monthDashboardQuery.data) {
-      return formatDashboardData(monthDashboardQuery.data);
+      return formatDashboardData(
+        monthDashboardQuery.data,
+        openingBalanceQuery.data?.openingBalanceCents ?? 0
+      );
     }
     return emptyDashboardData(monthKey);
-  }, [monthDashboardQuery.data, monthKey]);
+  }, [monthDashboardQuery.data, openingBalanceQuery.data?.openingBalanceCents, monthKey]);
 
   const importBanner = useMemo(() => {
     if (monthDashboardQuery.isLoading) {

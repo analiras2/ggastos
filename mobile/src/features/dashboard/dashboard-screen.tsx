@@ -8,6 +8,7 @@ import { SyncStatusBanner } from '@/components/ggastos/navigation/sync-status-ba
 import { MetricHeroCard } from '@/components/ggastos/cards/metric-hero-card';
 import { KpiComparisonCard } from '@/components/ggastos/cards/kpi-comparison-card';
 import { CategoryDetailsSheet } from '@/features/dashboard/category-details-sheet';
+import { OpeningBalanceCard } from '@/features/opening-balance/opening-balance-card';
 import { DashboardCategoriesSection } from '@/features/dashboard/dashboard-categories-section';
 import { useDashboardViewModel } from '@/features/dashboard/use-dashboard-view-model';
 import { AddPlanSheet } from '@/features/planning/add-plan-sheet';
@@ -80,6 +81,8 @@ export function DashboardScreen() {
         />
 
         <MetricHeroCard label="Saldo atual" {...data.hero} />
+
+        <OpeningBalanceCard monthKey={monthKey} />
 
         <View style={styles.kpiRow}>
           <KpiComparisonCard label="Saldo previsto" value={data.previsto}/>

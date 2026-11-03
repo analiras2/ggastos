@@ -65,11 +65,12 @@ function toCategoryBudget(category: MonthDashboard['categories'][number]): Categ
   };
 }
 
-export function formatDashboardData(monthDashboard: MonthDashboard): DashboardData {
+export function formatDashboardData(monthDashboard: MonthDashboard, openingBalanceCents = 0): DashboardData {
   const { summary } = monthDashboard;
-  const totalActual =
+  const monthMovementCents =
     summary.actualIncomeCents - summary.actualExpenseCents - summary.actualInvestmentCents;
-  const heroDeltaCents = summary.expectedBalanceCents - totalActual;
+  const heroDeltaCents = summary.expectedBalanceCents - monthMovementCents;
+  const totalActual = monthMovementCents + openingBalanceCents;
 
   return {
     month: monthLabel(monthDashboard.month),
@@ -79,7 +80,7 @@ export function formatDashboardData(monthDashboard: MonthDashboard): DashboardDa
       deltaLabel: 'até o momento',
       status: totalActual >= 0 ? 'healthy' : 'tight',
     },
-    previsto: formatCurrencyCents(summary.expectedBalanceCents),
+    previsto: formatCurrencyCents(summary.expectedBalanceCents + openingBalanceCents),
     commitment: { value: formatCurrencyCents(summary.committedRemainingCents) },
     categories: monthDashboard.categories.map(toCategoryBudget),
     pendingReviewCount: 0,

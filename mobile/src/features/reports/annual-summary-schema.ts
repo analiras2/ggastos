@@ -14,6 +14,7 @@ export const annualMonthSchema = z.object({
   actualExpenseCents: centsSchema,
   plannedInvestmentCents: centsSchema,
   actualInvestmentCents: centsSchema,
+  openingBalanceCents: centsSchema,
   expectedBalanceCents: centsSchema,
   currentBalanceCents: centsSchema,
   committedRemainingCents: centsSchema,
