@@ -2,7 +2,11 @@
 
 ## Status
 
-Plano para aprovação. Nada implementado. Branch: `feature/paid-entries`.
+Plano aprovado. Branch: `feature/paid-entries`.
+
+- Fase 1 concluída: migration `20261103120000_planned_entry_payment_method.sql` (aplicada só no
+  banco local; falta `supabase db push` para produção) e suíte `supabase/tests/paid-entries-suite.mjs`
+  (12/12). O "desfazer" do app já limpa a forma de pagamento, porque a constraint exige isso.
 
 ## O que se quer
 

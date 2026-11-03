@@ -137,7 +137,7 @@ async function undoManualConfirmation({ id }: PlannedEntryLocation): Promise<voi
 
   const { error } = await client
     .from('planned_entries')
-    .update({ status: 'PLANNED', manually_confirmed_at: null })
+    .update({ status: 'PLANNED', manually_confirmed_at: null, payment_method: null })
     .eq('id', id);
 
   if (error) {
