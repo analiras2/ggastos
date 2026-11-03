@@ -4,6 +4,10 @@
 
 Plano aprovado. Branch: `feature/paid-entries`.
 
+- Fase 2 concluída: `paid-entry-rules.ts` (regras puras, 10 testes em `paid-entry-rules.test.mjs`),
+  `use-paid-entry-state.ts` e o ViewModel do formulário (`paidEntry`: situação, forma, rótulo
+  "Já paguei/Já recebi" e aviso de data futura), com gravação em um passo. Título vazio vira o nome
+  da categoria quando já pago. Sem tela ainda (fase 3).
 - Cartão de crédito como forma de pagamento (pedido depois da aprovação): `CREDIT_CARD` é um
   valor válido no banco, mas o formulário não o oferece. Cada linha importada de fatura é
   gravada com `payment_method = CREDIT_CARD` (coluna nova em `imported_transactions`, migration

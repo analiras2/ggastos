@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { SELECTABLE_PAYMENT_METHODS } from '@/features/planning/paid-entry-rules';
+
 export const IMPACT_TYPES = ['INCOME', 'EXPENSE', 'INVESTMENT', 'TRANSFER'] as const;
 export const impactTypeSchema = z.enum(IMPACT_TYPES);
 export type ImpactType = z.infer<typeof impactTypeSchema>;
@@ -43,6 +45,14 @@ export const createPlannedEntrySchema = z.object({
     .optional(),
   note: z.string().trim().nullable().optional(),
   tags: z.array(z.string()).default([]),
+  settlement: z.enum(['PLANNED', 'PAID']).default('PLANNED'),
+  paymentMethod: z.enum(SELECTABLE_PAYMENT_METHODS).nullable().optional(),
+}).refine((input) => input.settlement === 'PAID' || input.paymentMethod == null, {
+  message: 'A forma de pagamento só vale para lançamentos já pagos.',
+  path: ['paymentMethod'],
+}).refine((input) => input.settlement === 'PLANNED' || Boolean(input.dueDate), {
+  message: 'Informe a data em que o lançamento aconteceu.',
+  path: ['dueDate'],
 });
 export type CreatePlannedEntryInput = z.infer<typeof createPlannedEntrySchema>;
 
@@ -101,11 +111,12 @@ export const plannedEntrySchema = z.object({
   installmentTotal: z.number().int().nullable(),
   note: z.string().nullable(),
   tags: z.array(z.string()),
+  paymentMethod: z.string().nullable().default(null),
   createdAt: z.string(),
   updatedAt: z.string(),
   cancelledAt: z.string().nullable(),
 });
-export type PlannedEntry = z.infer<typeof plannedEntrySchema>;
+export type PlannedEntry= z.infer<typeof plannedEntrySchema>;
 
 export const planningTemplateSchema = z.object({
   id: z.string().uuid(),
