@@ -141,8 +141,37 @@ function buildTests({ userA, userB }) {
   });
 
   test("rejects a payment method that is not offered", async () => {
-    assertRejected(await userRest(userA, "POST", "planned_entries", paidEntry(userA, "2026-06", 100, { payment_method: "CREDIT_CARD" })), "credit card");
+    assertRejected(await userRest(userA, "POST", "planned_entries", paidEntry(userA, "2026-06", 100, { payment_method: "CHEQUE" })), "unknown method");
     assertRejected(await userRest(userA, "POST", "planned_entries", paidEntry(userA, "2026-06", 100, { payment_method: "pix" })), "lower case");
+  });
+
+  test("credit card is a valid method in the database even though the form does not offer it", async () => {
+    const response = await userRest(userA, "POST", "planned_entries", paidEntry(userA, "2026-06", 100, { payment_method: "CREDIT_CARD" }));
+    assert(response.ok, `expected 201, got ${response.status}: ${JSON.stringify(response.body)}`);
+  });
+
+  test("imported rows can carry a payment method, and only a known one", async () => {
+    const [connection] = await service("POST", "financial_connections", {
+      user_id: userA.userId, source_provider: "LEGACY", source_connection_id: `paid-conn-${userA.userId}`, institution_name: "Paid Test Bank", status: "UPDATED",
+    });
+    const [account] = await service("POST", "financial_accounts", {
+      user_id: userA.userId, connection_id: connection.id, source_provider: "LEGACY", source_account_id: `paid-acc-${userA.userId}`,
+      type: "CREDIT", subtype: "CREDIT_CARD", name: "Paid Test Card", currency_code: "BRL",
+    });
+    const row = (method, id) => ({
+      user_id: userA.userId, connection_id: connection.id, account_id: account.id, source_provider: "LEGACY", source_transaction_id: `paid-tx-${id}-${userA.userId}`,
+      posted_at: "2026-06-10T12:00:00Z", competency_month: "2026-06", description: "Method test", amount_cents: 100, currency_code: "BRL",
+      status: "POSTED", direction: "DEBIT", impact_type: "EXPENSE", payment_method: method,
+    });
+    const stored = await service("POST", "imported_transactions", row("CREDIT_CARD", "ok"));
+    assertEqual(stored[0].payment_method, "CREDIT_CARD", "stored method");
+    let rejected = false;
+    try {
+      await service("POST", "imported_transactions", row("CHEQUE", "bad"));
+    } catch (error) {
+      rejected = /23514/.test(String(error));
+    }
+    assert(rejected, "expected the check constraint to reject an unknown payment method");
   });
 
   test("rejects a payment method on an entry that is still planned", async () => {

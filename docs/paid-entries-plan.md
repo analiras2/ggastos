@@ -4,9 +4,14 @@
 
 Plano aprovado. Branch: `feature/paid-entries`.
 
+- Cartão de crédito como forma de pagamento (pedido depois da aprovação): `CREDIT_CARD` é um
+  valor válido no banco, mas o formulário não o oferece. Cada linha importada de fatura é
+  gravada com `payment_method = CREDIT_CARD` (coluna nova em `imported_transactions`, migration
+  `20261103130000_credit_card_payment_method.sql`, preenchida para as linhas já importadas;
+  a função `import-card-statement` grava o valor, ainda sem deploy em produção).
 - Fase 1 concluída: migration `20261103120000_planned_entry_payment_method.sql` (aplicada só no
   banco local; falta `supabase db push` para produção) e suíte `supabase/tests/paid-entries-suite.mjs`
-  (12/12). O "desfazer" do app já limpa a forma de pagamento, porque a constraint exige isso.
+  (14/14). O "desfazer" do app já limpa a forma de pagamento, porque a constraint exige isso.
 
 ## O que se quer
 
