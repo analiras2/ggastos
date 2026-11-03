@@ -72,6 +72,13 @@ Cada fatura (lote) é **paga** (`PAID`, linhas `POSTED`) ou **em aberto** (`OPEN
 
 Detalhes e decisões: [plano](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/statement-payment-status-plan.md).
 
+## Forma de pagamento
+
+Toda linha importada de fatura é gravada com `payment_method = CREDIT_CARD`. Lançamentos feitos
+à mão e já pagos (dinheiro, Pix, débito/transferência, outro) usam a mesma coluna em
+`planned_entries`. Cartão não é oferecido no formulário: compra no cartão entra pela fatura, e
+lançar de novo contaria em dobro. Detalhes: [plano](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/paid-entries-plan.md).
+
 ## Limites atuais
 
 - Apenas Nubank e Bradesco são suportados.

@@ -2,8 +2,12 @@
 
 ## Status
 
-Plano aprovado. Branch: `feature/paid-entries`.
+Fases 1 a 4 concluídas, pendente de produção. Branch: `feature/paid-entries`.
 
+- Fase 4 concluída: a folha de detalhes da categoria mostra a forma de pagamento ("03/11/2026 · Pix")
+  nas entradas pagas e "Cartão de crédito" nas linhas importadas. O desfazer já limpava a forma
+  desde a fase 1. Corrigido de passagem: a data de vencimento era lida como UTC e aparecia um dia
+  antes no Brasil; agora é formatada sem passar por `Date`.
 - Fase 3 concluída: o formulário virou "Novo lançamento" (e o atalho do painel também), com
   Situação (Planejado / Já paguei ou Já recebi), Forma de pagamento (sem cartão), nota sobre o
   cartão e aviso de data futura. Verificado no navegador: lançar R$ 45,50 em Pix levou o saldo

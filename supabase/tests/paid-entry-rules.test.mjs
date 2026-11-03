@@ -5,9 +5,11 @@ import {
   SELECTABLE_PAYMENT_METHODS,
   buildPaidFields,
   isFutureDate,
+  paymentMethodLabel,
   resolveEntryTitle,
   settlementLabel,
 } from "../../mobile/src/features/planning/paid-entry-rules.ts";
+import { formatIsoDateToBrazilian } from "../../mobile/src/features/planning/planning-form-utils.ts";
 
 test("a planned entry carries no confirmation and no payment method, even if one was picked", () => {
   assert.deepEqual(buildPaidFields("PLANNED", "PIX", "2026-11-03"), {
@@ -64,4 +66,17 @@ test("only a date after today is in the future", () => {
   assert.equal(isFutureDate("2026-11-04", "2026-11-03"), true);
   assert.equal(isFutureDate("2026-11-03", "2026-11-03"), false);
   assert.equal(isFutureDate("2026-11-02", "2026-11-03"), false);
+});
+
+test("payment methods have a label, including credit card, and unknown ones have none", () => {
+  assert.equal(paymentMethodLabel("PIX"), "Pix");
+  assert.equal(paymentMethodLabel("CREDIT_CARD"), "Cartão de crédito");
+  assert.equal(paymentMethodLabel("DEBIT_TRANSFER"), "Débito/transferência");
+  assert.equal(paymentMethodLabel(null), null);
+  assert.equal(paymentMethodLabel("CHEQUE"), null);
+});
+
+test("an ISO date is formatted without shifting the day", () => {
+  assert.equal(formatIsoDateToBrazilian("2026-11-03"), "03/11/2026");
+  assert.equal(formatIsoDateToBrazilian("2026-01-01"), "01/01/2026");
 });

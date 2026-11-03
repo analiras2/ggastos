@@ -29,3 +29,10 @@ export function installmentCountFromInput(text: string): number {
   const digitsOnly = text.replace(/\D/g, '');
   return digitsOnly ? parseInt(digitsOnly, 10) : 0;
 }
+
+// Formats a YYYY-MM-DD date without going through Date, which would read it as UTC midnight and
+// show the previous day in time zones behind UTC.
+export function formatIsoDateToBrazilian(isoDate: string): string {
+  const [year, month, day] = isoDate.slice(0, 10).split('-');
+  return `${day}/${month}/${year}`;
+}
