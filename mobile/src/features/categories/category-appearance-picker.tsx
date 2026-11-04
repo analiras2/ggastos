@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { CategoryIcon } from '@/components/ggastos/core/category-icon';
-import { CATEGORY_COLORS, categoryColorSoft } from '@/constants/category-colors';
+import { CATEGORY_COLORS, categoryIconColor } from '@/constants/category-colors';
 import { CATEGORY_ICON_OPTIONS } from '@/constants/category-icons';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import { CustomColorModal } from '@/features/categories/custom-color-modal';
@@ -29,8 +29,8 @@ export function CategoryAppearancePicker({ name, icon, color, onChangeIcon, onCh
   return (
     <View style={styles.container}>
       <View style={styles.previewRow}>
-        <View style={[styles.preview, { backgroundColor: categoryColorSoft(color) }]}>
-          <CategoryIcon name={icon} size={ICON_SIZE + 4} color={color} />
+        <View style={[styles.preview, { backgroundColor: color }]}>
+          <CategoryIcon name={icon} size={ICON_SIZE + 4} color={categoryIconColor(color)} />
         </View>
         <Text style={styles.previewName} numberOfLines={1}>{name}</Text>
       </View>
@@ -46,9 +46,9 @@ export function CategoryAppearancePicker({ name, icon, color, onChangeIcon, onCh
               accessibilityLabel={`Ícone ${option.name}`}
               accessibilityState={{ selected: isSelected }}
               onPress={() => onChangeIcon(option.name)}
-              style={[styles.iconCell, isSelected && { borderColor: color, backgroundColor: categoryColorSoft(color) }]}
+              style={[styles.iconCell, isSelected && { borderColor: color, backgroundColor: color }]}
             >
-              <CategoryIcon name={option.name} size={ICON_SIZE} color={isSelected ? color : GgastosColors.inkSoft} />
+              <CategoryIcon name={option.name} size={ICON_SIZE} color={isSelected ? categoryIconColor(color) : GgastosColors.inkSoft} />
             </Pressable>
           );
         })}
