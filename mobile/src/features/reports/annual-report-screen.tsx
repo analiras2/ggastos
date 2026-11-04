@@ -55,6 +55,9 @@ export function AnnualReportScreen() {
         {!isLoading && !isError && !isEmpty ? (
           <View>
             <Text style={styles.sectionTitle}>Meses</Text>
+            <Text style={styles.note}>
+              Os gastos incluem faturas ainda em aberto; o saldo atual só conta o que já foi pago.
+            </Text>
             {months.map((month) => (
               <AnnualMonthRow
                 key={month.month}
@@ -122,6 +125,11 @@ const styles = StyleSheet.create({
     color: GgastosColors.inkFaint,
     textAlign: 'center',
     paddingVertical: 24,
+  },
+  note: {
+    ...GgastosType.bodySm,
+    color: GgastosColors.inkSoft,
+    marginBottom: GgastosSpacing.space2,
   },
   sectionTitle: {
     ...GgastosType.displaySm,

@@ -3,6 +3,12 @@ import * as DocumentPicker from 'expo-document-picker';
 import { File as ExpoFile } from 'expo-file-system';
 
 import {
+  describePaymentStatus,
+  isPaymentChoice,
+  type PaymentChoice,
+  toRequestedStatus,
+} from '@/features/statements/payment-status-labels';
+import {
   getFormattedImportCardStatementError,
   type ImportCardStatementResult,
   type StatementBank,
@@ -23,6 +29,9 @@ type ImportSummaryRow = {
 interface StatementImportViewModel {
   selectedBank: StatementBank;
   setSelectedBank: (bank: string) => void;
+  paymentChoice: PaymentChoice;
+  setPaymentChoice: (choice: string) => void;
+  paymentStatusMessage: string | null;
   selectedFileName: string | null;
   importBatchId: string | null;
   errorMessage: string | null;
@@ -117,6 +126,7 @@ function buildImportSummary(result: ImportCardStatementResult | null): ImportSum
 export function useStatementImportViewModel(onSuccess?: () => void): StatementImportViewModel {
   const importMutation = useImportCardStatement();
   const [selectedBank, setSelectedBankState] = useState<StatementBank>('NUBANK');
+  const [paymentChoice, setPaymentChoiceState] = useState<PaymentChoice>('AUTO');
   const [selectedFile, setSelectedFile] = useState<SelectedStatementFile | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lastResult, setLastResult] = useState<ImportCardStatementResult | null>(null);
@@ -132,6 +142,12 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
     setErrorMessage(null);
   }, []);
 
+  const setPaymentChoice = useCallback((choice: string) => {
+    if (isPaymentChoice(choice)) {
+      setPaymentChoiceState(choice);
+    }
+  }, []);
+
   const clearSelectedFile = useCallback(() => {
     setSelectedFile(null);
     setLastResult(null);
@@ -140,6 +156,7 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
 
   const reset = useCallback(() => {
     setSelectedBankState('NUBANK');
+    setPaymentChoiceState('AUTO');
     setSelectedFile(null);
     setErrorMessage(null);
     setLastResult(null);
@@ -208,22 +225,29 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
         bank: selectedBank,
         fileName: selectedFile.name,
         contents,
+        paymentStatus: toRequestedStatus(paymentChoice),
       });
       setLastResult(result);
       onSuccess?.();
     } catch (error) {
       setErrorMessage(getFormattedImportCardStatementError(error));
     }
-  }, [importMutation, onSuccess, selectedBank, selectedFile]);
+  }, [importMutation, onSuccess, paymentChoice, selectedBank, selectedFile]);
 
   const importSummary = useMemo(() => buildImportSummary(lastResult), [lastResult]);
   const successMessage = lastResult
     ? `${formatBankName(lastResult.bank)} importado. ${lastResult.rowsImported} novas linhas e ${lastResult.rowsDuplicated} duplicadas.`
     : null;
+  const paymentStatusMessage = lastResult
+    ? describePaymentStatus(lastResult.paymentStatus, lastResult.paymentStatusSource)
+    : null;
 
   return {
     selectedBank,
     setSelectedBank,
+    paymentChoice,
+    setPaymentChoice,
+    paymentStatusMessage,
     selectedFileName: selectedFile?.name ?? null,
     importBatchId: lastResult?.batchId ?? null,
     errorMessage,

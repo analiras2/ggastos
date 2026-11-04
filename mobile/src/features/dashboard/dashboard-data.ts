@@ -23,6 +23,8 @@ export type DashboardData = {
   commitment: {
     value: string;
   };
+  // Unpaid imported statements of the month; null when there are none.
+  openInvoices: { value: string } | null;
   categories: CategoryBudget[];
   pendingReviewCount: number;
 };

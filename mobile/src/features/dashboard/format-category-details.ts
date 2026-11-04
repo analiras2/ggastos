@@ -1,6 +1,8 @@
 import type { EntryKind, StatusChipStatus } from '@/constants/ggastos-theme';
 import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
 import type { CategoryDetails } from '@/features/dashboard/dashboard-schema';
+import { paymentMethodLabel } from '@/features/planning/paid-entry-rules';
+import { formatIsoDateToBrazilian } from '@/features/planning/planning-form-utils';
 import type { ImpactType, PlanningStatus } from '@/features/planning/planning-schema';
 
 const IMPACT_TYPE_TO_KIND: Record<ImpactType, EntryKind> = {
@@ -46,12 +48,17 @@ export type CategoryDetailsView = {
   isEmpty: boolean;
 };
 
+function withPaymentMethod(text: string, paymentMethod: string | null): string {
+  const label = paymentMethodLabel(paymentMethod);
+  return label ? `${text} · ${label}` : text;
+}
+
 function formatCompetence(installmentIndex: number | null, installmentTotal: number | null, dueDate: string | null) {
   if (installmentIndex != null && installmentTotal != null) {
     return `Parcela ${installmentIndex}/${installmentTotal}`;
   }
   if (dueDate) {
-    return new Date(dueDate).toLocaleDateString('pt-BR');
+    return formatIsoDateToBrazilian(dueDate);
   }
   return 'Sem vencimento';
 }
@@ -65,7 +72,10 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
     category: details.name,
     amount: formatCurrencyCents(entry.amountCents),
     kind,
-    competence: formatCompetence(entry.installmentIndex, entry.installmentTotal, entry.dueDate),
+    competence: withPaymentMethod(
+      formatCompetence(entry.installmentIndex, entry.installmentTotal, entry.dueDate),
+      entry.paymentMethod,
+    ),
     status: PLANNING_STATUS_TO_CHIP[entry.status],
     isConfirmable: entry.status === 'PLANNED' || entry.status === 'PROJECTED' || entry.status === 'CARRIED_OVER',
     isUndoable: entry.status === 'RECONCILED' && entry.manuallyConfirmedAt !== null,
@@ -77,7 +87,7 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
     category: details.name,
     amount: formatCurrencyCents(transaction.amountCents),
     kind,
-    date: new Date(transaction.postedAt).toLocaleDateString('pt-BR'),
+    date: withPaymentMethod(new Date(transaction.postedAt).toLocaleDateString('pt-BR'), transaction.paymentMethod),
   }));
 
   return {

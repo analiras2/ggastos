@@ -1,6 +1,6 @@
-import type { Session, User } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 
-import { ownerCredentials, supabase } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 const PROFILE_FALLBACK_EMAIL_DOMAIN = 'users.ggastos.local';
 
@@ -24,32 +24,15 @@ export async function ensureProfile(user: User) {
   }
 }
 
-export async function ensureOwnerSession(): Promise<Session> {
-  if (!supabase || !ownerCredentials) {
-    throw new Error('Owner credentials are not configured.');
+export async function signInWithPassword(email: string, password: string) {
+  if (!supabase) {
+    throw new Error('Supabase is not configured.');
   }
 
-  const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword(
-    ownerCredentials
-  );
-  if (!signInError) {
-    if (!signInData.session) {
-      throw new Error('Owner sign-in did not return a session.');
-    }
-
-    return signInData.session;
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    throw error;
   }
-
-  const { data, error: signUpError } = await supabase.auth.signUp(ownerCredentials);
-  if (signUpError) {
-    throw signUpError;
-  }
-
-  if (!data.session) {
-    throw new Error('Owner account requires email confirmation before it can sign in.');
-  }
-
-  return data.session;
 }
 
 function getDisplayName(user: User): string | null {

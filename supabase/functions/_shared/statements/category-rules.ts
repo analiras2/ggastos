@@ -1,3 +1,5 @@
+import { foldText, normalizeMerchantText } from "./merchant-key.ts";
+
 export type StatementCategoryRule = {
   ruleType: string;
   ruleValue: string;
@@ -9,18 +11,18 @@ export function resolveStatementCategory(
   description: string,
   rules: readonly StatementCategoryRule[],
 ): string | null {
-  const normalizedDescription = description.trim().toLocaleLowerCase("pt-BR");
-  if (!normalizedDescription) {
+  const foldedDescription = foldText(description);
+  if (!foldedDescription) {
     return null;
   }
 
   const matchingRule = rules
     .filter((rule) => {
-      const normalizedRuleValue = rule.ruleValue.trim().toLocaleLowerCase("pt-BR");
+      const normalizedRuleValue = normalizeMerchantText(rule.ruleValue);
       return (
         rule.ruleType === "DESCRIPTION_CONTAINS" &&
         normalizedRuleValue.length > 0 &&
-        normalizedDescription.includes(normalizedRuleValue)
+        foldedDescription.includes(normalizedRuleValue)
       );
     })
     .sort((left, right) => left.priority - right.priority)[0];

@@ -50,9 +50,8 @@ cp mobile/.env.example mobile/.env
 
 Edite `mobile/.env` e preencha `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` com a
 chave **Publishable** exibida por `supabase status`. A URL local padrão já é
-`http://127.0.0.1:54321`. Para o login automático do app pessoal, preencha
-também `EXPO_PUBLIC_OWNER_EMAIL` e `EXPO_PUBLIC_OWNER_PASSWORD`; se deixá-las
-vazias, a tela de login será exibida.
+`http://127.0.0.1:54321`. O app exibe uma tela de login (e-mail e senha) e
+mantém a sessão persistida. Não coloque senhas em variáveis `EXPO_PUBLIC_*`.
 
 Instale as dependências e escolha uma plataforma:
 

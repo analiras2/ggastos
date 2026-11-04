@@ -12,6 +12,9 @@ import {
 import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
 
 export type StatementBank = 'NUBANK' | 'BRADESCO';
+export type StatementPaymentStatus = 'PAID' | 'OPEN';
+// Where the applied payment status came from: the user, the file, the due date or the default.
+export type StatementPaymentStatusSource = 'USER' | 'FILE' | 'DUE_DATE' | 'DEFAULT';
 
 export type ImportCardStatementInput = {
   bank: StatementBank;
@@ -19,6 +22,8 @@ export type ImportCardStatementInput = {
   contents: string;
   invoiceMonth?: string | null;
   fileHash?: string | null;
+  // Omit it to let the app suggest one from the file or the due date.
+  paymentStatus?: StatementPaymentStatus | null;
 };
 
 export type ImportCardStatementResult = {
@@ -31,6 +36,8 @@ export type ImportCardStatementResult = {
   rowsSkipped: number;
   rowsFailed: number;
   matchesCreated: number;
+  paymentStatus: StatementPaymentStatus;
+  paymentStatusSource: StatementPaymentStatusSource;
 };
 
 const monthDashboardKeyPrefix = ['month-dashboard'];

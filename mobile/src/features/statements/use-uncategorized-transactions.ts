@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 
+import type { TransactionDirection } from '@/features/statements/selection-state';
+import { saveCategoryRule } from '@/features/statements/save-category-rule';
 import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
 
 export type UncategorizedTransaction = {
@@ -7,6 +9,7 @@ export type UncategorizedTransaction = {
   batchId: string;
   description: string;
   amountCents: number;
+  direction: TransactionDirection;
   postedAt: string;
 };
 
@@ -18,8 +21,10 @@ export type CategorizeTransactionInput = {
   saveAsRule: boolean;
 };
 
+export const UNCATEGORIZED_TRANSACTIONS_ROOT_KEY = ['uncategorized-transactions'] as const;
+
 export const uncategorizedTransactionsKey = (batchId?: string | null) => [
-  'uncategorized-transactions',
+  ...UNCATEGORIZED_TRANSACTIONS_ROOT_KEY,
   batchId ?? 'all',
 ];
 
@@ -30,7 +35,7 @@ async function listUncategorizedTransactions(batchId?: string | null): Promise<U
 
   let query = supabase
     .from('imported_transactions')
-    .select('id,statement_import_batch_id,description,amount_cents,posted_at')
+    .select('id,statement_import_batch_id,description,amount_cents,direction,posted_at')
     .is('internal_category_id', null)
     .eq('is_hidden_from_budget', false)
     .order('posted_at', { ascending: false });
@@ -50,59 +55,9 @@ async function listUncategorizedTransactions(batchId?: string | null): Promise<U
     batchId: row.statement_import_batch_id as string,
     description: row.description as string,
     amountCents: row.amount_cents as number,
+    direction: row.direction === 'CREDIT' ? 'CREDIT' : 'DEBIT',
     postedAt: row.posted_at as string,
   }));
-}
-
-async function saveCategoryRule(input: CategorizeTransactionInput): Promise<void> {
-  if (!supabase || !input.saveAsRule) {
-    return;
-  }
-
-  const ruleValue = input.description.trim();
-  const { data: existingRule, error: existingRuleError } = await supabase
-    .from('user_category_rules')
-    .select('id')
-    .eq('rule_type', 'DESCRIPTION_CONTAINS')
-    .eq('rule_value', ruleValue)
-    .maybeSingle();
-
-  if (existingRuleError) {
-    throw existingRuleError;
-  }
-
-  if (existingRule) {
-    const { error } = await supabase
-      .from('user_category_rules')
-      .update({ target_category_id: input.categoryId, is_active: true })
-      .eq('id', existingRule.id);
-
-    if (error) {
-      throw error;
-    }
-    return;
-  }
-
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError) {
-    throw userError;
-  }
-  if (!userData.user) {
-    throw new Error('É preciso estar autenticado para salvar uma regra de categoria.');
-  }
-
-  const { error } = await supabase.from('user_category_rules').insert({
-    user_id: userData.user.id,
-    rule_type: 'DESCRIPTION_CONTAINS',
-    rule_value: ruleValue,
-    target_category_id: input.categoryId,
-    priority: 0,
-    is_active: true,
-  });
-
-  if (error) {
-    throw error;
-  }
 }
 
 async function categorizeTransaction(input: CategorizeTransactionInput): Promise<void> {
@@ -119,7 +74,9 @@ async function categorizeTransaction(input: CategorizeTransactionInput): Promise
     throw error;
   }
 
-  await saveCategoryRule(input);
+  if (input.saveAsRule) {
+    await saveCategoryRule({ description: input.description, categoryId: input.categoryId });
+  }
 }
 
 export function useUncategorizedTransactions(

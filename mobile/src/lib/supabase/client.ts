@@ -12,19 +12,6 @@ export const missingSupabaseEnv = [
   !supabasePublishableKey ? 'EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY' : null,
 ].filter((value): value is string => value !== null);
 
-const ownerEmail = process.env.EXPO_PUBLIC_OWNER_EMAIL?.trim() ?? '';
-const ownerPassword = process.env.EXPO_PUBLIC_OWNER_PASSWORD ?? '';
-
-export const missingOwnerEnv = [
-  !ownerEmail ? 'EXPO_PUBLIC_OWNER_EMAIL' : null,
-  !ownerPassword ? 'EXPO_PUBLIC_OWNER_PASSWORD' : null,
-].filter((value): value is string => value !== null);
-
-export const ownerCredentials =
-  ownerEmail.length > 0 && ownerPassword.length > 0
-    ? { email: ownerEmail, password: ownerPassword }
-    : null;
-
 export const supabase: SupabaseClient | null =
   missingSupabaseEnv.length === 0
     ? createClient(supabaseUrl, supabasePublishableKey, {

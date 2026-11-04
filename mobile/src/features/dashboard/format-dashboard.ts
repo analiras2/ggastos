@@ -67,10 +67,10 @@ function toCategoryBudget(category: MonthDashboard['categories'][number]): Categ
 
 export function formatDashboardData(monthDashboard: MonthDashboard, openingBalanceCents = 0): DashboardData {
   const { summary } = monthDashboard;
-  const monthMovementCents =
-    summary.actualIncomeCents - summary.actualExpenseCents - summary.actualInvestmentCents;
-  const heroDeltaCents = summary.expectedBalanceCents - monthMovementCents;
-  const totalActual = monthMovementCents + openingBalanceCents;
+  // Cash balance: only what was actually paid. Unpaid (open) statements are counted in
+  // committedRemainingCents instead (see get_month_dashboard).
+  const heroDeltaCents = summary.expectedBalanceCents - summary.currentBalanceCents;
+  const totalActual = summary.currentBalanceCents + openingBalanceCents;
 
   return {
     month: monthLabel(monthDashboard.month),
@@ -82,6 +82,8 @@ export function formatDashboardData(monthDashboard: MonthDashboard, openingBalan
     },
     previsto: formatCurrencyCents(summary.expectedBalanceCents + openingBalanceCents),
     commitment: { value: formatCurrencyCents(summary.committedRemainingCents) },
+    openInvoices:
+      summary.openExpenseCents > 0 ? { value: formatCurrencyCents(summary.openExpenseCents) } : null,
     categories: monthDashboard.categories.map(toCategoryBudget),
     pendingReviewCount: 0,
   };
@@ -98,6 +100,7 @@ export function emptyDashboardData(monthKey: string): DashboardData {
     },
     previsto: formatCurrencyCents(0),
     commitment: { value: formatCurrencyCents(0) },
+    openInvoices: null,
     categories: [],
     pendingReviewCount: 0,
   };

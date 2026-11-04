@@ -20,6 +20,16 @@ import {
   type FinancialConnectionUpsert,
 } from "../_shared/upsert.ts";
 import { runAutoMatch } from "../_shared/reconciliation/auto-match.ts";
+import {
+  applyPaymentStatus,
+  batchPaymentStatus,
+  parsePaymentStatus,
+  resolvePaymentStatus,
+  rowStatusFor,
+  type ImportedRowStatus,
+  type PaymentStatus,
+} from "../_shared/statements/payment-status.ts";
+import { preserveUserEdits, type ExistingUserEdits } from "../_shared/statements/preserve-user-edits.ts";
 
 declare const Deno: {
   env: {
@@ -42,6 +52,7 @@ type ImportRequest = {
   contents: string;
   invoiceMonth: string | null;
   fileHash: string | null;
+  paymentStatus: PaymentStatus | null;
 };
 
 type StatementBatchRow = {
@@ -73,6 +84,7 @@ type StatementTransactionUpsert = {
   is_hidden_from_budget: boolean;
   note: string | null;
   provider_payload: Record<string, unknown>;
+  payment_method: "CREDIT_CARD";
   statement_import_batch_id: string;
   statement_source_bank: StatementBank;
   statement_source_fingerprint: string;
@@ -82,9 +94,14 @@ type StatementTransactionUpsert = {
   statement_import_mode: StatementImportMode;
 };
 
-type ExistingFingerprintRow = {
+type ExistingImportedRow = {
   statement_source_fingerprint: string;
+  internal_category_id: string | null;
+  note: string | null;
+  status: ImportedRowStatus;
 };
+
+type StoredImportedRow = ExistingUserEdits & { status: ImportedRowStatus };
 
 type UserCategoryRuleRow = {
   rule_type: string;
@@ -94,6 +111,15 @@ type UserCategoryRuleRow = {
 };
 
 type ActiveCategoryRow = { id: string };
+
+const FINGERPRINT_LOOKUP_CHUNK_SIZE = 50;
+const STATEMENT_TIME_ZONE = "America/Sao_Paulo";
+
+// Today as YYYY-MM-DD in the time zone of the statements, so a due date is compared with the
+// local calendar day and not with the UTC one.
+function todayInStatementTimeZone(): string {
+  return new Date().toLocaleDateString("en-CA", { timeZone: STATEMENT_TIME_ZONE });
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -182,6 +208,18 @@ async function parseImportRequest(request: Request): Promise<ImportRequest> {
     });
   }
 
+  const paymentStatus = parsePaymentStatus(candidate.paymentStatus);
+  if (
+    candidate.paymentStatus !== undefined &&
+    candidate.paymentStatus !== null &&
+    paymentStatus === null
+  ) {
+    throw jsonResponse(400, {
+      error: "invalid_payment_status",
+      message: "paymentStatus must be either PAID or OPEN.",
+    });
+  }
+
   if (invoiceMonth !== null && !INVOICE_MONTH_PATTERN.test(invoiceMonth)) {
     throw jsonResponse(400, {
       error: "invalid_invoice_month",
@@ -195,6 +233,7 @@ async function parseImportRequest(request: Request): Promise<ImportRequest> {
     contents,
     invoiceMonth,
     fileHash,
+    paymentStatus,
   };
 }
 
@@ -354,6 +393,7 @@ async function createImportBatch(
     fileName: string;
     fileHash: string;
     invoiceMonth: string | null;
+    paymentStatus: PaymentStatus;
     payload: Record<string, unknown>;
   },
 ): Promise<string> {
@@ -372,6 +412,7 @@ async function createImportBatch(
         file_name: batch.fileName,
         file_hash: batch.fileHash,
         invoice_month: batch.invoiceMonth,
+        payment_status: batch.paymentStatus,
         status: "RECEIVED",
         payload: batch.payload,
       }),
@@ -404,27 +445,38 @@ async function updateImportBatch(
   );
 }
 
-async function findExistingFingerprints(
+// Rows already stored for these fingerprints, with the columns a user may have edited.
+async function findExistingImportedRows(
   config: SupabaseRestConfig,
   context: { userId: string; bank: StatementBank; fingerprints: string[] },
-): Promise<Set<string>> {
-  if (context.fingerprints.length === 0) {
-    return new Set();
+): Promise<Map<string, StoredImportedRow>> {
+  const existing = new Map<string, StoredImportedRow>();
+
+  // Chunked so the fingerprint list never makes the request URL too long.
+  for (let start = 0; start < context.fingerprints.length; start += FINGERPRINT_LOOKUP_CHUNK_SIZE) {
+    const chunk = context.fingerprints.slice(start, start + FINGERPRINT_LOOKUP_CHUNK_SIZE);
+    const params = new URLSearchParams({
+      select: "statement_source_fingerprint,internal_category_id,note,status",
+      user_id: `eq.${context.userId}`,
+      statement_source_bank: `eq.${context.bank}`,
+      statement_source_fingerprint: `in.(${chunk.join(",")})`,
+    });
+    const rows = await supabaseRest<ExistingImportedRow[]>(
+      config,
+      `/rest/v1/imported_transactions?${params.toString()}`,
+      { method: "GET" },
+    );
+
+    for (const row of rows) {
+      existing.set(row.statement_source_fingerprint, {
+        internal_category_id: row.internal_category_id,
+        note: row.note,
+        status: row.status,
+      });
+    }
   }
 
-  const params = new URLSearchParams({
-    select: "statement_source_fingerprint",
-    user_id: `eq.${context.userId}`,
-    statement_source_bank: `eq.${context.bank}`,
-    statement_source_fingerprint: `in.(${context.fingerprints.join(",")})`,
-  });
-  const rows = await supabaseRest<ExistingFingerprintRow[]>(
-    config,
-    `/rest/v1/imported_transactions?${params.toString()}`,
-    { method: "GET" },
-  );
-
-  return new Set(rows.map((row) => row.statement_source_fingerprint));
+  return existing;
 }
 
 function buildImportedTransaction(
@@ -437,6 +489,7 @@ function buildImportedTransaction(
     bank: StatementBank;
     fingerprint: string;
     now: string;
+    rowStatus: ImportedRowStatus;
     categoryRules: readonly StatementCategoryRule[];
   },
 ): StatementTransactionUpsert {
@@ -454,7 +507,7 @@ function buildImportedTransaction(
     description_raw: transaction.descriptionRaw,
     amount_cents: transaction.amountCents,
     currency_code: transaction.currencyCode,
-    status: "POSTED",
+    status: context.rowStatus,
     direction: transaction.direction,
     merchant_name: null,
     merchant_legal_name: null,
@@ -476,6 +529,7 @@ function buildImportedTransaction(
       sourceRowNumber: transaction.sourceRowNumber,
       installment: transaction.installment,
     },
+    payment_method: "CREDIT_CARD",
     statement_import_batch_id: context.batchId,
     statement_source_bank: context.bank,
     statement_source_fingerprint: context.fingerprint,
@@ -495,6 +549,7 @@ async function buildImportedTransactions(
     batchId: string;
     bank: StatementBank;
     now: string;
+    rowStatus: ImportedRowStatus;
     categoryRules: readonly StatementCategoryRule[];
   },
 ): Promise<StatementTransactionUpsert[]> {
@@ -581,6 +636,13 @@ Deno.serve(async (request) => {
     const parsed = parseStatement(requestWithHash);
     const now = new Date().toISOString();
 
+    const resolvedPaymentStatus = resolvePaymentStatus({
+      requested: importRequest.paymentStatus,
+      detected: parsed.metadata.detectedPaymentStatus,
+      dueDate: parsed.metadata.invoiceDueDate,
+      today: todayInStatementTimeZone(),
+    });
+
     await ensureProfile(config, user);
     const batchId = await createImportBatch(config, {
       userId: user.id,
@@ -588,6 +650,7 @@ Deno.serve(async (request) => {
       fileName: importRequest.fileName,
       fileHash,
       invoiceMonth: parsed.metadata.invoiceMonth,
+      paymentStatus: resolvedPaymentStatus.status,
       payload: {
         source: "CARD_STATEMENT",
         metadata: parsed.metadata,
@@ -633,16 +696,31 @@ Deno.serve(async (request) => {
       bank: importRequest.bank,
       batchId,
       now,
+      rowStatus: rowStatusFor(resolvedPaymentStatus.status),
       categoryRules,
       ...accountContext,
     });
-    const existingFingerprints = await findExistingFingerprints(config, {
+    const existingRows = await findExistingImportedRows(config, {
       userId: user.id,
       bank: importRequest.bank,
       fingerprints: transactions.map((transaction) => transaction.statement_source_fingerprint),
     });
-    const rowsDuplicated = existingFingerprints.size;
-    await upsertStatementTransactions(config, transactions);
+    const rowsDuplicated = existingRows.size;
+    // Re-importing must not undo what the user did after the first import: categories and notes are
+    // kept, and a paid row is only reopened when the user explicitly asks for it.
+    const existingStatuses = new Map(
+      [...existingRows].map(([fingerprint, row]) => [fingerprint, row.status] as const),
+    );
+    const rowsToUpsert = applyPaymentStatus(
+      preserveUserEdits(transactions, existingRows),
+      existingStatuses,
+      resolvedPaymentStatus,
+    );
+    await upsertStatementTransactions(config, rowsToUpsert);
+    const paymentStatus = batchPaymentStatus(
+      rowsToUpsert.map((row) => row.status),
+      resolvedPaymentStatus.status,
+    );
     const matchOutcomes = await runAutoMatch(config, {
       userId: user.id,
       accountId: accountContext.accountId,
@@ -651,6 +729,7 @@ Deno.serve(async (request) => {
     const rowsImported = transactions.length - rowsDuplicated;
     await updateImportBatch(config, batchId, {
       status: "PROCESSED",
+      payment_status: paymentStatus,
       rows_read: parsed.rowsRead,
       rows_imported: rowsImported,
       rows_duplicated: rowsDuplicated,
@@ -675,6 +754,8 @@ Deno.serve(async (request) => {
       rowsSkipped: parsed.skippedRows.length,
       rowsFailed: 0,
       matchesCreated: matchOutcomes.length,
+      paymentStatus,
+      paymentStatusSource: resolvedPaymentStatus.source,
     });
   } catch (error) {
     if (error instanceof Response) {

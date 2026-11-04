@@ -70,7 +70,7 @@ export function DashboardScreen() {
           edgePadding={GgastosSpacing.space5}
           actions={[
             { label: 'Importar fatura', icon: 'upload', onPress: handleOpenStatementImport },
-            { label: 'Adicionar planejamento', icon: 'plus', onPress: handleAddPlan },
+            { label: 'Novo lançamento', icon: 'plus', onPress: handleAddPlan },
             { label: 'Template', icon: 'repeat', onPress: handleAddTemplate },
             {
               label: isClosingMonth ? 'Fechando...' : isMonthClosed ? 'Recalcular mês' : 'Fechar mês',
@@ -88,6 +88,16 @@ export function DashboardScreen() {
           <KpiComparisonCard label="Saldo previsto" value={data.previsto}/>
           <KpiComparisonCard label="Comprometido restante" value={data.commitment.value} />
         </View>
+
+        {data.openInvoices ? (
+          <View style={styles.kpiRow}>
+            <KpiComparisonCard
+              label="Faturas em aberto"
+              value={data.openInvoices.value}
+              caption="Já contam em Comprometido restante. Pague em Pendências."
+            />
+          </View>
+        ) : null}
 
         <DashboardCategoriesSection categories={data.categories} onOpenCategory={handleOpenCategory} />
 

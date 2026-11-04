@@ -6,6 +6,7 @@ import { Icon } from '@/components/ggastos/core/icon';
 import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
 import { CategoryField } from '@/features/planning/category-field';
 import { DateField } from '@/features/planning/date-field';
+import { PaidEntryFields } from '@/features/planning/paid-entry-fields';
 import { useAddPlanViewModel } from '@/features/planning/use-add-plan-view-model';
 
 type AddPlanSheetProps = {
@@ -27,6 +28,7 @@ export function AddPlanSheet({ visible, onClose }: AddPlanSheetProps) {
     isLoadingCategories,
     selectedCategoryId,
     setSelectedCategoryId,
+    paidEntry,
     errorMessage,
     isSubmitting,
     handleSubmit,
@@ -37,7 +39,7 @@ export function AddPlanSheet({ visible, onClose }: AddPlanSheetProps) {
       <SafeAreaProvider>
         <SafeAreaView style={styles.screen} edges={['top']}>
           <View style={styles.header}>
-            <Text style={styles.title}>Novo planejamento</Text>
+            <Text style={styles.title}>Novo lançamento</Text>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Fechar"
@@ -54,7 +56,7 @@ export function AddPlanSheet({ visible, onClose }: AddPlanSheetProps) {
               <Text style={styles.label}>Título</Text>
               <TextInput
                 onChangeText={setTitle}
-                placeholder="Opcional — será preenchido pela importação"
+                placeholder={paidEntry.settlement === 'PAID' ? 'Opcional — usa o nome da categoria' : 'Opcional — será preenchido pela importação'}
                 placeholderTextColor={GgastosColors.inkFaint}
                 style={styles.input}
                 value={title}
@@ -90,6 +92,8 @@ export function AddPlanSheet({ visible, onClose }: AddPlanSheetProps) {
                 onSelect={setSelectedCategoryId}
               />
             </View>
+
+            <PaidEntryFields state={paidEntry} />
 
             {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 

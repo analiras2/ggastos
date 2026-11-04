@@ -9,6 +9,7 @@ import {
 import { categoryDetailsKey } from '@/features/dashboard/use-category-details';
 import { monthDashboardKey } from '@/features/dashboard/use-month-dashboard';
 import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
+import { buildPaidFields } from '@/features/planning/paid-entry-rules';
 import {
   createPlannedEntrySchema,
   plannedEntrySchema,
@@ -47,6 +48,7 @@ function mapPlannedEntryRow(row: Record<string, unknown>): PlannedEntry {
     installmentTotal: row.installment_total,
     note: row.note,
     tags: Array.isArray(row.tags) ? row.tags : [],
+    paymentMethod: row.payment_method ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     cancelledAt: row.cancelled_at,
@@ -81,6 +83,8 @@ async function createPlannedEntry(input: CreatePlannedEntryInput): Promise<Plann
     throw new Error('É preciso estar autenticado para criar um planejamento.');
   }
 
+  const paidFields = buildPaidFields(parsedInput.settlement, parsedInput.paymentMethod ?? null, parsedInput.dueDate ?? '');
+
   const { data, error } = await client
     .from('planned_entries')
     .insert({
@@ -95,6 +99,9 @@ async function createPlannedEntry(input: CreatePlannedEntryInput): Promise<Plann
       due_date: parsedInput.dueDate ?? null,
       note: parsedInput.note ?? null,
       tags: parsedInput.tags ?? [],
+      status: paidFields.status,
+      manually_confirmed_at: paidFields.manuallyConfirmedAt,
+      payment_method: paidFields.paymentMethod,
     })
     .select('*')
     .single();
@@ -137,7 +144,7 @@ async function undoManualConfirmation({ id }: PlannedEntryLocation): Promise<voi
 
   const { error } = await client
     .from('planned_entries')
-    .update({ status: 'PLANNED', manually_confirmed_at: null })
+    .update({ status: 'PLANNED', manually_confirmed_at: null, payment_method: null })
     .eq('id', id);
 
   if (error) {
