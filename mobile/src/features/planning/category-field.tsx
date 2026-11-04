@@ -4,6 +4,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import { Icon } from '@/components/ggastos/core/icon';
+import { NewCategoryPanel } from '@/features/categories/new-category-panel';
 import { CategoryPickerList } from '@/features/planning/category-picker-list';
 import { SegmentedToggle } from '@/features/planning/segmented-toggle';
 import { useCreatePersonalCategory, type CategoryOption } from '@/features/planning/use-categories';
@@ -28,6 +29,7 @@ export function CategoryField({ categories, isLoading, selectedCategoryId, onSel
   const [isPickerVisible, setIsPickerVisible] = useState(false);
   const [search, setSearch] = useState('');
   const [creationError, setCreationError] = useState<string | null>(null);
+  const [isChoosingAppearance, setIsChoosingAppearance] = useState(false);
   const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
   const [impactType, setImpactType] = useState<ImpactType>(selectedCategory?.impactType ?? impactTypes[0]);
   const createCategory = useCreatePersonalCategory();
@@ -43,11 +45,12 @@ export function CategoryField({ categories, isLoading, selectedCategoryId, onSel
     setIsPickerVisible(false);
   }
 
-  async function handleCreate() {
+  async function handleCreate(icon: string, color: string) {
     try {
-      const category = await createCategory.mutateAsync({ name: search, impactType });
+      const category = await createCategory.mutateAsync({ name: search, impactType, icon, color });
       handleSelect((category as { id: string }).id);
       setSearch('');
+      setIsChoosingAppearance(false);
     } catch (error) {
       setCreationError(error instanceof Error ? error.message : 'Não foi possível criar a categoria.');
     }
@@ -95,6 +98,7 @@ export function CategoryField({ categories, isLoading, selectedCategoryId, onSel
                 onChangeText={(value) => {
                   setSearch(value);
                   setCreationError(null);
+                  setIsChoosingAppearance(false);
                 }}
                 placeholder="Pesquisar ou criar categoria"
                 placeholderTextColor={GgastosColors.inkFaint}
@@ -107,7 +111,8 @@ export function CategoryField({ categories, isLoading, selectedCategoryId, onSel
                 onSelect={handleSelect}
                 emptyMessage={search ? 'Nenhuma categoria encontrada.' : undefined}
               />
-              {canCreate ? <Pressable accessibilityRole="button" disabled={createCategory.isPending} onPress={handleCreate} style={styles.createRow}><Text style={styles.createText}>{createCategory.isPending ? 'Criando...' : `Criar “${search.trim()}”`}</Text></Pressable> : null}
+              {canCreate && !isChoosingAppearance ? <Pressable accessibilityRole="button" onPress={() => setIsChoosingAppearance(true)} style={styles.createRow}><Text style={styles.createText}>{`Criar “${search.trim()}”`}</Text></Pressable> : null}
+              {canCreate && isChoosingAppearance ? <NewCategoryPanel name={search.trim()} isPending={createCategory.isPending} onConfirm={handleCreate} onCancel={() => setIsChoosingAppearance(false)} /> : null}
               {creationError ? <Text style={styles.error}>{creationError}</Text> : null}
             </ScrollView>
           </SafeAreaView>

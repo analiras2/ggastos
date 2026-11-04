@@ -10,6 +10,8 @@ export type CategoryOption = {
   impactType: ImpactType;
   isPersonal: boolean;
   isActive: boolean;
+  icon: string | null;
+  color: string | null;
 };
 
 export const categoriesKey = ['categories'];
@@ -24,7 +26,7 @@ async function listCategories(): Promise<CategoryOption[]> {
 
   const { data, error } = await supabase
     .from('categories')
-    .select('id,code,name,impact_type,user_id,is_active,parent_id')
+    .select('id,code,name,impact_type,user_id,is_active,parent_id,icon,color')
     .eq('is_active', true)
     .order('name', { ascending: true });
 
@@ -39,6 +41,8 @@ async function listCategories(): Promise<CategoryOption[]> {
     impactType: impactTypeSchema.parse(row.impact_type),
     isPersonal: row.user_id !== null,
     isActive: row.is_active as boolean,
+    icon: (row.icon as string | null) ?? null,
+    color: (row.color as string | null) ?? null,
   }));
 }
 
@@ -60,13 +64,13 @@ export function useCategoryNames(): UseQueryResult<CategoryName[], Error> {
   return useQuery({ queryKey: categoryNamesKey, queryFn: listCategoryNames });
 }
 
-type CreateCategoryInput = { name: string; impactType: ImpactType };
+type CreateCategoryInput = { name: string; impactType: ImpactType; icon: string | null; color: string | null };
 
 export function useCreatePersonalCategory() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ name, impactType }: CreateCategoryInput) => {
+    mutationFn: async ({ name, impactType, icon, color }: CreateCategoryInput) => {
       if (!supabase) {
         throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
       }
@@ -74,6 +78,8 @@ export function useCreatePersonalCategory() {
       const { data, error } = await supabase.rpc('create_personal_category', {
         p_name: name.trim(),
         p_impact_type: impactType,
+        p_icon: icon,
+        p_color: color,
       });
 
       if (error) {

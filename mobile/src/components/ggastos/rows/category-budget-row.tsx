@@ -1,8 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GgastosColors, GgastosRadius, GgastosType } from '@/constants/ggastos-theme';
-import { categoryColorSoft } from '@/constants/category-colors';
-import { Icon } from '@/components/ggastos/core/icon';
+import { categoryIconColor } from '@/constants/category-colors';
+import { CategoryIcon } from '@/components/ggastos/core/category-icon';
 
 type DeltaTone = 'neutral' | 'over' | 'under';
 
@@ -41,8 +41,8 @@ export function CategoryBudgetRow({
       onPress={onPress}
       style={styles.row}
     >
-      <View style={[styles.iconBadge, { backgroundColor: categoryColorSoft(color) }]}>
-        <Icon name={icon} size={17} color={color} />
+      <View style={[styles.iconBadge, { backgroundColor: color }]}>
+        <CategoryIcon name={icon} size={17} color={categoryIconColor(color)} />
       </View>
       <View style={styles.content}>
         <Text style={styles.name}>{name}</Text>

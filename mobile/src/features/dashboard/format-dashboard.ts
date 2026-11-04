@@ -1,4 +1,8 @@
-import { categoryColor } from '@/constants/category-colors';
+import {
+  resolveCategoryColor,
+  resolveCategoryIcon,
+  type CategoryAppearanceMap,
+} from '@/features/categories/category-appearance';
 import type { CategoryBudget, DashboardData } from '@/features/dashboard/dashboard-data';
 import type { MonthDashboard } from '@/features/dashboard/dashboard-schema';
 import { monthLabel } from '@/features/dashboard/month-utils';
@@ -36,7 +40,10 @@ function iconForCategory(categoryCode: string): string {
   return CATEGORY_ICONS[categoryCode] ?? 'circle-dollar-sign';
 }
 
-function toCategoryBudget(category: MonthDashboard['categories'][number]): CategoryBudget {
+function toCategoryBudget(
+  category: MonthDashboard['categories'][number],
+  appearance?: CategoryAppearanceMap
+): CategoryBudget {
   const progress =
     category.plannedCents > 0
       ? Math.round((category.actualCents / category.plannedCents) * 100)
@@ -57,8 +64,8 @@ function toCategoryBudget(category: MonthDashboard['categories'][number]): Categ
   return {
     categoryId: category.categoryId,
     name: category.name,
-    icon: iconForCategory(category.categoryCode),
-    color: categoryColor(category.categoryId),
+    icon: resolveCategoryIcon(category.categoryId, iconForCategory(category.categoryCode), appearance),
+    color: resolveCategoryColor(category.categoryId, appearance),
     planned: formatCurrencyCents(category.plannedCents),
     actual: formatCurrencyCents(category.actualCents),
     delta,
@@ -67,7 +74,11 @@ function toCategoryBudget(category: MonthDashboard['categories'][number]): Categ
   };
 }
 
-export function formatDashboardData(monthDashboard: MonthDashboard, openingBalanceCents = 0): DashboardData {
+export function formatDashboardData(
+  monthDashboard: MonthDashboard,
+  openingBalanceCents = 0,
+  appearance?: CategoryAppearanceMap
+): DashboardData {
   const { summary } = monthDashboard;
   // Cash balance: only what was actually paid. Unpaid (open) statements are counted in
   // committedRemainingCents instead (see get_month_dashboard).
@@ -86,7 +97,7 @@ export function formatDashboardData(monthDashboard: MonthDashboard, openingBalan
     commitment: { value: formatCurrencyCents(summary.committedRemainingCents) },
     openInvoices:
       summary.openExpenseCents > 0 ? { value: formatCurrencyCents(summary.openExpenseCents) } : null,
-    categories: monthDashboard.categories.map(toCategoryBudget),
+    categories: monthDashboard.categories.map((category) => toCategoryBudget(category, appearance)),
     pendingReviewCount: 0,
   };
 }

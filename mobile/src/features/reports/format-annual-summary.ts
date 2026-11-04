@@ -1,3 +1,4 @@
+import { resolveCategoryColor, type CategoryAppearanceMap } from '@/features/categories/category-appearance';
 import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
 import type { AnnualCategory, AnnualMonth } from '@/features/reports/annual-summary-schema';
 
@@ -33,6 +34,7 @@ export type AnnualMonthRowView = {
 export type AnnualCategoryView = {
   categoryId: string;
   name: string;
+  color: string;
   actualCents: number;
 };
 
@@ -56,10 +58,11 @@ export function toAnnualMonthRow(month: AnnualMonth): AnnualMonthRowView {
   };
 }
 
-export function toAnnualCategoryView(category: AnnualCategory): AnnualCategoryView {
+export function toAnnualCategoryView(category: AnnualCategory, appearance?: CategoryAppearanceMap): AnnualCategoryView {
   return {
     categoryId: category.categoryId,
     name: category.name,
+    color: resolveCategoryColor(category.categoryId, appearance),
     actualCents: category.actualCents,
   };
 }

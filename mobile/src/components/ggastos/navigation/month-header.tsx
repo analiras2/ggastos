@@ -36,13 +36,7 @@ export function MonthHeader({
         <Pressable accessibilityRole="button" accessibilityLabel="Mês anterior" onPress={onPrev} style={styles.chevron}>
           <Icon name="chevron-left" size={18} />
         </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Voltar para o mês atual"
-          disabled={isCurrentMonth}
-          onPress={onPressMonth}
-          style={styles.monthGroup}
-        >
+        <View style={styles.monthGroup}>
           {year ? (
             <Pressable
               accessibilityRole="button"
@@ -56,8 +50,15 @@ export function MonthHeader({
               {canPickMonth ? <Icon name="chevron-down" size={12} /> : null}
             </Pressable>
           ) : null}
-          <Text style={styles.month}>{monthName}</Text>
-        </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Voltar para o mês atual"
+            disabled={isCurrentMonth}
+            onPress={onPressMonth}
+          >
+            <Text style={styles.month}>{monthName}</Text>
+          </Pressable>
+        </View>
         <Pressable accessibilityRole="button" accessibilityLabel="Próximo mês" onPress={onNext} style={styles.chevron}>
           <Icon name="chevron-right" size={18} />
         </Pressable>

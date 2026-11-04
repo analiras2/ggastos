@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 
+import { useCategoryAppearance } from '@/features/categories/use-category-appearance';
 import {
   toAnnualCategoryView,
   toAnnualMonthRow,
@@ -28,9 +29,11 @@ export function useAnnualReportViewModel(): AnnualReportViewModel {
     [summaryQuery.data]
   );
 
+  const categoryAppearanceQuery = useCategoryAppearance();
+
   const categories = useMemo(
-    () => (summaryQuery.data?.categories ?? []).filter((category) => category.impactType === 'EXPENSE').map(toAnnualCategoryView),
-    [summaryQuery.data]
+    () => (summaryQuery.data?.categories ?? []).filter((category) => category.impactType === 'EXPENSE').map((category) => toAnnualCategoryView(category, categoryAppearanceQuery.data)),
+    [summaryQuery.data, categoryAppearanceQuery.data]
   );
 
   const isEmpty = useMemo(() => {
