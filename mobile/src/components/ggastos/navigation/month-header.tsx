@@ -1,23 +1,31 @@
+import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import { Icon } from '@/components/ggastos/core/icon';
+import { MonthYearPicker } from '@/components/ggastos/navigation/month-year-picker';
 
 type MonthHeaderProps = {
   month: string;
+  monthKey?: string;
   isCurrentMonth?: boolean;
   onPrev?: () => void;
   onNext?: () => void;
   onPressMonth?: () => void;
+  onSelectMonth?: (monthKey: string) => void;
 };
 
 export function MonthHeader({
   month,
+  monthKey,
   isCurrentMonth = true,
   onPrev,
   onNext,
   onPressMonth,
+  onSelectMonth,
 }: MonthHeaderProps) {
+  const [isPickerVisible, setIsPickerVisible] = useState(false);
+  const canPickMonth = Boolean(monthKey && onSelectMonth);
   const lastSpaceIndex = month.lastIndexOf(' ');
   const monthName = lastSpaceIndex >= 0 ? month.slice(0, lastSpaceIndex) : month;
   const year = lastSpaceIndex >= 0 ? month.slice(lastSpaceIndex + 1) : '';
@@ -35,13 +43,33 @@ export function MonthHeader({
           onPress={onPressMonth}
           style={styles.monthGroup}
         >
-          {year ? <Text style={styles.year}>{year}</Text> : null}
+          {year ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Escolher mês e ano"
+              disabled={!canPickMonth}
+              hitSlop={8}
+              onPress={() => setIsPickerVisible(true)}
+              style={styles.yearButton}
+            >
+              <Text style={styles.year}>{year}</Text>
+              {canPickMonth ? <Icon name="chevron-down" size={12} /> : null}
+            </Pressable>
+          ) : null}
           <Text style={styles.month}>{monthName}</Text>
         </Pressable>
         <Pressable accessibilityRole="button" accessibilityLabel="Próximo mês" onPress={onNext} style={styles.chevron}>
           <Icon name="chevron-right" size={18} />
         </Pressable>
       </View>
+      {monthKey && onSelectMonth ? (
+        <MonthYearPicker
+          visible={isPickerVisible}
+          monthKey={monthKey}
+          onSelect={onSelectMonth}
+          onClose={() => setIsPickerVisible(false)}
+        />
+      ) : null}
     </View>
   );
 }
@@ -64,6 +92,11 @@ const styles = StyleSheet.create({
   monthGroup: {
     flex: 1,
     alignItems: 'center',
+  },
+  yearButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   year: {
     ...GgastosType.label,

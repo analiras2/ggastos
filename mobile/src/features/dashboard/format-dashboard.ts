@@ -65,12 +65,12 @@ function toCategoryBudget(category: MonthDashboard['categories'][number]): Categ
   };
 }
 
-export function formatDashboardData(monthDashboard: MonthDashboard): DashboardData {
+export function formatDashboardData(monthDashboard: MonthDashboard, openingBalanceCents = 0): DashboardData {
   const { summary } = monthDashboard;
   // Cash balance: only what was actually paid. Unpaid (open) statements are counted in
   // committedRemainingCents instead (see get_month_dashboard).
-  const totalActual = summary.currentBalanceCents;
-  const heroDeltaCents = summary.expectedBalanceCents - totalActual;
+  const heroDeltaCents = summary.expectedBalanceCents - summary.currentBalanceCents;
+  const totalActual = summary.currentBalanceCents + openingBalanceCents;
 
   return {
     month: monthLabel(monthDashboard.month),
@@ -80,7 +80,7 @@ export function formatDashboardData(monthDashboard: MonthDashboard): DashboardDa
       deltaLabel: 'até o momento',
       status: totalActual >= 0 ? 'healthy' : 'tight',
     },
-    previsto: formatCurrencyCents(summary.expectedBalanceCents),
+    previsto: formatCurrencyCents(summary.expectedBalanceCents + openingBalanceCents),
     commitment: { value: formatCurrencyCents(summary.committedRemainingCents) },
     openInvoices:
       summary.openExpenseCents > 0 ? { value: formatCurrencyCents(summary.openExpenseCents) } : null,
