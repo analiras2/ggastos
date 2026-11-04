@@ -8,6 +8,7 @@ import {
 } from '@/features/dashboard/format-category-details';
 import { currentMonthKey, shiftMonthKey } from '@/features/dashboard/month-utils';
 import { useCategoryDetails } from '@/features/dashboard/use-category-details';
+import { useCategoryAppearance } from '@/features/categories/use-category-appearance';
 import { useMonthOpeningBalance } from '@/features/opening-balance/use-month-opening-balance';
 import { useMonthDashboard } from '@/features/dashboard/use-month-dashboard';
 import { usePlannedEntryStatusToggle } from '@/features/dashboard/use-planned-entry-status-toggle';
@@ -66,6 +67,7 @@ export function useDashboardViewModel(): DashboardViewModel {
   const [categoryReviewBatchId, setCategoryReviewBatchId] = useState<string | null>(null);
   const monthDashboardQuery = useMonthDashboard(monthKey);
   const openingBalanceQuery = useMonthOpeningBalance(monthKey);
+  const categoryAppearanceQuery = useCategoryAppearance();
   const closeMonthMutation = useCloseMonth();
   const monthSnapshotQuery = useMonthSnapshot(monthKey);
   const categoryDetailsQuery = useCategoryDetails(monthKey, selectedCategory?.categoryId ?? null);
@@ -97,11 +99,12 @@ export function useDashboardViewModel(): DashboardViewModel {
     if (monthDashboardQuery.data) {
       return formatDashboardData(
         monthDashboardQuery.data,
-        openingBalanceQuery.data?.openingBalanceCents ?? 0
+        openingBalanceQuery.data?.openingBalanceCents ?? 0,
+        categoryAppearanceQuery.data
       );
     }
     return emptyDashboardData(monthKey);
-  }, [monthDashboardQuery.data, openingBalanceQuery.data?.openingBalanceCents, monthKey]);
+  }, [monthDashboardQuery.data, openingBalanceQuery.data?.openingBalanceCents, categoryAppearanceQuery.data, monthKey]);
 
   const importBanner = useMemo(() => {
     if (monthDashboardQuery.isLoading) {
