@@ -1,3 +1,4 @@
+import { categoryColor } from '@/constants/category-colors';
 import type { CategoryBudget, DashboardData } from '@/features/dashboard/dashboard-data';
 import type { MonthDashboard } from '@/features/dashboard/dashboard-schema';
 import { monthLabel } from '@/features/dashboard/month-utils';
@@ -57,6 +58,7 @@ function toCategoryBudget(category: MonthDashboard['categories'][number]): Categ
     categoryId: category.categoryId,
     name: category.name,
     icon: iconForCategory(category.categoryCode),
+    color: categoryColor(category.categoryId),
     planned: formatCurrencyCents(category.plannedCents),
     actual: formatCurrencyCents(category.actualCents),
     delta,
