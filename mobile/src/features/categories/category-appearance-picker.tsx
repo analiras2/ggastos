@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { CategoryIcon } from '@/components/ggastos/core/category-icon';
 import { CATEGORY_COLORS, categoryColorSoft } from '@/constants/category-colors';
 import { CATEGORY_ICON_OPTIONS } from '@/constants/category-icons';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { CustomColorModal } from '@/features/categories/custom-color-modal';
+import { CustomColorSwatch } from '@/features/categories/custom-color-swatch';
 
 const ICON_CELL_SIZE = 44;
 const COLOR_SWATCH_SIZE = 32;
@@ -20,6 +23,9 @@ type CategoryAppearancePickerProps = {
 };
 
 export function CategoryAppearancePicker({ name, icon, color, onChangeIcon, onChangeColor }: CategoryAppearancePickerProps) {
+  const [isCustomColorVisible, setIsCustomColorVisible] = useState(false);
+  const isCustomColor = !(CATEGORY_COLORS as readonly string[]).includes(color);
+
   return (
     <View style={styles.container}>
       <View style={styles.previewRow}>
@@ -65,7 +71,18 @@ export function CategoryAppearancePicker({ name, icon, color, onChangeIcon, onCh
             </Pressable>
           );
         })}
+        <CustomColorSwatch customColor={isCustomColor ? color : null} onPress={() => setIsCustomColorVisible(true)} />
       </View>
+
+      <CustomColorModal
+        visible={isCustomColorVisible}
+        initialColor={color}
+        onConfirm={(customColor) => {
+          onChangeColor(customColor);
+          setIsCustomColorVisible(false);
+        }}
+        onClose={() => setIsCustomColorVisible(false)}
+      />
     </View>
   );
 }
