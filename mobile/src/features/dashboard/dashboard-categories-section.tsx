@@ -21,6 +21,7 @@ export function DashboardCategoriesSection({ categories, onOpenCategory }: Dashb
           key={category.categoryId}
           name={category.name}
           icon={category.icon}
+          color={category.color}
           planned={category.planned}
           actual={category.actual}
           delta={category.delta}

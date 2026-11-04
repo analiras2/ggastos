@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GgastosColors, GgastosRadius, GgastosType } from '@/constants/ggastos-theme';
+import { categoryColorSoft } from '@/constants/category-colors';
 import { Icon } from '@/components/ggastos/core/icon';
 
 type DeltaTone = 'neutral' | 'over' | 'under';
@@ -8,6 +9,7 @@ type DeltaTone = 'neutral' | 'over' | 'under';
 type CategoryBudgetRowProps = {
   name: string;
   icon?: string;
+  color?: string;
   planned: string;
   actual: string;
   delta: string;
@@ -25,6 +27,7 @@ const DELTA_COLOR: Record<DeltaTone, string> = {
 export function CategoryBudgetRow({
   name,
   icon = 'circle',
+  color = GgastosColors.brandPrimary,
   planned,
   actual,
   delta,
@@ -38,8 +41,8 @@ export function CategoryBudgetRow({
       onPress={onPress}
       style={styles.row}
     >
-      <View style={styles.iconBadge}>
-        <Icon name={icon} size={17} />
+      <View style={[styles.iconBadge, { backgroundColor: categoryColorSoft(color) }]}>
+        <Icon name={icon} size={17} color={color} />
       </View>
       <View style={styles.content}>
         <Text style={styles.name}>{name}</Text>
@@ -53,7 +56,7 @@ export function CategoryBudgetRow({
                 styles.progressFill,
                 {
                   width: `${Math.min(100, Math.max(0, progress))}%`,
-                  backgroundColor: deltaTone === 'over' ? GgastosColors.expense : GgastosColors.brandPrimary,
+                  backgroundColor: deltaTone === 'over' ? GgastosColors.expense : color,
                 },
               ]}
             />
@@ -79,7 +82,6 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: GgastosColors.brandPrimarySoft,
     alignItems: 'center',
     justifyContent: 'center',
   },

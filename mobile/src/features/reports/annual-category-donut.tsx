@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { categoryColor } from '@/constants/category-colors';
 import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
 import type { AnnualCategoryView } from '@/features/reports/format-annual-summary';
 
@@ -10,7 +11,6 @@ const CHART_SIZE = 168;
 const STROKE_WIDTH = 24;
 const RADIUS = (CHART_SIZE - STROKE_WIDTH) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
-const COLORS = ['#1F6B57', '#C65A46', '#356FA8', '#C28A2C', '#7A5C9E', '#477A89', '#A26D47'];
 
 export function AnnualCategoryDonut({ categories }: AnnualCategoryDonutProps) {
   const items = categories.filter((category) => category.actualCents > 0);
@@ -25,12 +25,12 @@ export function AnnualCategoryDonut({ categories }: AnnualCategoryDonutProps) {
             const share = category.actualCents / total;
             const length = share * CIRCUMFERENCE;
             const offset = items.slice(0, index).reduce((sum, item) => sum + (item.actualCents / total) * CIRCUMFERENCE, 0);
-            return <Circle key={category.categoryId} cx={CHART_SIZE / 2} cy={CHART_SIZE / 2} r={RADIUS} stroke={COLORS[index % COLORS.length]} strokeWidth={STROKE_WIDTH} strokeDasharray={`${length} ${CIRCUMFERENCE - length}`} strokeDashoffset={-offset} strokeLinecap="butt" fill="none" rotation="-90" origin={`${CHART_SIZE / 2}, ${CHART_SIZE / 2}`} />;
+            return <Circle key={category.categoryId} cx={CHART_SIZE / 2} cy={CHART_SIZE / 2} r={RADIUS} stroke={categoryColor(category.categoryId)} strokeWidth={STROKE_WIDTH} strokeDasharray={`${length} ${CIRCUMFERENCE - length}`} strokeDashoffset={-offset} strokeLinecap="butt" fill="none" rotation="-90" origin={`${CHART_SIZE / 2}, ${CHART_SIZE / 2}`} />;
           })}
         </Svg>
         <View style={styles.center}><Text style={styles.centerLabel}>Gastos</Text><Text style={styles.centerValue}>{formatCurrencyCents(total)}</Text></View>
       </View>
-      <View style={styles.legend}>{items.map((category, index) => <View key={category.categoryId} style={styles.legendRow}><View style={[styles.color, { backgroundColor: COLORS[index % COLORS.length] }]} /><Text style={styles.name} numberOfLines={1}>{category.name}</Text><Text style={styles.value}>{Math.round((category.actualCents / total) * 100)}% · {formatCurrencyCents(category.actualCents)}</Text></View>)}</View>
+      <View style={styles.legend}>{items.map((category, index) => <View key={category.categoryId} style={styles.legendRow}><View style={[styles.color, { backgroundColor: categoryColor(category.categoryId) }]} /><Text style={styles.name} numberOfLines={1}>{category.name}</Text><Text style={styles.value}>{Math.round((category.actualCents / total) * 100)}% · {formatCurrencyCents(category.actualCents)}</Text></View>)}</View>
     </View>
   );
 }

@@ -4,6 +4,7 @@ export type CategoryBudget = {
   categoryId: string;
   name: string;
   icon: string;
+  color: string;
   planned: string;
   actual: string;
   delta: string;
