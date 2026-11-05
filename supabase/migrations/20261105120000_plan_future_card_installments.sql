@@ -91,6 +91,10 @@ begin
     from sources s
     cross join lateral generate_series(s.paid_index + 1, s.total) as k
     where s.category_id is not null
+      -- Months that already passed are left alone: their statement was not imported on purpose
+      -- or is simply missing, and planning there would only add noise.
+      and public.shift_month_key(s.competency_month, k - s.paid_index)
+        >= to_char(now() at time zone 'America/Sao_Paulo', 'YYYY-MM')
   ),
   inserted as (
     insert into public.planned_entries (
