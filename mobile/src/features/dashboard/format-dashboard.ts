@@ -54,20 +54,15 @@ function toCategoryBudget(
   const deltaTone: CategoryBudget['deltaTone'] =
     category.deltaCents > 0 ? 'over' : category.deltaCents < 0 ? 'under' : 'neutral';
 
-  const delta =
-    category.actualCents === 0
-      ? 'Ainda não começou'
-      : category.deltaCents === 0
-        ? 'No previsto'
-        : formatSignedCurrencyCents(category.deltaCents);
+  const hasDelta = category.actualCents > 0 && category.deltaCents !== 0;
+  const delta = hasDelta ? formatSignedCurrencyCents(category.deltaCents) : null;
 
   return {
     categoryId: category.categoryId,
     name: category.name,
     icon: resolveCategoryIcon(category.categoryId, iconForCategory(category.categoryCode), appearance),
     color: resolveCategoryColor(category.categoryId, appearance),
-    planned: formatCurrencyCents(category.plannedCents),
-    actual: formatCurrencyCents(category.actualCents),
+    planned: category.plannedCents > 0 ? formatCurrencyCents(category.plannedCents) : null,
     delta,
     deltaTone,
     progress,

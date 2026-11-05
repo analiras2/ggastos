@@ -6,8 +6,7 @@ import {
   type UseQueryResult,
 } from '@tanstack/react-query';
 
-import { categoryDetailsKey } from '@/features/dashboard/use-category-details';
-import { monthDashboardKey } from '@/features/dashboard/use-month-dashboard';
+import { invalidateMonthData } from '@/lib/query/invalidate-month-data';
 import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
 import { buildPaidFields } from '@/features/planning/paid-entry-rules';
 import {
@@ -168,34 +167,17 @@ export function useCreatePlannedEntry(): UseMutationResult<
 
   return useMutation({
     mutationFn: createPlannedEntry,
-    onSuccess: async (entry) => {
-      await queryClient.invalidateQueries({ queryKey: plannedEntriesKey(entry.month) });
-    },
+    onSuccess: () => invalidateMonthData(queryClient),
   });
 }
 
-export function useCancelPlannedEntry(
-  month: string
-): UseMutationResult<void, Error, string> {
+export function useCancelPlannedEntry(): UseMutationResult<void, Error, string> {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: cancelPlannedEntry,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: plannedEntriesKey(month) });
-    },
+    onSuccess: () => invalidateMonthData(queryClient),
   });
-}
-
-async function invalidatePlannedEntryLocation(
-  queryClient: ReturnType<typeof useQueryClient>,
-  { month, categoryId }: PlannedEntryLocation
-) {
-  await Promise.all([
-    queryClient.invalidateQueries({ queryKey: plannedEntriesKey(month) }),
-    queryClient.invalidateQueries({ queryKey: monthDashboardKey(month) }),
-    queryClient.invalidateQueries({ queryKey: categoryDetailsKey(month, categoryId) }),
-  ]);
 }
 
 export function useConfirmPlannedEntryManually(): UseMutationResult<
@@ -207,7 +189,7 @@ export function useConfirmPlannedEntryManually(): UseMutationResult<
 
   return useMutation({
     mutationFn: confirmPlannedEntryManually,
-    onSuccess: (_data, variables) => invalidatePlannedEntryLocation(queryClient, variables),
+    onSuccess: () => invalidateMonthData(queryClient),
   });
 }
 
@@ -220,6 +202,6 @@ export function useUndoManualConfirmation(): UseMutationResult<
 
   return useMutation({
     mutationFn: undoManualConfirmation,
-    onSuccess: (_data, variables) => invalidatePlannedEntryLocation(queryClient, variables),
+    onSuccess: () => invalidateMonthData(queryClient),
   });
 }

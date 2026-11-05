@@ -6,6 +6,7 @@ import {
   type UseQueryResult,
 } from '@tanstack/react-query';
 
+import { invalidateMonthData } from '@/lib/query/invalidate-month-data';
 import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
 import {
   createPlanningTemplateSchema,
@@ -143,7 +144,10 @@ export function useCreatePlanningTemplate(): UseMutationResult<
   return useMutation({
     mutationFn: createPlanningTemplate,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['planning-templates'] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['planning-templates'] }),
+        invalidateMonthData(queryClient),
+      ]);
     },
   });
 }
@@ -156,8 +160,7 @@ export function useArchivePlanningTemplate(): UseMutationResult<void, Error, Arc
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['planning-templates'] }),
-        queryClient.invalidateQueries({ queryKey: ['planned-entries'] }),
-        queryClient.invalidateQueries({ queryKey: ['month-dashboard'] }),
+        invalidateMonthData(queryClient),
       ]);
     },
   });
@@ -167,6 +170,11 @@ export function useUpdatePlanningTemplate(): UseMutationResult<void, Error, Upda
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updatePlanningTemplate,
-    onSuccess: async () => queryClient.invalidateQueries({ queryKey: ['planning-templates'] }),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['planning-templates'] }),
+        invalidateMonthData(queryClient),
+      ]);
+    },
   });
 }

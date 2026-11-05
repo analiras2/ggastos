@@ -1,3 +1,4 @@
+import { CalendarClock } from 'lucide-react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GgastosColors, GgastosRadius, GgastosType } from '@/constants/ggastos-theme';
@@ -10,13 +11,15 @@ type CategoryBudgetRowProps = {
   name: string;
   icon?: string;
   color?: string;
-  planned: string;
-  actual: string;
-  delta: string;
+  // Shown only for planned categories; the calendar icon marks them as planned.
+  planned?: string | null;
+  delta?: string | null;
   deltaTone?: DeltaTone;
   progress?: number;
   onPress?: () => void;
 };
+
+const PLANNED_ICON_SIZE = 12;
 
 const DELTA_COLOR: Record<DeltaTone, string> = {
   over: GgastosColors.expense,
@@ -29,7 +32,6 @@ export function CategoryBudgetRow({
   icon = 'circle',
   color = GgastosColors.brandPrimary,
   planned,
-  actual,
   delta,
   deltaTone = 'neutral',
   progress,
@@ -46,9 +48,12 @@ export function CategoryBudgetRow({
       </View>
       <View style={styles.content}>
         <Text style={styles.name}>{name}</Text>
-        <Text style={styles.meta}>
-          Previsto {planned} · Realizado {actual}
-        </Text>
+        {planned ? (
+          <View accessible accessibilityLabel={`Previsto ${planned}`} style={styles.plannedRow}>
+            <CalendarClock size={PLANNED_ICON_SIZE} color={GgastosColors.inkFaint} strokeWidth={2} />
+            <Text style={styles.meta}>{planned}</Text>
+          </View>
+        ) : null}
         {typeof progress === 'number' ? (
           <View style={styles.progressTrack}>
             <View
@@ -63,7 +68,7 @@ export function CategoryBudgetRow({
           </View>
         ) : null}
       </View>
-      <Text style={[styles.delta, { color: DELTA_COLOR[deltaTone] }]}>{delta}</Text>
+      {delta ? <Text style={[styles.delta, { color: DELTA_COLOR[deltaTone] }]}>{delta}</Text> : null}
     </Pressable>
   );
 }
@@ -93,6 +98,11 @@ const styles = StyleSheet.create({
     ...GgastosType.bodyMd,
     fontWeight: '700',
     color: GgastosColors.inkStrong,
+  },
+  plannedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   meta: {
     ...GgastosType.micro,

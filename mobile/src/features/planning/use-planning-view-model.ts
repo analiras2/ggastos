@@ -68,7 +68,7 @@ export function usePlanningViewModel() {
   const entriesQuery = usePlannedEntries(month);
   const categoryNamesQuery = useCategoryNames();
   const templatesQuery = usePlanningTemplates(month);
-  const cancelEntry = useCancelPlannedEntry(month);
+  const cancelEntry = useCancelPlannedEntry();
   const confirmEntry = useConfirmPlannedEntryManually();
   const undoConfirmation = useUndoManualConfirmation();
   const archiveTemplate = useArchivePlanningTemplate();

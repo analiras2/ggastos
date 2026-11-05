@@ -5,9 +5,10 @@ export type CategoryBudget = {
   name: string;
   icon: string;
   color: string;
-  planned: string;
-  actual: string;
-  delta: string;
+  // Null when the category has nothing planned for the month.
+  planned: string | null;
+  // Null when there is no difference to show.
+  delta: string | null;
   deltaTone: 'neutral' | 'over' | 'under';
   progress: number;
 };

@@ -1,7 +1,5 @@
 import { useCallback, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 
-import { monthDashboardKey } from '@/features/dashboard/use-month-dashboard';
 import { useCategories, type CategoryOption } from '@/features/planning/use-categories';
 import { useCreatePlannedEntry } from '@/features/planning/use-planned-entries';
 import { resolveEntryTitle } from '@/features/planning/paid-entry-rules';
@@ -33,7 +31,6 @@ interface AddPlanViewModel {
 }
 
 export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
-  const queryClient = useQueryClient();
   const categoriesQuery = useCategories();
   const createPlannedEntry = useCreatePlannedEntry();
 
@@ -101,8 +98,6 @@ export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
         paymentMethod: settlement === 'PAID' ? paymentMethod : null,
       });
 
-      await queryClient.invalidateQueries({ queryKey: monthDashboardKey(monthKeyFromIsoDate(dueDate)) });
-
       reset();
       onSuccess();
     } catch (error) {
@@ -120,7 +115,6 @@ export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
     settlement,
     paymentMethod,
     createPlannedEntry,
-    queryClient,
     reset,
     onSuccess,
   ]);
