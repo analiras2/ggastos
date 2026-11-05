@@ -109,7 +109,7 @@ begin
       'PLANNED',
       e.installment_index,
       e.total,
-      'CREDIT_CARD',
+      null, -- the payment method is only allowed on entries that were already paid
       false,
       key.value,
       e.statement_import_batch_id
