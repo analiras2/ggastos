@@ -479,6 +479,26 @@ async function findExistingImportedRows(
   return existing;
 }
 
+// Plans the remaining installments of the purchases found in this statement. The import itself
+// already succeeded, so a failure here is logged instead of failing the whole request.
+async function planFutureInstallments(
+  config: SupabaseRestConfig,
+  userId: string,
+  batchId: string,
+): Promise<number> {
+  try {
+    const created = await supabaseRest<number>(config, "/rest/v1/rpc/plan_future_installments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ p_user_id: userId, p_batch_id: batchId }),
+    });
+    return typeof created === "number" ? created : 0;
+  } catch (error) {
+    console.error("plan_future_installments failed", error);
+    return 0;
+  }
+}
+
 function buildImportedTransaction(
   transaction: ParsedStatementTransaction,
   context: {
@@ -721,6 +741,7 @@ Deno.serve(async (request) => {
       rowsToUpsert.map((row) => row.status),
       resolvedPaymentStatus.status,
     );
+    const installmentsPlanned = await planFutureInstallments(config, user.id, batchId);
     const matchOutcomes = await runAutoMatch(config, {
       userId: user.id,
       accountId: accountContext.accountId,
@@ -754,6 +775,7 @@ Deno.serve(async (request) => {
       rowsSkipped: parsed.skippedRows.length,
       rowsFailed: 0,
       matchesCreated: matchOutcomes.length,
+      installmentsPlanned,
       paymentStatus,
       paymentStatusSource: resolvedPaymentStatus.source,
     });
