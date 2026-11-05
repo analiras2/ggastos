@@ -11,6 +11,7 @@ import { CategoryDetailsSheet } from '@/features/dashboard/category-details-shee
 import { OpeningBalanceCard } from '@/features/opening-balance/opening-balance-card';
 import { DashboardCategoriesSection } from '@/features/dashboard/dashboard-categories-section';
 import { useDashboardViewModel } from '@/features/dashboard/use-dashboard-view-model';
+import { MonthSearchSheet } from '@/features/search/month-search-sheet';
 import { AddPlanSheet } from '@/features/planning/add-plan-sheet';
 import { AddTemplateSheet } from '@/features/planning/add-template-sheet';
 import { StatementImportSheet } from '@/features/statements/statement-import-sheet';
@@ -21,6 +22,10 @@ export function DashboardScreen() {
     data,
     importBanner,
     categoryDetails,
+    isSearchVisible,
+    handleOpenSearch,
+    handleCloseSearch,
+    handleSelectSearchCategory,
     isAddPlanVisible,
     isAddTemplateVisible,
     isStatementImportVisible,
@@ -69,6 +74,7 @@ export function DashboardScreen() {
         <QuickActionRow
           edgePadding={GgastosSpacing.space5}
           actions={[
+            { label: 'Buscar', icon: 'search', onPress: handleOpenSearch },
             { label: 'Importar fatura', icon: 'upload', onPress: handleOpenStatementImport },
             { label: 'Novo lançamento', icon: 'plus', onPress: handleAddPlan },
             { label: 'Template', icon: 'repeat', onPress: handleAddTemplate },
@@ -112,6 +118,13 @@ export function DashboardScreen() {
           <SyncStatusBanner state={closeMonthBanner.state} message={closeMonthBanner.message} />
         ) : null}
       </ScrollView>
+
+      <MonthSearchSheet
+        visible={isSearchVisible}
+        monthKey={monthKey}
+        onSelectCategory={handleSelectSearchCategory}
+        onClose={handleCloseSearch}
+      />
 
       <CategoryDetailsSheet
         visible={categoryDetails.visible}
