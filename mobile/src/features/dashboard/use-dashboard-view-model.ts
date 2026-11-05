@@ -32,6 +32,10 @@ interface DashboardViewModel {
     actionLabel?: string;
   };
   categoryDetails: CategoryDetailsPanel;
+  isSearchVisible: boolean;
+  handleOpenSearch: () => void;
+  handleCloseSearch: () => void;
+  handleSelectSearchCategory: (categoryId: string) => void;
   isAddPlanVisible: boolean;
   isAddTemplateVisible: boolean;
   isStatementImportVisible: boolean;
@@ -61,6 +65,7 @@ interface DashboardViewModel {
 export function useDashboardViewModel(): DashboardViewModel {
   const [monthKey, setMonthKey] = useState<string>(currentMonthKey);
   const [selectedCategory, setSelectedCategory] = useState<CategoryBudget | null>(null);
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [isAddPlanVisible, setIsAddPlanVisible] = useState(false);
   const [isAddTemplateVisible, setIsAddTemplateVisible] = useState(false);
   const [isStatementImportVisible, setIsStatementImportVisible] = useState(false);
@@ -214,7 +219,30 @@ export function useDashboardViewModel(): DashboardViewModel {
     setCategoryReviewBatchId(null);
   }, []);
 
+  const handleOpenSearch = useCallback(() => {
+    setIsSearchVisible(true);
+  }, []);
+
+  const handleCloseSearch = useCallback(() => {
+    setIsSearchVisible(false);
+  }, []);
+
+  const handleSelectSearchCategory = useCallback(
+    (categoryId: string) => {
+      const category = data.categories.find((item) => item.categoryId === categoryId);
+      setIsSearchVisible(false);
+      if (category) {
+        setSelectedCategory(category);
+      }
+    },
+    [data.categories]
+  );
+
   return {
+    isSearchVisible,
+    handleOpenSearch,
+    handleCloseSearch,
+    handleSelectSearchCategory,
     data,
     monthKey,
     importBanner,
