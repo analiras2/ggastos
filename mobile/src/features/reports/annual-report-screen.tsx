@@ -5,7 +5,7 @@ import { EmptyStateCard } from '@/components/ggastos/cards/empty-state-card';
 import { Icon } from '@/components/ggastos/core/icon';
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import { AnnualMonthRow } from '@/features/reports/annual-month-row';
-import { AnnualCategoryDonut } from '@/features/reports/annual-category-donut';
+import { AnnualCategoryBars } from '@/features/reports/annual-category-bars';
 import { useAnnualReportViewModel } from '@/features/reports/use-annual-report-view-model';
 
 export function AnnualReportScreen() {
@@ -76,7 +76,7 @@ export function AnnualReportScreen() {
         {!isLoading && !isError && categories.length > 0 ? (
           <View>
             <Text style={styles.sectionTitle}>Categorias</Text>
-            <AnnualCategoryDonut categories={categories} />
+            <AnnualCategoryBars categories={categories} />
           </View>
         ) : null}
       </ScrollView>
