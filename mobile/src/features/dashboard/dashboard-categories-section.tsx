@@ -23,7 +23,6 @@ export function DashboardCategoriesSection({ categories, onOpenCategory }: Dashb
           icon={category.icon}
           color={category.color}
           planned={category.planned}
-          actual={category.actual}
           delta={category.delta}
           deltaTone={category.deltaTone}
           progress={category.progress}

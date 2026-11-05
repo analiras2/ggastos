@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { monthDashboardKey } from '@/features/dashboard/use-month-dashboard';
+import { invalidateMonthData } from '@/lib/query/invalidate-month-data';
 import type { RecurrenceFrequency } from '@/features/planning/planning-schema';
 import { useCategories, type CategoryOption } from '@/features/planning/use-categories';
 import { useCreatePlanningTemplate } from '@/features/planning/use-planning-templates';
@@ -127,7 +127,7 @@ export function useAddTemplateViewModel(onSuccess: () => void): AddTemplateViewM
         installmentAmountCents: mode === 'INSTALLMENT' ? perInstallmentCents : null,
       });
 
-      await queryClient.invalidateQueries({ queryKey: monthDashboardKey(startMonth) });
+      await invalidateMonthData(queryClient);
 
       reset();
       onSuccess();

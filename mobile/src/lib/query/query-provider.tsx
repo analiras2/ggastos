@@ -8,7 +8,8 @@ export function AppQueryProvider({ children }: PropsWithChildren) {
         defaultOptions: {
           queries: {
             staleTime: 30_000,
-            refetchOnMount: false,
+            // Cached data is reused on mount, except when a mutation invalidated it.
+            refetchOnMount: (query) => query.state.isInvalidated,
             refetchOnWindowFocus: false,
             retry: 1,
           },

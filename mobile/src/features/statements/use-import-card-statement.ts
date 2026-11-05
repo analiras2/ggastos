@@ -9,6 +9,7 @@ import {
   FunctionsRelayError,
 } from '@supabase/supabase-js';
 
+import { invalidateMonthData } from '@/lib/query/invalidate-month-data';
 import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
 
 export type StatementBank = 'NUBANK' | 'BRADESCO';
@@ -40,7 +41,6 @@ export type ImportCardStatementResult = {
   paymentStatusSource: StatementPaymentStatusSource;
 };
 
-const monthDashboardKeyPrefix = ['month-dashboard'];
 const reconciliationInboxKeyPrefix = ['reconciliation-inbox'];
 
 type HttpErrorResponse = {
@@ -147,7 +147,7 @@ export function useImportCardStatement(): UseMutationResult<
     mutationFn: invokeImportCardStatement,
     onSuccess: async () => {
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: monthDashboardKeyPrefix }),
+        invalidateMonthData(queryClient),
         queryClient.invalidateQueries({ queryKey: reconciliationInboxKeyPrefix }),
       ]);
     },

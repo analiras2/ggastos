@@ -80,13 +80,13 @@ export function DashboardScreen() {
           ]}
         />
 
-        <MetricHeroCard label="Saldo atual" {...data.hero} />
+        <MetricHeroCard label="Carteira" {...data.hero} />
 
         <OpeningBalanceCard monthKey={monthKey} />
 
         <View style={styles.kpiRow}>
           <KpiComparisonCard label="Saldo previsto" value={data.previsto}/>
-          <KpiComparisonCard label="Comprometido restante" value={data.commitment.value} />
+          <KpiComparisonCard label="Pendente" value={data.commitment.value} />
         </View>
 
         {data.openInvoices ? (
@@ -94,7 +94,7 @@ export function DashboardScreen() {
             <KpiComparisonCard
               label="Faturas em aberto"
               value={data.openInvoices.value}
-              caption="Já contam em Comprometido restante. Pague em Pendências."
+              caption="Já contam em Pendente. Pague em Pendências."
             />
           </View>
         ) : null}
