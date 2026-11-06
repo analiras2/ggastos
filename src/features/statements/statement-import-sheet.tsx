@@ -4,8 +4,10 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ggastos/core/button';
 import { Icon } from '@/components/ggastos/core/icon';
 import { SegmentedControl } from '@/components/ggastos/forms/segmented-control';
-import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import { PaymentStatusField } from '@/features/statements/payment-status-field';
+import { StatementFileField } from '@/features/statements/statement-file-field';
+import { StatementImportResult } from '@/features/statements/statement-import-result';
 import { useStatementImportViewModel } from '@/features/statements/use-statement-import-view-model';
 
 type StatementImportSheetProps = {
@@ -56,68 +58,19 @@ export function StatementImportSheet({ visible, onClose, onReviewUncategorized }
 
             <PaymentStatusField value={viewModel.paymentChoice} onChange={viewModel.setPaymentChoice} />
 
-            <View style={styles.field}>
-              <Text style={styles.label}>CSV</Text>
-              <View style={styles.fileButton}>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={viewModel.selectedFileName ? 'Trocar arquivo CSV' : 'Selecionar arquivo CSV'}
-                  disabled={viewModel.isPickingFile || viewModel.isSubmitting}
-                  onPress={viewModel.handlePickFile}
-                  style={styles.filePickerTrigger}
-                >
-                  <Icon name="file-up" size={20} />
-                  <View style={styles.fileTextGroup}>
-                    <Text style={styles.fileTitle}>
-                      {viewModel.selectedFileName ?? 'Selecionar arquivo'}
-                    </Text>
-                    <Text style={styles.fileCaption}>
-                      {viewModel.selectedFileName ? 'Toque para trocar o arquivo' : 'Nubank ou Bradesco em .csv'}
-                    </Text>
-                  </View>
-                </Pressable>
+            <StatementFileField
+              fileName={viewModel.selectedFileName}
+              isBusy={viewModel.isPickingFile || viewModel.isSubmitting}
+              onPick={viewModel.handlePickFile}
+              onClear={viewModel.clearSelectedFile}
+            />
 
-                {viewModel.selectedFileName ? (
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Remover arquivo selecionado"
-                    disabled={viewModel.isPickingFile || viewModel.isSubmitting}
-                    hitSlop={12}
-                    onPress={viewModel.clearSelectedFile}
-                    style={styles.removeFileButton}
-                  >
-                    <Icon name="x" size={18} />
-                  </Pressable>
-                ) : null}
-              </View>
-            </View>
-
-            {viewModel.errorMessage ? (
-              <View style={styles.errorBanner}>
-                <Icon name="circle-alert" size={18} />
-                <Text style={styles.errorText}>{viewModel.errorMessage}</Text>
-              </View>
-            ) : null}
-
-            {viewModel.successMessage ? (
-              <View style={styles.successBanner}>
-                <Icon name="check" size={18} />
-                <Text style={styles.successText}>
-                  {viewModel.successMessage} {viewModel.paymentStatusMessage}
-                </Text>
-              </View>
-            ) : null}
-
-            {viewModel.importSummary.length > 0 ? (
-              <View style={styles.summaryGrid}>
-                {viewModel.importSummary.map((item) => (
-                  <View key={item.label} style={styles.summaryItem}>
-                    <Text style={styles.summaryValue}>{item.value}</Text>
-                    <Text style={styles.summaryLabel}>{item.label}</Text>
-                  </View>
-                ))}
-              </View>
-            ) : null}
+            <StatementImportResult
+              errorMessage={viewModel.errorMessage}
+              successMessage={viewModel.successMessage}
+              paymentStatusMessage={viewModel.paymentStatusMessage}
+              summary={viewModel.importSummary}
+            />
 
             {viewModel.importBatchId ? (
               <Button
@@ -175,83 +128,6 @@ const styles = StyleSheet.create({
   },
   label: {
     ...GgastosType.label,
-    color: GgastosColors.inkSoft,
-  },
-  fileButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: GgastosColors.lineSoft,
-    borderRadius: GgastosRadius.md,
-    paddingHorizontal: GgastosSpacing.space4,
-    paddingVertical: GgastosSpacing.space4,
-    backgroundColor: GgastosColors.bgSurface,
-  },
-  filePickerTrigger: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: GgastosSpacing.space3,
-  },
-  removeFileButton: {
-    padding: GgastosSpacing.space2,
-  },
-  fileTextGroup: {
-    flex: 1,
-    gap: 2,
-  },
-  fileTitle: {
-    ...GgastosType.bodyMd,
-    color: GgastosColors.inkStrong,
-  },
-  fileCaption: {
-    ...GgastosType.micro,
-    color: GgastosColors.inkFaint,
-  },
-  errorBanner: {
-    flexDirection: 'row',
-    gap: GgastosSpacing.space2,
-    borderRadius: GgastosRadius.md,
-    padding: GgastosSpacing.space3,
-    backgroundColor: GgastosColors.warningSoft,
-  },
-  errorText: {
-    ...GgastosType.bodySm,
-    flex: 1,
-    color: GgastosColors.warning,
-  },
-  successBanner: {
-    flexDirection: 'row',
-    gap: GgastosSpacing.space2,
-    borderRadius: GgastosRadius.md,
-    padding: GgastosSpacing.space3,
-    backgroundColor: GgastosColors.brandPrimarySofter,
-  },
-  successText: {
-    ...GgastosType.bodySm,
-    flex: 1,
-    color: GgastosColors.brandPrimaryDark,
-  },
-  summaryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: GgastosSpacing.space3,
-  },
-  summaryItem: {
-    minWidth: 96,
-    flexGrow: 1,
-    borderWidth: 1,
-    borderColor: GgastosColors.lineSofter,
-    borderRadius: GgastosRadius.md,
-    padding: GgastosSpacing.space3,
-    backgroundColor: GgastosColors.bgSurface,
-  },
-  summaryValue: {
-    ...GgastosType.displaySm,
-    color: GgastosColors.inkStrong,
-  },
-  summaryLabel: {
-    ...GgastosType.micro,
     color: GgastosColors.inkSoft,
   },
 });

@@ -1,12 +1,9 @@
-import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import { Icon } from '@/components/ggastos/core/icon';
-import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
-import { CategoryField } from '@/features/planning/category-field';
-import { DateField } from '@/features/planning/date-field';
-import { SegmentedToggle } from '@/features/planning/segmented-toggle';
+import { TemplateFormFields } from '@/features/planning/template-form-fields';
 import { useAddTemplateViewModel } from '@/features/planning/use-add-template-view-model';
 
 type AddTemplateSheetProps = {
@@ -15,27 +12,8 @@ type AddTemplateSheetProps = {
 };
 
 export function AddTemplateSheet({ visible, onClose }: AddTemplateSheetProps) {
-  const {
-    mode,
-    setMode,
-    title,
-    setTitle,
-    startDate,
-    setStartDate,
-    amountCents,
-    handleAmountChange,
-    recurrenceFrequency,
-    setRecurrenceFrequency,
-    installmentCountInput,
-    handleInstallmentCountChange,
-    categories,
-    isLoadingCategories,
-    selectedCategoryId,
-    setSelectedCategoryId,
-    errorMessage,
-    isSubmitting,
-    handleSubmit,
-  } = useAddTemplateViewModel(onClose);
+  const form = useAddTemplateViewModel(onClose);
+  const { errorMessage, isSubmitting, handleSubmit } = form;
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
@@ -55,81 +33,7 @@ export function AddTemplateSheet({ visible, onClose }: AddTemplateSheetProps) {
           </View>
 
           <ScrollView contentContainerStyle={styles.content}>
-            <View style={styles.field}>
-              <Text style={styles.label}>Tipo</Text>
-              <SegmentedToggle
-                options={[
-                  { value: 'RECURRING', label: 'Recorrente' },
-                  { value: 'INSTALLMENT', label: 'Parcelado' },
-                ]}
-                value={mode}
-                onChange={setMode}
-              />
-            </View>
-
-            <View style={styles.field}>
-              <Text style={styles.label}>Título</Text>
-              <TextInput
-                onChangeText={setTitle}
-                placeholder="Ex: Conta de Luz, Compra Eletrônico..."
-                placeholderTextColor={GgastosColors.inkFaint}
-                style={styles.input}
-                value={title}
-              />
-            </View>
-
-            <View style={styles.field}>
-              <Text style={styles.label}>Início</Text>
-              <DateField value={startDate} onChange={setStartDate} />
-            </View>
-
-            {mode === 'RECURRING' ? (
-              <View style={styles.field}>
-                <Text style={styles.label}>Frequência</Text>
-                <SegmentedToggle
-                  options={[
-                    { value: 'MONTHLY', label: 'Mensal' },
-                    { value: 'YEARLY', label: 'Anual' },
-                  ]}
-                  value={recurrenceFrequency}
-                  onChange={setRecurrenceFrequency}
-                />
-              </View>
-            ) : null}
-
-            <View style={styles.field}>
-              <Text style={styles.label}>{mode === 'INSTALLMENT' ? 'Valor total' : 'Valor'}</Text>
-              <TextInput
-                keyboardType="number-pad"
-                onChangeText={handleAmountChange}
-                style={styles.input}
-                value={formatCurrencyCents(amountCents)}
-              />
-            </View>
-
-            {mode === 'INSTALLMENT' ? (
-              <View style={styles.field}>
-                <Text style={styles.label}>Número de parcelas</Text>
-                <TextInput
-                  keyboardType="number-pad"
-                  onChangeText={handleInstallmentCountChange}
-                  placeholder="Ex: 6"
-                  placeholderTextColor={GgastosColors.inkFaint}
-                  style={styles.input}
-                  value={installmentCountInput}
-                />
-              </View>
-            ) : null}
-
-            <View style={styles.field}>
-              <Text style={styles.label}>Categoria</Text>
-              <CategoryField
-                categories={categories}
-                isLoading={isLoadingCategories}
-                selectedCategoryId={selectedCategoryId}
-                onSelect={setSelectedCategoryId}
-              />
-            </View>
+            <TemplateFormFields form={form} />
 
             {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
@@ -174,23 +78,6 @@ const styles = StyleSheet.create({
   content: {
     padding: GgastosSpacing.space5,
     gap: GgastosSpacing.space5,
-  },
-  field: {
-    gap: GgastosSpacing.space2,
-  },
-  label: {
-    ...GgastosType.label,
-    color: GgastosColors.inkSoft,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: GgastosColors.lineSoft,
-    borderRadius: GgastosRadius.md,
-    paddingHorizontal: GgastosSpacing.space4,
-    paddingVertical: GgastosSpacing.space3,
-    ...GgastosType.bodyMd,
-    color: GgastosColors.inkStrong,
-    backgroundColor: GgastosColors.bgSurface,
   },
   errorText: {
     ...GgastosType.bodySm,

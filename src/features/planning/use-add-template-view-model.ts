@@ -1,19 +1,12 @@
 import { useCallback, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 
-import { invalidateMonthData } from '@/lib/query/invalidate-month-data';
+import { buildTemplateInput, type TemplateMode } from '@/features/planning/build-template-input';
+import { centsFromMaskedInput } from '@/features/planning/planning-form-utils';
 import type { RecurrenceFrequency } from '@/features/planning/planning-schema';
 import { useCategories, type CategoryOption } from '@/features/planning/use-categories';
 import { useCreatePlanningTemplate } from '@/features/planning/use-planning-templates';
-import {
-  centsFromMaskedInput,
-  formatDateToIso,
-  installmentAmountCents,
-  installmentCountFromInput,
-  monthKeyFromIsoDate,
-} from '@/features/planning/planning-form-utils';
 
-export type TemplateMode = 'RECURRING' | 'INSTALLMENT';
+export type { TemplateMode } from '@/features/planning/build-template-input';
 
 interface AddTemplateViewModel {
   mode: TemplateMode;
@@ -39,7 +32,6 @@ interface AddTemplateViewModel {
 }
 
 export function useAddTemplateViewModel(onSuccess: () => void): AddTemplateViewModel {
-  const queryClient = useQueryClient();
   const categoriesQuery = useCategories();
   const createTemplate = useCreatePlanningTemplate();
 
@@ -74,79 +66,40 @@ export function useAddTemplateViewModel(onSuccess: () => void): AddTemplateViewM
   const handleSubmit = useCallback(async () => {
     setErrorMessage(null);
 
-    const trimmedTitle = title.trim();
-    if (!trimmedTitle) {
-      setErrorMessage('Informe um título.');
+    const result = buildTemplateInput({
+      mode,
+      title,
+      category: categoriesQuery.data?.find((item) => item.id === selectedCategoryId),
+      hasCategorySelected: selectedCategoryId !== null,
+      startDate,
+      amountCents,
+      recurrenceFrequency,
+      installmentCountInput,
+    });
+
+    if ('error' in result) {
+      setErrorMessage(result.error);
       return;
     }
-
-    if (!selectedCategoryId) {
-      setErrorMessage('Selecione uma categoria.');
-      return;
-    }
-
-    const category = categoriesQuery.data?.find((item) => item.id === selectedCategoryId);
-    if (!category) {
-      setErrorMessage('Categoria inválida. Selecione novamente.');
-      return;
-    }
-
-    if (!startDate) {
-      setErrorMessage('Selecione a data de início.');
-      return;
-    }
-
-    if (amountCents <= 0) {
-      setErrorMessage('Informe um valor maior que zero.');
-      return;
-    }
-
-    const startMonth = monthKeyFromIsoDate(formatDateToIso(startDate));
-
-    const installmentCount =
-      mode === 'INSTALLMENT' ? installmentCountFromInput(installmentCountInput) : 0;
-
-    if (mode === 'INSTALLMENT' && installmentCount <= 0) {
-      setErrorMessage('Informe o número de parcelas.');
-      return;
-    }
-
-    const perInstallmentCents =
-      mode === 'INSTALLMENT' ? installmentAmountCents(amountCents, installmentCount) : null;
 
     try {
-      await createTemplate.mutateAsync({
-        title: trimmedTitle,
-        impactType: category.impactType,
-        categoryId: category.id,
-        defaultAmountCents: mode === 'INSTALLMENT' ? (perInstallmentCents as number) : amountCents,
-        recurrenceFrequency: mode === 'RECURRING' ? recurrenceFrequency : 'NONE',
-        recurrenceInterval: 1,
-        startMonth,
-        installmentTotal: mode === 'INSTALLMENT' ? installmentCount : null,
-        installmentAmountCents: mode === 'INSTALLMENT' ? perInstallmentCents : null,
-      });
-
-      await invalidateMonthData(queryClient);
-
+      // The mutation refreshes the month data itself.
+      await createTemplate.mutateAsync(result.input);
       reset();
       onSuccess();
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Não foi possível criar o template.';
-      setErrorMessage(message);
+      setErrorMessage(error instanceof Error ? error.message : 'Não foi possível criar o template.');
     }
   }, [
+    mode,
     title,
     selectedCategoryId,
     categoriesQuery.data,
     startDate,
     amountCents,
-    mode,
-    installmentCountInput,
     recurrenceFrequency,
+    installmentCountInput,
     createTemplate,
-    queryClient,
     reset,
     onSuccess,
   ]);

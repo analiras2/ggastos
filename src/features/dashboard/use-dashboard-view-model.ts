@@ -1,103 +1,29 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import type { CategoryBudget, DashboardData } from '@/features/dashboard/dashboard-data';
-import { emptyDashboardData, formatCurrencyCents, formatDashboardData } from '@/features/dashboard/format-dashboard';
-import {
-  formatCategoryDetails,
-  type CategoryDetailsView,
-} from '@/features/dashboard/format-category-details';
-import { currentMonthKey, shiftMonthKey } from '@/features/dashboard/month-utils';
-import { useCategoryDetails } from '@/features/dashboard/use-category-details';
 import { useCategoryAppearance } from '@/features/categories/use-category-appearance';
-import { useMonthOpeningBalance } from '@/features/opening-balance/use-month-opening-balance';
-import { useMonthDashboard } from '@/features/dashboard/use-month-dashboard';
-import { usePlannedEntryStatusToggle } from '@/features/dashboard/use-planned-entry-status-toggle';
-import { getFormattedCloseMonthError, useCloseMonth } from '@/features/closing/use-close-month';
 import { useMonthSnapshot } from '@/features/closing/use-month-snapshot';
-
-interface CategoryDetailsPanel {
-  visible: boolean;
-  isLoading: boolean;
-  isError: boolean;
-  details: CategoryDetailsView | null;
-  togglingEntryId: string | null;
-  onToggleEntryStatus: (entryId: string, isUndo: boolean) => void;
-}
-
-interface DashboardViewModel {
-  data: DashboardData;
-  importBanner: {
-    state: 'ok' | 'pending' | 'error';
-    message: string;
-    actionLabel?: string;
-  };
-  categoryDetails: CategoryDetailsPanel;
-  isSearchVisible: boolean;
-  handleOpenSearch: () => void;
-  handleCloseSearch: () => void;
-  handleSelectSearchCategory: (categoryId: string) => void;
-  isAddPlanVisible: boolean;
-  isAddTemplateVisible: boolean;
-  isStatementImportVisible: boolean;
-  categoryReviewBatchId: string | null;
-  monthKey: string;
-  isCurrentMonth: boolean;
-  isMonthClosed: boolean;
-  isClosingMonth: boolean;
-  closeMonthBanner: { state: 'ok' | 'pending' | 'error'; message: string } | null;
-  handlePrevMonth: () => void;
-  handleNextMonth: () => void;
-  handleGoToCurrentMonth: () => void;
-  handleSelectMonth: (monthKey: string) => void;
-  handleOpenCategory: (category: CategoryBudget) => void;
-  handleCloseCategoryDetails: () => void;
-  handleAddPlan: () => void;
-  handleCloseAddPlan: () => void;
-  handleAddTemplate: () => void;
-  handleCloseAddTemplate: () => void;
-  handleOpenStatementImport: () => void;
-  handleCloseStatementImport: () => void;
-  handleOpenCategoryReview: (batchId: string) => void;
-  handleCloseCategoryReview: () => void;
-  handleCloseMonth: () => void;
-}
+import type { DashboardData } from '@/features/dashboard/dashboard-data';
+import type { DashboardViewModel } from '@/features/dashboard/dashboard-view-model-types';
+import { emptyDashboardData, formatDashboardData } from '@/features/dashboard/format-dashboard';
+import { currentMonthKey, shiftMonthKey } from '@/features/dashboard/month-utils';
+import { useCategoryDetailsPanel } from '@/features/dashboard/use-category-details-panel';
+import { useCloseMonthBanner } from '@/features/dashboard/use-close-month-banner';
+import { useDashboardSheets } from '@/features/dashboard/use-dashboard-sheets';
+import { useMonthDashboard } from '@/features/dashboard/use-month-dashboard';
+import { useMonthOpeningBalance } from '@/features/opening-balance/use-month-opening-balance';
 
 export function useDashboardViewModel(): DashboardViewModel {
   const [monthKey, setMonthKey] = useState<string>(currentMonthKey);
-  const [selectedCategory, setSelectedCategory] = useState<CategoryBudget | null>(null);
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
-  const [isAddPlanVisible, setIsAddPlanVisible] = useState(false);
-  const [isAddTemplateVisible, setIsAddTemplateVisible] = useState(false);
-  const [isStatementImportVisible, setIsStatementImportVisible] = useState(false);
-  const [categoryReviewBatchId, setCategoryReviewBatchId] = useState<string | null>(null);
   const monthDashboardQuery = useMonthDashboard(monthKey);
   const openingBalanceQuery = useMonthOpeningBalance(monthKey);
   const categoryAppearanceQuery = useCategoryAppearance();
-  const closeMonthMutation = useCloseMonth();
   const monthSnapshotQuery = useMonthSnapshot(monthKey);
-  const categoryDetailsQuery = useCategoryDetails(monthKey, selectedCategory?.categoryId ?? null);
-  const { togglingEntryId, handleToggleStatus } = usePlannedEntryStatusToggle(
+  const sheets = useDashboardSheets();
+  const { categoryDetails, handleOpenCategory, handleCloseCategoryDetails } =
+    useCategoryDetailsPanel(monthKey);
+  const { closeMonthBanner, isClosingMonth, handleCloseMonth } = useCloseMonthBanner(
     monthKey,
-    selectedCategory?.categoryId ?? null
-  );
-
-  const categoryDetails = useMemo<CategoryDetailsPanel>(
-    () => ({
-      visible: selectedCategory !== null,
-      isLoading: categoryDetailsQuery.isLoading,
-      isError: categoryDetailsQuery.isError,
-      details: categoryDetailsQuery.data ? formatCategoryDetails(categoryDetailsQuery.data) : null,
-      togglingEntryId,
-      onToggleEntryStatus: handleToggleStatus,
-    }),
-    [
-      selectedCategory,
-      categoryDetailsQuery.isLoading,
-      categoryDetailsQuery.isError,
-      categoryDetailsQuery.data,
-      togglingEntryId,
-      handleToggleStatus,
-    ]
+    monthDashboardQuery.data?.summary.openExpenseCents ?? 0
   );
 
   const data = useMemo<DashboardData>(() => {
@@ -113,17 +39,11 @@ export function useDashboardViewModel(): DashboardViewModel {
 
   const importBanner = useMemo(() => {
     if (monthDashboardQuery.isLoading) {
-      return {
-        state: 'pending' as const,
-        message: 'Carregando o mês...',
-      };
+      return { state: 'pending' as const, message: 'Carregando o mês...' };
     }
 
     if (monthDashboardQuery.isError) {
-      return {
-        state: 'error' as const,
-        message: 'Não foi possível carregar os dados do mês.',
-      };
+      return { state: 'error' as const, message: 'Não foi possível carregar os dados do mês.' };
     }
 
     return {
@@ -133,127 +53,32 @@ export function useDashboardViewModel(): DashboardViewModel {
     };
   }, [monthDashboardQuery.isError, monthDashboardQuery.isLoading]);
 
-  const openExpenseCents = monthDashboardQuery.data?.summary.openExpenseCents ?? 0;
+  const handlePrevMonth = useCallback(() => setMonthKey((current) => shiftMonthKey(current, -1)), []);
+  const handleNextMonth = useCallback(() => setMonthKey((current) => shiftMonthKey(current, 1)), []);
+  const handleGoToCurrentMonth = useCallback(() => setMonthKey(currentMonthKey()), []);
+  const handleSelectMonth = useCallback((selectedMonthKey: string) => setMonthKey(selectedMonthKey), []);
 
-  const closeMonthBanner = useMemo(() => {
-    if (closeMonthMutation.isPending) {
-      return { state: 'pending' as const, message: 'Fechando o mês...' };
-    }
-
-    if (closeMonthMutation.isError) {
-      return { state: 'error' as const, message: getFormattedCloseMonthError(closeMonthMutation.error) };
-    }
-
-    if (closeMonthMutation.isSuccess) {
-      const closedMessage = 'Mês fechado. O snapshot pode ser recalculado a qualquer momento.';
-      if (openExpenseCents > 0) {
-        return {
-          state: 'pending' as const,
-          message: `${closedMessage} Atenção: ${formatCurrencyCents(openExpenseCents)} em faturas ainda em aberto. Marque como paga em Pendências e recalcule o mês.`,
-        };
-      }
-      return { state: 'ok' as const, message: closedMessage };
-    }
-
-    return null;
-  }, [closeMonthMutation.isPending, closeMonthMutation.isError, closeMonthMutation.error, closeMonthMutation.isSuccess, openExpenseCents]);
-
-  const handleCloseMonth = useCallback(() => {
-    closeMonthMutation.mutate(monthKey);
-  }, [closeMonthMutation, monthKey]);
-
-  const handlePrevMonth = useCallback(() => {
-    setMonthKey((current) => shiftMonthKey(current, -1));
-  }, []);
-
-  const handleNextMonth = useCallback(() => {
-    setMonthKey((current) => shiftMonthKey(current, 1));
-  }, []);
-
-  const handleGoToCurrentMonth = useCallback(() => {
-    setMonthKey(currentMonthKey());
-  }, []);
-
-  const handleSelectMonth = useCallback((selectedMonthKey: string) => {
-    setMonthKey(selectedMonthKey);
-  }, []);
-
-  const handleOpenCategory = useCallback((category: CategoryBudget) => {
-    setSelectedCategory(category);
-  }, []);
-
-  const handleCloseCategoryDetails = useCallback(() => {
-    setSelectedCategory(null);
-  }, []);
-
-  const handleAddPlan = useCallback(() => {
-    setIsAddPlanVisible(true);
-  }, []);
-
-  const handleCloseAddPlan = useCallback(() => {
-    setIsAddPlanVisible(false);
-  }, []);
-
-  const handleAddTemplate = useCallback(() => {
-    setIsAddTemplateVisible(true);
-  }, []);
-
-  const handleCloseAddTemplate = useCallback(() => {
-    setIsAddTemplateVisible(false);
-  }, []);
-
-  const handleOpenStatementImport = useCallback(() => {
-    setIsStatementImportVisible(true);
-  }, []);
-
-  const handleCloseStatementImport = useCallback(() => {
-    setIsStatementImportVisible(false);
-  }, []);
-
-  const handleOpenCategoryReview = useCallback((batchId: string) => {
-    setIsStatementImportVisible(false);
-    setCategoryReviewBatchId(batchId);
-  }, []);
-
-  const handleCloseCategoryReview = useCallback(() => {
-    setCategoryReviewBatchId(null);
-  }, []);
-
-  const handleOpenSearch = useCallback(() => {
-    setIsSearchVisible(true);
-  }, []);
-
-  const handleCloseSearch = useCallback(() => {
-    setIsSearchVisible(false);
-  }, []);
-
+  const { handleCloseSearch } = sheets;
   const handleSelectSearchCategory = useCallback(
     (categoryId: string) => {
       const category = data.categories.find((item) => item.categoryId === categoryId);
-      setIsSearchVisible(false);
+      handleCloseSearch();
       if (category) {
-        setSelectedCategory(category);
+        handleOpenCategory(category);
       }
     },
-    [data.categories]
+    [data.categories, handleCloseSearch, handleOpenCategory]
   );
 
   return {
-    isSearchVisible,
-    handleOpenSearch,
-    handleCloseSearch,
-    handleSelectSearchCategory,
+    ...sheets,
     data,
     monthKey,
     importBanner,
     categoryDetails,
-    isAddPlanVisible,
-    isAddTemplateVisible,
-    isStatementImportVisible,
-    categoryReviewBatchId,
     isCurrentMonth: monthKey === currentMonthKey(),
     isMonthClosed: monthSnapshotQuery.data?.status === 'CLOSED',
-    isClosingMonth: closeMonthMutation.isPending,
+    isClosingMonth,
     closeMonthBanner,
     handlePrevMonth,
     handleNextMonth,
@@ -261,14 +86,7 @@ export function useDashboardViewModel(): DashboardViewModel {
     handleSelectMonth,
     handleOpenCategory,
     handleCloseCategoryDetails,
-    handleAddPlan,
-    handleCloseAddPlan,
-    handleAddTemplate,
-    handleCloseAddTemplate,
-    handleOpenStatementImport,
-    handleCloseStatementImport,
-    handleOpenCategoryReview,
-    handleCloseCategoryReview,
+    handleSelectSearchCategory,
     handleCloseMonth,
   };
 }

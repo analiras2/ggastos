@@ -4,8 +4,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
 import { Icon } from '@/components/ggastos/core/icon';
 import { EmptyStateCard } from '@/components/ggastos/cards/empty-state-card';
-import { PlannedEntryRow } from '@/components/ggastos/rows/planned-entry-row';
-import { TransactionRow } from '@/components/ggastos/rows/transaction-row';
+import { CategoryDetailsList } from '@/features/dashboard/category-details-list';
 import type { CategoryDetailsView } from '@/features/dashboard/format-category-details';
 
 type CategoryDetailsSheetProps = {
@@ -60,44 +59,11 @@ export function CategoryDetailsSheet({
           ) : null}
 
           {!isLoading && !isError && details && !details.isEmpty ? (
-            <>
-              {details.plannedItems.length > 0 ? (
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Planejado</Text>
-                  {details.plannedItems.map((item) => (
-                    <PlannedEntryRow
-                      key={item.id}
-                      title={item.title}
-                      category={item.category}
-                      amount={item.amount}
-                      kind={item.kind}
-                      competence={item.competence}
-                      status={item.status}
-                      isConfirmable={item.isConfirmable}
-                      isUndoable={item.isUndoable}
-                      isTogglingStatus={togglingEntryId === item.id}
-                      onToggleStatus={() => onToggleEntryStatus(item.id, item.isUndoable)}
-                    />
-                  ))}
-                </View>
-              ) : null}
-
-              {details.transactionItems.length > 0 ? (
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Realizado</Text>
-                  {details.transactionItems.map((item) => (
-                    <TransactionRow
-                      key={item.id}
-                      title={item.title}
-                      category={item.category}
-                      amount={item.amount}
-                      kind={item.kind}
-                      date={item.date}
-                    />
-                  ))}
-                </View>
-              ) : null}
-            </>
+            <CategoryDetailsList
+              details={details}
+              togglingEntryId={togglingEntryId}
+              onToggleEntryStatus={onToggleEntryStatus}
+            />
           ) : null}
         </ScrollView>
       </SafeAreaView>
@@ -141,13 +107,5 @@ const styles = StyleSheet.create({
     color: GgastosColors.inkFaint,
     textAlign: 'center',
     paddingVertical: 24,
-  },
-  section: {
-    gap: 4,
-  },
-  sectionTitle: {
-    ...GgastosType.displaySm,
-    color: GgastosColors.inkStrong,
-    marginBottom: 4,
   },
 });

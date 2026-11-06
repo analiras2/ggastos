@@ -5,7 +5,8 @@ import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
 export type MonthSearchItem = {
   id: string;
   source: 'PLANNED' | 'REALIZED';
-  title: string;
+  // Planned entries created by hand may have no title.
+  title: string | null;
   categoryId: string | null;
   amountCents: number;
   // ISO date or timestamp used for ordering and display.

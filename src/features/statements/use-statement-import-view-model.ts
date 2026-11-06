@@ -8,107 +8,24 @@ import {
   toRequestedStatus,
 } from '@/features/statements/payment-status-labels';
 import {
+  CSV_MIME_TYPES,
+  decodeBytes,
+  readPickedFile,
+  validateStatementFile,
+  type SelectedStatementFile,
+} from '@/features/statements/statement-file';
+import {
+  buildImportSummary,
+  buildSuccessMessage,
+  isStatementBank,
+  type StatementImportViewModel,
+} from '@/features/statements/statement-import-summary';
+import {
   getFormattedImportCardStatementError,
   type ImportCardStatementResult,
   type StatementBank,
   useImportCardStatement,
 } from '@/features/statements/use-import-card-statement';
-
-type SelectedStatementFile = {
-  name: string;
-  bytes: ArrayBuffer;
-  fallbackContents: string | null;
-};
-
-type ImportSummaryRow = {
-  label: string;
-  value: string;
-};
-
-interface StatementImportViewModel {
-  selectedBank: StatementBank;
-  setSelectedBank: (bank: string) => void;
-  paymentChoice: PaymentChoice;
-  setPaymentChoice: (choice: string) => void;
-  paymentStatusMessage: string | null;
-  selectedFileName: string | null;
-  importBatchId: string | null;
-  errorMessage: string | null;
-  successMessage: string | null;
-  importSummary: ImportSummaryRow[];
-  isPickingFile: boolean;
-  isSubmitting: boolean;
-  canSubmit: boolean;
-  handlePickFile: () => Promise<void>;
-  clearSelectedFile: () => void;
-  handleSubmit: () => Promise<void>;
-  reset: () => void;
-}
-
-const CSV_MIME_TYPES = [
-  'text/csv',
-  'text/comma-separated-values',
-  'application/csv',
-  'application/vnd.ms-excel',
-  'text/plain',
-];
-const LATIN_1_CHUNK_SIZE = 8_192;
-
-function isStatementBank(value: string): value is StatementBank {
-  return value === 'NUBANK' || value === 'BRADESCO';
-}
-
-function formatBankName(bank: StatementBank): string {
-  return bank === 'NUBANK' ? 'Nubank' : 'Bradesco';
-}
-
-function decodeLatin1(bytes: ArrayBuffer): string {
-  const characters = new Uint8Array(bytes);
-  let contents = '';
-
-  for (let offset = 0; offset < characters.length; offset += LATIN_1_CHUNK_SIZE) {
-    const chunk = characters.subarray(offset, offset + LATIN_1_CHUNK_SIZE);
-    contents += String.fromCharCode(...chunk);
-  }
-
-  return contents;
-}
-
-function decodeBytes(bytes: ArrayBuffer, bank: StatementBank): string | null {
-  if (bank === 'BRADESCO') {
-    return decodeLatin1(bytes);
-  }
-
-  if (typeof TextDecoder === 'undefined') {
-    return null;
-  }
-
-  return new TextDecoder('utf-8').decode(bytes);
-}
-
-async function readPickedFile(file: File): Promise<SelectedStatementFile> {
-  const bytes = await file.arrayBuffer();
-  return {
-    name: file.name,
-    bytes,
-    fallbackContents: decodeBytes(bytes, 'NUBANK') ?? await file.text(),
-  };
-}
-
-function buildImportSummary(result: ImportCardStatementResult | null): ImportSummaryRow[] {
-  if (!result) {
-    return [];
-  }
-
-  return [
-    { label: 'Lidas', value: String(result.rowsRead) },
-    { label: 'Importadas', value: String(result.rowsImported) },
-    { label: 'Duplicadas', value: String(result.rowsDuplicated) },
-    { label: 'Ignoradas', value: String(result.rowsSkipped) },
-    { label: 'Falhas', value: String(result.rowsFailed) },
-    { label: 'Matches', value: String(result.matchesCreated) },
-  ];
-}
 
 export function useStatementImportViewModel(onSuccess?: () => void): StatementImportViewModel {
   const importMutation = useImportCardStatement();
@@ -161,13 +78,9 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
       }
 
       const file = await readPickedFile(pickedFile);
-      if (!file.name.toLowerCase().endsWith('.csv')) {
-        setErrorMessage('Selecione um arquivo CSV.');
-        return;
-      }
-
-      if (file.bytes.byteLength === 0) {
-        setErrorMessage('O arquivo CSV está vazio.');
+      const problem = validateStatementFile(file);
+      if (problem) {
+        setErrorMessage(problem);
         return;
       }
 
@@ -210,9 +123,7 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
   }, [importMutation, onSuccess, paymentChoice, selectedBank, selectedFile]);
 
   const importSummary = useMemo(() => buildImportSummary(lastResult), [lastResult]);
-  const successMessage = lastResult
-    ? `${formatBankName(lastResult.bank)} importado. ${lastResult.rowsImported} novas linhas e ${lastResult.rowsDuplicated} duplicadas.`
-    : null;
+  const successMessage = buildSuccessMessage(lastResult);
   const paymentStatusMessage = lastResult
     ? describePaymentStatus(lastResult.paymentStatus, lastResult.paymentStatusSource)
     : null;

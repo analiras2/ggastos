@@ -63,14 +63,19 @@ export function useMonthSearchViewModel(month: string, visible: boolean): MonthS
   const results = useMemo(() => {
     const categories = new Map((categoriesQuery.data ?? []).map((category) => [category.id, category]));
 
+    // Manually created entries can have no title (it is filled in by the import), so they
+    // are found and shown by their category name instead.
+    const displayTitle = (item: MonthSearchItem) =>
+      item.title?.trim() || (item.categoryId ? categories.get(item.categoryId)?.name : undefined) || NO_CATEGORY_LABEL;
+
     return (itemsQuery.data ?? [])
-      .filter((item) => matchesSearch(item.title, normalizedQuery))
+      .filter((item) => matchesSearch(displayTitle(item), normalizedQuery))
       .map((item): MonthSearchResult => {
         const category = item.categoryId ? categories.get(item.categoryId) : undefined;
         return {
           id: `${item.source}-${item.id}`,
           categoryId: item.categoryId,
-          title: item.title,
+          title: displayTitle(item),
           category: category?.name ?? NO_CATEGORY_LABEL,
           amount: formatCurrencyCents(item.amountCents),
           kind: category ? KIND_BY_IMPACT[category.impactType] : 'despesa',

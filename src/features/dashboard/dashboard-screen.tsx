@@ -7,50 +7,14 @@ import { QuickActionRow } from '@/components/ggastos/navigation/quick-action-row
 import { SyncStatusBanner } from '@/components/ggastos/navigation/sync-status-banner';
 import { MetricHeroCard } from '@/components/ggastos/cards/metric-hero-card';
 import { KpiComparisonCard } from '@/components/ggastos/cards/kpi-comparison-card';
-import { CategoryDetailsSheet } from '@/features/dashboard/category-details-sheet';
-import { OpeningBalanceCard } from '@/features/opening-balance/opening-balance-card';
 import { DashboardCategoriesSection } from '@/features/dashboard/dashboard-categories-section';
+import { DashboardSheets } from '@/features/dashboard/dashboard-sheets';
 import { useDashboardViewModel } from '@/features/dashboard/use-dashboard-view-model';
-import { MonthSearchSheet } from '@/features/search/month-search-sheet';
-import { AddPlanSheet } from '@/features/planning/add-plan-sheet';
-import { AddTemplateSheet } from '@/features/planning/add-template-sheet';
-import { StatementImportSheet } from '@/features/statements/statement-import-sheet';
-import { UncategorizedTransactionReviewSheet } from '@/features/statements/uncategorized-transaction-review-sheet';
+import { OpeningBalanceCard } from '@/features/opening-balance/opening-balance-card';
 
 export function DashboardScreen() {
-  const {
-    data,
-    importBanner,
-    categoryDetails,
-    isSearchVisible,
-    handleOpenSearch,
-    handleCloseSearch,
-    handleSelectSearchCategory,
-    isAddPlanVisible,
-    isAddTemplateVisible,
-    isStatementImportVisible,
-    categoryReviewBatchId,
-    monthKey,
-    isCurrentMonth,
-    isMonthClosed,
-    isClosingMonth,
-    closeMonthBanner,
-    handlePrevMonth,
-    handleNextMonth,
-    handleGoToCurrentMonth,
-    handleSelectMonth,
-    handleOpenCategory,
-    handleCloseCategoryDetails,
-    handleAddPlan,
-    handleCloseAddPlan,
-    handleAddTemplate,
-    handleCloseAddTemplate,
-    handleOpenStatementImport,
-    handleCloseStatementImport,
-    handleOpenCategoryReview,
-    handleCloseCategoryReview,
-    handleCloseMonth,
-  } = useDashboardViewModel();
+  const viewModel = useDashboardViewModel();
+  const { data, importBanner, closeMonthBanner, monthKey, isMonthClosed, isClosingMonth } = viewModel;
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -58,11 +22,11 @@ export function DashboardScreen() {
         <MonthHeader
           month={data.month}
           monthKey={monthKey}
-          onSelectMonth={handleSelectMonth}
-          isCurrentMonth={isCurrentMonth}
-          onPrev={handlePrevMonth}
-          onNext={handleNextMonth}
-          onPressMonth={handleGoToCurrentMonth}
+          onSelectMonth={viewModel.handleSelectMonth}
+          isCurrentMonth={viewModel.isCurrentMonth}
+          onPrev={viewModel.handlePrevMonth}
+          onNext={viewModel.handleNextMonth}
+          onPressMonth={viewModel.handleGoToCurrentMonth}
         />
 
         {isMonthClosed ? (
@@ -74,14 +38,14 @@ export function DashboardScreen() {
         <QuickActionRow
           edgePadding={GgastosSpacing.space5}
           actions={[
-            { label: 'Buscar', icon: 'search', onPress: handleOpenSearch },
-            { label: 'Importar fatura', icon: 'upload', onPress: handleOpenStatementImport },
-            { label: 'Novo lançamento', icon: 'plus', onPress: handleAddPlan },
-            { label: 'Template', icon: 'repeat', onPress: handleAddTemplate },
+            { label: 'Buscar', icon: 'search', onPress: viewModel.handleOpenSearch },
+            { label: 'Importar fatura', icon: 'upload', onPress: viewModel.handleOpenStatementImport },
+            { label: 'Novo lançamento', icon: 'plus', onPress: viewModel.handleAddPlan },
+            { label: 'Template', icon: 'repeat', onPress: viewModel.handleAddTemplate },
             {
               label: isClosingMonth ? 'Fechando...' : isMonthClosed ? 'Recalcular mês' : 'Fechar mês',
               icon: 'calendar-check',
-              onPress: handleCloseMonth,
+              onPress: viewModel.handleCloseMonth,
             },
           ]}
         />
@@ -91,7 +55,7 @@ export function DashboardScreen() {
         <OpeningBalanceCard monthKey={monthKey} />
 
         <View style={styles.kpiRow}>
-          <KpiComparisonCard label="Saldo previsto" value={data.previsto}/>
+          <KpiComparisonCard label="Saldo previsto" value={data.previsto} />
           <KpiComparisonCard label="Pendente" value={data.commitment.value} />
         </View>
 
@@ -105,13 +69,13 @@ export function DashboardScreen() {
           </View>
         ) : null}
 
-        <DashboardCategoriesSection categories={data.categories} onOpenCategory={handleOpenCategory} />
+        <DashboardCategoriesSection categories={data.categories} onOpenCategory={viewModel.handleOpenCategory} />
 
         <SyncStatusBanner
           state={importBanner.state}
           message={importBanner.message}
           actionLabel={importBanner.actionLabel}
-          onAction={handleOpenStatementImport}
+          onAction={viewModel.handleOpenStatementImport}
         />
 
         {closeMonthBanner ? (
@@ -119,38 +83,7 @@ export function DashboardScreen() {
         ) : null}
       </ScrollView>
 
-      <MonthSearchSheet
-        visible={isSearchVisible}
-        monthKey={monthKey}
-        onSelectCategory={handleSelectSearchCategory}
-        onClose={handleCloseSearch}
-      />
-
-      <CategoryDetailsSheet
-        visible={categoryDetails.visible}
-        isLoading={categoryDetails.isLoading}
-        isError={categoryDetails.isError}
-        details={categoryDetails.details}
-        togglingEntryId={categoryDetails.togglingEntryId}
-        onToggleEntryStatus={categoryDetails.onToggleEntryStatus}
-        onClose={handleCloseCategoryDetails}
-      />
-
-      <AddPlanSheet visible={isAddPlanVisible} onClose={handleCloseAddPlan} />
-
-      <AddTemplateSheet visible={isAddTemplateVisible} onClose={handleCloseAddTemplate} />
-
-      <StatementImportSheet
-        visible={isStatementImportVisible}
-        onClose={handleCloseStatementImport}
-        onReviewUncategorized={handleOpenCategoryReview}
-      />
-
-      <UncategorizedTransactionReviewSheet
-        batchId={categoryReviewBatchId}
-        visible={categoryReviewBatchId !== null}
-        onClose={handleCloseCategoryReview}
-      />
+      <DashboardSheets viewModel={viewModel} />
     </SafeAreaView>
   );
 }

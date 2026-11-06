@@ -1,14 +1,10 @@
-import { useMemo, useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
-import { Icon } from '@/components/ggastos/core/icon';
-import { NewCategoryPanel } from '@/features/categories/new-category-panel';
-import { CategoryPickerList } from '@/features/planning/category-picker-list';
-import { SegmentedToggle } from '@/features/planning/segmented-toggle';
-import { useCreatePersonalCategory, type CategoryOption } from '@/features/planning/use-categories';
+import { CategoryPickerModal } from '@/features/planning/category-picker-modal';
 import type { ImpactType } from '@/features/planning/planning-schema';
+import type { CategoryOption } from '@/features/planning/use-categories';
 
 type CategoryFieldProps = {
   categories: CategoryOption[];
@@ -18,42 +14,22 @@ type CategoryFieldProps = {
   impactTypes?: ImpactType[];
 };
 
-const impactTypeOptions: { value: ImpactType; label: string }[] = [
-  { value: 'EXPENSE', label: 'Despesa' },
-  { value: 'INCOME', label: 'Receita' },
-  { value: 'INVESTMENT', label: 'Investimento' },
-  { value: 'TRANSFER', label: 'Transferência' },
-];
+const ALL_IMPACT_TYPES: ImpactType[] = ['EXPENSE', 'INCOME', 'INVESTMENT', 'TRANSFER'];
 
-export function CategoryField({ categories, isLoading, selectedCategoryId, onSelect, impactTypes = ['EXPENSE', 'INCOME', 'INVESTMENT', 'TRANSFER'] }: CategoryFieldProps) {
+// A field that shows the chosen category and opens the picker to change or create one.
+export function CategoryField({
+  categories,
+  isLoading,
+  selectedCategoryId,
+  onSelect,
+  impactTypes = ALL_IMPACT_TYPES,
+}: CategoryFieldProps) {
   const [isPickerVisible, setIsPickerVisible] = useState(false);
-  const [search, setSearch] = useState('');
-  const [creationError, setCreationError] = useState<string | null>(null);
-  const [isChoosingAppearance, setIsChoosingAppearance] = useState(false);
   const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
-  const [impactType, setImpactType] = useState<ImpactType>(selectedCategory?.impactType ?? impactTypes[0]);
-  const createCategory = useCreatePersonalCategory();
-  const normalizedSearch = normalizeSearch(search);
-  const matchingCategories = useMemo(
-    () => categories.filter((category) => category.impactType === impactType && normalizeSearch(category.name).includes(normalizedSearch)),
-    [categories, impactType, normalizedSearch]
-  );
-  const canCreate = search.trim().length > 0 && !matchingCategories.some((category) => normalizeSearch(category.name) === normalizedSearch);
 
   function handleSelect(id: string) {
     onSelect(id);
     setIsPickerVisible(false);
-  }
-
-  async function handleCreate(icon: string, color: string) {
-    try {
-      const category = await createCategory.mutateAsync({ name: search, impactType, icon, color });
-      handleSelect((category as { id: string }).id);
-      setSearch('');
-      setIsChoosingAppearance(false);
-    } catch (error) {
-      setCreationError(error instanceof Error ? error.message : 'Não foi possível criar a categoria.');
-    }
   }
 
   return (
@@ -61,10 +37,7 @@ export function CategoryField({ categories, isLoading, selectedCategoryId, onSel
       <Pressable
         accessibilityRole="button"
         disabled={isLoading}
-        onPress={() => {
-          setImpactType(selectedCategory?.impactType ?? impactTypes[0]);
-          setIsPickerVisible(true);
-        }}
+        onPress={() => setIsPickerVisible(true)}
         style={styles.input}
       >
         <Text style={selectedCategory ? styles.value : styles.placeholder}>
@@ -72,52 +45,16 @@ export function CategoryField({ categories, isLoading, selectedCategoryId, onSel
         </Text>
       </Pressable>
 
-      <Modal visible={isPickerVisible} animationType="slide" onRequestClose={() => setIsPickerVisible(false)}>
-        <SafeAreaProvider>
-          <SafeAreaView style={styles.modalScreen} edges={['top']}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Categoria</Text>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Fechar"
-                hitSlop={12}
-                onPress={() => setIsPickerVisible(false)}
-                style={styles.closeButton}
-              >
-                <Icon name="x" size={18} />
-              </Pressable>
-            </View>
-            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.modalContent}>
-              <SegmentedToggle
-                options={impactTypeOptions.filter((option) => impactTypes.includes(option.value))}
-                value={impactType}
-                onChange={setImpactType}
-              />
-              <TextInput
-                autoFocus
-                onChangeText={(value) => {
-                  setSearch(value);
-                  setCreationError(null);
-                  setIsChoosingAppearance(false);
-                }}
-                placeholder="Pesquisar ou criar categoria"
-                placeholderTextColor={GgastosColors.inkFaint}
-                style={styles.searchInput}
-                value={search}
-              />
-              <CategoryPickerList
-                categories={matchingCategories}
-                selectedCategoryId={selectedCategoryId}
-                onSelect={handleSelect}
-                emptyMessage={search ? 'Nenhuma categoria encontrada.' : undefined}
-              />
-              {canCreate && !isChoosingAppearance ? <Pressable accessibilityRole="button" onPress={() => setIsChoosingAppearance(true)} style={styles.createRow}><Text style={styles.createText}>{`Criar “${search.trim()}”`}</Text></Pressable> : null}
-              {canCreate && isChoosingAppearance ? <NewCategoryPanel name={search.trim()} isPending={createCategory.isPending} onConfirm={handleCreate} onCancel={() => setIsChoosingAppearance(false)} /> : null}
-              {creationError ? <Text style={styles.error}>{creationError}</Text> : null}
-            </ScrollView>
-          </SafeAreaView>
-        </SafeAreaProvider>
-      </Modal>
+      {isPickerVisible ? (
+        <CategoryPickerModal
+          categories={categories}
+          selectedCategoryId={selectedCategoryId}
+          impactTypes={impactTypes}
+          initialImpactType={selectedCategory?.impactType ?? impactTypes[0]}
+          onSelect={handleSelect}
+          onClose={() => setIsPickerVisible(false)}
+        />
+      ) : null}
     </View>
   );
 }
@@ -139,49 +76,4 @@ const styles = StyleSheet.create({
     ...GgastosType.bodyMd,
     color: GgastosColors.inkFaint,
   },
-  modalScreen: {
-    flex: 1,
-    backgroundColor: GgastosColors.bgBase,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: GgastosSpacing.space5,
-    paddingVertical: GgastosSpacing.space4,
-    borderBottomWidth: 1,
-    borderBottomColor: GgastosColors.lineSofter,
-  },
-  modalTitle: {
-    ...GgastosType.displaySm,
-    color: GgastosColors.inkStrong,
-  },
-  closeButton: {
-    padding: 6,
-  },
-  modalContent: {
-    padding: GgastosSpacing.space5,
-    gap: GgastosSpacing.space4,
-  },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: GgastosColors.lineSoft,
-    borderRadius: GgastosRadius.md,
-    paddingHorizontal: GgastosSpacing.space4,
-    paddingVertical: GgastosSpacing.space3,
-    ...GgastosType.bodyMd,
-    color: GgastosColors.inkStrong,
-    backgroundColor: GgastosColors.bgSurface,
-  },
-  createRow: {
-    borderRadius: GgastosRadius.md,
-    padding: GgastosSpacing.space4,
-    backgroundColor: GgastosColors.brandPrimarySofter,
-  },
-  createText: { ...GgastosType.bodyMd, fontWeight: '700', color: GgastosColors.brandPrimary },
-  error: { ...GgastosType.bodySm, color: GgastosColors.expense },
 });
-
-function normalizeSearch(value: string): string {
-  return value.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').trim().toLocaleLowerCase('pt-BR');
-}
