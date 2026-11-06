@@ -14,11 +14,8 @@ export interface CategoryDetailsPanel {
 
 export interface DashboardViewModel {
   data: DashboardData;
-  importBanner: {
-    state: BannerState;
-    message: string;
-    actionLabel?: string;
-  };
+  loadStatus: 'loading' | 'error' | 'ready';
+  canCloseMonth: boolean;
   categoryDetails: CategoryDetailsPanel;
   isSearchVisible: boolean;
   handleOpenSearch: () => void;

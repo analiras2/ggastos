@@ -16,8 +16,10 @@ interface AnnualReportViewModel {
   isLoading: boolean;
   isError: boolean;
   isEmpty: boolean;
+  showMonths: boolean;
   handlePrevYear: () => void;
   handleNextYear: () => void;
+  handleToggleMonths: () => void;
 }
 
 export function useAnnualReportViewModel(): AnnualReportViewModel {
@@ -44,8 +46,12 @@ export function useAnnualReportViewModel(): AnnualReportViewModel {
 
   const handlePrevYear = useCallback(() => setYear((current) => current - 1), []);
   const handleNextYear = useCallback(() => setYear((current) => current + 1), []);
+  const [showMonths, setShowMonths] = useState(false);
+  const handleToggleMonths = useCallback(() => setShowMonths((current) => !current), []);
 
   return {
+    showMonths,
+    handleToggleMonths,
     year,
     months,
     categories,

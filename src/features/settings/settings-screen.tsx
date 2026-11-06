@@ -13,7 +13,7 @@ export function SettingsScreen() {
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
-      <Text style={styles.title}>Ajustes</Text>
+      <Text style={styles.title}>Perfil</Text>
 
       <View style={styles.accountBox}>
         <Text style={styles.label}>Conta</Text>

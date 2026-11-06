@@ -4,13 +4,23 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { EmptyStateCard } from '@/shared/ui/cards/empty-state-card';
 import { Icon } from '@/shared/ui/core/icon';
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
-import { AnnualMonthRow } from '@/features/reports/annual-month-row';
+import { AnnualMonthsSection } from '@/features/reports/annual-months-section';
 import { AnnualCategoryBars } from '@/features/reports/annual-category-bars';
 import { useAnnualReportViewModel } from '@/features/reports/use-annual-report-view-model';
 
 export function AnnualReportScreen() {
-  const { year, months, categories, isLoading, isError, isEmpty, handlePrevYear, handleNextYear } =
-    useAnnualReportViewModel();
+  const {
+    year,
+    months,
+    categories,
+    isLoading,
+    isError,
+    isEmpty,
+    showMonths,
+    handlePrevYear,
+    handleNextYear,
+    handleToggleMonths,
+  } = useAnnualReportViewModel();
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -52,32 +62,15 @@ export function AnnualReportScreen() {
           />
         ) : null}
 
-        {!isLoading && !isError && !isEmpty ? (
-          <View>
-            <Text style={styles.sectionTitle}>Meses</Text>
-            <Text style={styles.note}>
-              Os gastos incluem faturas ainda em aberto; o saldo atual só conta o que já foi pago.
-            </Text>
-            {months.map((month) => (
-              <AnnualMonthRow
-                key={month.month}
-                label={month.label}
-                hasSnapshot={month.hasSnapshot}
-                status={month.status}
-                plannedIncome={month.plannedIncome}
-                actualIncome={month.actualIncome}
-                plannedExpense={month.plannedExpense}
-                actualExpense={month.actualExpense}
-              />
-            ))}
-          </View>
-        ) : null}
-
         {!isLoading && !isError && categories.length > 0 ? (
           <View>
             <Text style={styles.sectionTitle}>Categorias</Text>
             <AnnualCategoryBars categories={categories} />
           </View>
+        ) : null}
+
+        {!isLoading && !isError && !isEmpty ? (
+          <AnnualMonthsSection months={months} isVisible={showMonths} onToggle={handleToggleMonths} />
         ) : null}
       </ScrollView>
     </SafeAreaView>
@@ -125,11 +118,6 @@ const styles = StyleSheet.create({
     color: GgastosColors.inkFaint,
     textAlign: 'center',
     paddingVertical: 24,
-  },
-  note: {
-    ...GgastosType.bodySm,
-    color: GgastosColors.inkSoft,
-    marginBottom: GgastosSpacing.space2,
   },
   sectionTitle: {
     ...GgastosType.displaySm,

@@ -37,21 +37,11 @@ export function useDashboardViewModel(): DashboardViewModel {
     return emptyDashboardData(monthKey);
   }, [monthDashboardQuery.data, openingBalanceQuery.data?.openingBalanceCents, categoryAppearanceQuery.data, monthKey]);
 
-  const importBanner = useMemo(() => {
-    if (monthDashboardQuery.isLoading) {
-      return { state: 'pending' as const, message: 'Carregando o mês...' };
-    }
-
-    if (monthDashboardQuery.isError) {
-      return { state: 'error' as const, message: 'Não foi possível carregar os dados do mês.' };
-    }
-
-    return {
-      state: 'ok' as const,
-      message: 'Importe a fatura do cartão para atualizar os gastos realizados.',
-      actionLabel: 'Importar CSV',
-    };
-  }, [monthDashboardQuery.isError, monthDashboardQuery.isLoading]);
+  const loadStatus: DashboardViewModel['loadStatus'] = monthDashboardQuery.isLoading
+    ? 'loading'
+    : monthDashboardQuery.isError
+      ? 'error'
+      : 'ready';
 
   const handlePrevMonth = useCallback(() => setMonthKey((current) => shiftMonthKey(current, -1)), []);
   const handleNextMonth = useCallback(() => setMonthKey((current) => shiftMonthKey(current, 1)), []);
@@ -74,9 +64,10 @@ export function useDashboardViewModel(): DashboardViewModel {
     ...sheets,
     data,
     monthKey,
-    importBanner,
+    loadStatus,
     categoryDetails,
     isCurrentMonth: monthKey === currentMonthKey(),
+    canCloseMonth: monthKey <= currentMonthKey(),
     isMonthClosed: monthSnapshotQuery.data?.status === 'CLOSED',
     isClosingMonth,
     closeMonthBanner,

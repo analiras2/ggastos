@@ -10,7 +10,7 @@ const TABS: { key: BottomTabKey; label: string; icon: string }[] = [
   { key: 'planejamento', label: 'Planejamento', icon: 'list-checks' },
   { key: 'revisar', label: 'Pendências', icon: 'list-todo' },
   { key: 'anual', label: 'Anual', icon: 'calendar-range' },
-  { key: 'ajustes', label: 'Ajustes', icon: 'settings' },
+  { key: 'ajustes', label: 'Perfil', icon: 'user' },
 ];
 
 type BottomTabBarProps = {
