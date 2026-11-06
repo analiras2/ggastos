@@ -4,6 +4,9 @@
 - Projeto: GGastos v2
 - Data: 2026-07-11
 - Status: Baseline histórico com extensão ativa de importação CSV em 2026-08-05
+- Atualização 2026-11: o schema vigente é o das migrations em `supabase/migrations/`, que também
+  criam `month_opening_balances`, `planned_entries.source_key`/`source_batch_id` (parcelas futuras)
+  e `categories.icon`/`color`. Este documento não lista essas colunas.
 - Idioma: PT-BR
 
 ## Estratégia ativa de origem de dados

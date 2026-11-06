@@ -56,6 +56,14 @@ planned-entries, templates, search, statements); `app-shell` compõe as abas.
   (`src/shared/lib/query/invalidate-month-data.ts`) para o mês, as categorias e os relatórios não ficarem velhos.
 - Toda mudança de dados vai por migration em `supabase/migrations/`; RPCs `security invoker`.
 
+## Documentação
+- [`docs/README.md`](docs/README.md): índice (vigente x histórico). Arquitetura em
+  [`docs/stack-tecnica-supabase-mvp.md`](docs/stack-tecnica-supabase-mvp.md).
+- [`docs/card-statement-import.md`](docs/card-statement-import.md): importação de fatura, situação de
+  pagamento e parcelas futuras.
+- [`.specs/README.md`](.specs/README.md): specs por funcionalidade (histórico; leia as correções de lá).
+- Mudou comportamento da importação ou da arquitetura? Atualize o doc correspondente no mesmo PR.
+
 ## Regras de operação
 - Não aplique migration nem faça deploy de Edge Function em produção sem pedido explícito.
   Valide SQL no banco local ou em transação com rollback.

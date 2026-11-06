@@ -4,6 +4,9 @@
 - Produto: GGastos v2
 - Data: 2026-07-10
 - Status: Baseline histórico; estratégia ativa revisada em 2026-08-05
+- Atualização 2026-11: o produto é um app web instalável (PWA), sem app nativo. Onde este texto
+  diz "app mobile", "React Native" ou "Pluggy", leia a arquitetura atual em
+  [`stack-tecnica-supabase-mvp.md`](stack-tecnica-supabase-mvp.md).
 - Idioma: PT-BR
 
 ## Atualização de estratégia

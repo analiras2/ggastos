@@ -4,6 +4,9 @@
 - Projeto: GGastos v2
 - Data: 2026-07-10
 - Status: Baseline histórico; estratégia ativa revisada em 2026-08-05
+- Atualização 2026-11: o cliente é um app web instalável (PWA), sem app nativo. Onde este texto
+  diz "app mobile" ou "React Native", leia a arquitetura atual em
+  [`stack-tecnica-supabase-mvp.md`](stack-tecnica-supabase-mvp.md).
 - Idioma: PT-BR
 
 ## Estratégia ativa

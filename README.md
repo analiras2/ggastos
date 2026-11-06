@@ -58,18 +58,21 @@ npm run web
 ### Verificações úteis
 
 ```bash
+npm run typecheck
 npm run lint
-npx tsc --noEmit
+npm test
+npm run test:backend   # Node 22+
 npm run build:web
 ```
 
 ## Documentos principais
-- [PRD](docs/prd-ggastos-v2.md)
-- [TDD](docs/tdd-ggastos-v2.md)
-- [Data Contract / Schema Spec](docs/data-contract-schema-spec.md)
-- [Stack Técnica Supabase MVP](docs/stack-tecnica-supabase-mvp.md)
+Índice completo, com o que é vigente e o que é histórico: [`docs/README.md`](docs/README.md).
+
+- [Arquitetura e stack](docs/stack-tecnica-supabase-mvp.md)
 - [Importação de fatura CSV](docs/card-statement-import.md)
-- [Roadmap](.specs/project/ROADMAP.md)
+- [PRD](docs/prd-ggastos-v2.md) e [TDD](docs/tdd-ggastos-v2.md) (baselines de produto)
+- [Data Contract / Schema Spec](docs/data-contract-schema-spec.md)
+- [Specs e roadmap](.specs/README.md)
 
 ## Estratégia ativa
 
