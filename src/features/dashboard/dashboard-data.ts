@@ -18,12 +18,6 @@ export type CategoryBudget = {
 
 export type DashboardData = {
   month: string;
-  hero: {
-    value: string;
-    delta: string;
-    deltaLabel: string;
-    status: 'healthy' | 'tight';
-  };
   previsto: string;
   commitment: {
     value: string;

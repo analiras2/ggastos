@@ -10,12 +10,11 @@ import { useCategoryDetailsPanel } from '@/features/dashboard/use-category-detai
 import { useCloseMonthBanner } from '@/features/dashboard/use-close-month-banner';
 import { useDashboardSheets } from '@/features/dashboard/use-dashboard-sheets';
 import { useMonthDashboard } from '@/features/dashboard/use-month-dashboard';
-import { useMonthOpeningBalance } from '@/features/opening-balance';
+import { useWalletPanel } from '@/features/dashboard/use-wallet-panel';
 
 export function useDashboardViewModel(): DashboardViewModel {
   const [monthKey, setMonthKey] = useState<string>(currentMonthKey);
   const monthDashboardQuery = useMonthDashboard(monthKey);
-  const openingBalanceQuery = useMonthOpeningBalance(monthKey);
   const categoryAppearanceQuery = useCategoryAppearance();
   const monthSnapshotQuery = useMonthSnapshot(monthKey);
   const sheets = useDashboardSheets();
@@ -25,17 +24,14 @@ export function useDashboardViewModel(): DashboardViewModel {
     monthKey,
     monthDashboardQuery.data?.summary.openExpenseCents ?? 0
   );
+  const walletPanel = useWalletPanel(handleCloseMonth);
 
   const data = useMemo<DashboardData>(() => {
     if (monthDashboardQuery.data) {
-      return formatDashboardData(
-        monthDashboardQuery.data,
-        openingBalanceQuery.data?.openingBalanceCents ?? 0,
-        categoryAppearanceQuery.data
-      );
+      return formatDashboardData(monthDashboardQuery.data, categoryAppearanceQuery.data);
     }
     return emptyDashboardData(monthKey);
-  }, [monthDashboardQuery.data, openingBalanceQuery.data?.openingBalanceCents, categoryAppearanceQuery.data, monthKey]);
+  }, [monthDashboardQuery.data, categoryAppearanceQuery.data, monthKey]);
 
   const loadStatus: DashboardViewModel['loadStatus'] = monthDashboardQuery.isLoading
     ? 'loading'
@@ -78,6 +74,7 @@ export function useDashboardViewModel(): DashboardViewModel {
     handleOpenCategory,
     handleCloseCategoryDetails,
     handleSelectSearchCategory,
-    handleCloseMonth,
+    ...walletPanel,
+    handleCloseMonth: walletPanel.handleRequestCloseMonth,
   };
 }

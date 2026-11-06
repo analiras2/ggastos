@@ -36,12 +36,19 @@ supabase/functions/_shared/<domínio>/ # regra de negócio por domínio (stateme
 supabase/tests/                 # suítes de integração (RLS, reimport...) que usam o banco local
 docs/  .specs/                  # produto, arquitetura, decisões
 ```
-Features: app-shell, auth, categories, closing, dashboard, opening-balance, planned-entries,
-planning (aba Planejamento), reconciliation, reports, search, settings, statements, templates.
+Features: app-shell, auth, categories, closing, dashboard, planned-entries, planning (aba
+Planejamento), reconciliation, reports, search, settings, statements, templates, wallet.
 
 Dependências (sem ciclos): `shared` não conhece features; `categories` é base de
-`planned-entries`/`templates`/`statements`; `dashboard` compõe a aba do mês (abre as sheets de
-planned-entries, templates, search, statements); `app-shell` compõe as abas.
+`planned-entries`/`templates`/`statements`; `templates` é usada por `planned-entries` (o formulário
+salva recorrentes e parcelados como template); `wallet` (carteira atual) é usada por `dashboard` e
+`settings`; `dashboard` compõe a aba do mês (abre as sheets de planned-entries, wallet, search,
+statements); `app-shell` compõe as abas.
+
+Modelo de dados em uma linha: o tipo do lançamento (despesa/receita/investimento/transferência)
+vive no próprio lançamento, não na categoria. A carteira é o saldo de hoje: parte do saldo
+informado (`wallet_settings`) e só conta meses a partir do mês de início, então faturas antigas
+importadas não a alteram.
 
 ## Convenções
 - Arquivo com no máximo 150 linhas; quebre por responsabilidade.

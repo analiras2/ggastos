@@ -5,11 +5,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { useSettingsViewModel } from '@/features/settings/use-settings-view-model';
 import { Icon } from '@/shared/ui/core/icon';
+import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { useWallet, WalletBalanceSheet } from '@/features/wallet';
 import { CategoryManagementSheet } from '@/features/settings/category-management-sheet';
 
 export function SettingsScreen() {
   const { accountLabel } = useSettingsViewModel();
   const [isCategoriesVisible, setIsCategoriesVisible] = useState(false);
+  const [isWalletVisible, setIsWalletVisible] = useState(false);
+  const walletQuery = useWallet();
+  const wallet = { isConfigured: walletQuery.data?.isConfigured ?? false, balanceCents: walletQuery.data?.balanceCents ?? 0 };
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -19,6 +24,22 @@ export function SettingsScreen() {
         <Text style={styles.label}>Conta</Text>
         <Text style={styles.email}>{accountLabel}</Text>
       </View>
+      <Pressable accessibilityRole="button" onPress={() => setIsWalletVisible(true)} style={styles.categoriesButton}>
+        <View>
+          <Text style={styles.categoriesTitle}>Saldo da carteira</Text>
+          <Text style={styles.categoriesSubtitle}>
+            {wallet.isConfigured ? `Hoje: ${formatCurrencyCents(wallet.balanceCents)}. Toque para ajustar.` : 'Informe quanto você tem hoje'}
+          </Text>
+        </View>
+        <Icon name="chevron-right" size={20} />
+      </Pressable>
+      <WalletBalanceSheet
+        visible={isWalletVisible}
+        mode={wallet.isConfigured ? 'adjust' : 'setup'}
+        currentCents={wallet.balanceCents}
+        onClose={() => setIsWalletVisible(false)}
+        onDone={() => setIsWalletVisible(false)}
+      />
       <Pressable accessibilityRole="button" onPress={() => setIsCategoriesVisible(true)} style={styles.categoriesButton}>
         <View><Text style={styles.categoriesTitle}>Categorias</Text><Text style={styles.categoriesSubtitle}>Criar, editar e ocultar categorias pessoais</Text></View><Icon name="chevron-right" size={20} />
       </Pressable>

@@ -1,3 +1,4 @@
+import type { WalletSheetMode } from '@/features/wallet';
 import type { CategoryBudget, DashboardData } from '@/features/dashboard/dashboard-data';
 import type { CategoryDetailsView } from '@/features/dashboard/format-category-details';
 
@@ -14,6 +15,18 @@ export interface CategoryDetailsPanel {
 
 export interface DashboardViewModel {
   data: DashboardData;
+  wallet: {
+    value: string;
+    balanceCents: number;
+    isNegative: boolean;
+    isConfigured: boolean;
+    isLoading: boolean;
+  };
+  walletSheetMode: WalletSheetMode | null;
+  handleOpenWalletSheet: () => void;
+  handleCloseWalletSheet: () => void;
+  handleRequestCloseMonth: () => void;
+  handleWalletSheetDone: () => void;
   loadStatus: 'loading' | 'error' | 'ready';
   canCloseMonth: boolean;
   categoryDetails: CategoryDetailsPanel;

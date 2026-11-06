@@ -4,6 +4,7 @@ import { AddPlanSheet } from '@/features/planned-entries';
 import { MonthSearchSheet } from '@/features/search';
 import { StatementImportSheet } from '@/features/statements';
 import { UncategorizedTransactionReviewSheet } from '@/features/statements';
+import { WalletBalanceSheet } from '@/features/wallet';
 
 type DashboardSheetsProps = { viewModel: DashboardViewModel };
 
@@ -32,6 +33,14 @@ export function DashboardSheets({ viewModel: vm }: DashboardSheetsProps) {
 
       <AddPlanSheet visible={vm.isAddPlanVisible} onClose={vm.handleCloseAddPlan} />
 
+      <WalletBalanceSheet
+        visible={vm.walletSheetMode !== null}
+        mode={vm.walletSheetMode ?? 'adjust'}
+        currentCents={vm.wallet.balanceCents}
+        monthName={vm.data.month.split(' ')[0]}
+        onClose={vm.handleCloseWalletSheet}
+        onDone={vm.handleWalletSheetDone}
+      />
 
       <StatementImportSheet
         visible={vm.isStatementImportVisible}

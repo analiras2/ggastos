@@ -11,19 +11,18 @@ import { KpiComparisonCard } from '@/shared/ui/cards/kpi-comparison-card';
 import { DashboardCategoriesSection } from '@/features/dashboard/dashboard-categories-section';
 import { DashboardSheets } from '@/features/dashboard/dashboard-sheets';
 import { useDashboardViewModel } from '@/features/dashboard/use-dashboard-view-model';
-import { useWalletHero } from '@/features/dashboard/use-wallet-hero';
 
 export function DashboardScreen() {
   const viewModel = useDashboardViewModel();
-  const wallet = useWalletHero();
-  const { data, loadStatus, closeMonthBanner, monthKey, isMonthClosed, isClosingMonth } = viewModel;
+  const { data, wallet, loadStatus, closeMonthBanner, monthKey, isMonthClosed, isClosingMonth } = viewModel;
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
       <View style={styles.walletBar}>
         <WalletHeader
           value={wallet.value}
-          isNegative={wallet.status === 'tight'}
+          isNegative={wallet.isNegative}
+          onPressValue={viewModel.handleOpenWalletSheet}
           onPressSearch={viewModel.handleOpenSearch}
         />
       </View>
@@ -38,6 +37,14 @@ export function DashboardScreen() {
           onNext={viewModel.handleNextMonth}
           onPressMonth={viewModel.handleGoToCurrentMonth}
         />
+
+        {!wallet.isLoading && !wallet.isConfigured ? (
+          <SyncStatusBanner
+            message="Informe o saldo atual da sua carteira para começar."
+            actionLabel="Informar saldo"
+            onAction={viewModel.handleOpenWalletSheet}
+          />
+        ) : null}
 
         {loadStatus === 'loading' ? <Text style={styles.status}>Carregando o mês...</Text> : null}
         {loadStatus === 'error' ? (

@@ -7,19 +7,33 @@ type WalletHeaderProps = {
   label?: string;
   value: string;
   isNegative?: boolean;
+  // Tapping the value lets the user correct it.
+  onPressValue?: () => void;
   onPressSearch?: () => void;
 };
 
 const SEARCH_BUTTON_SIZE = 44;
 
 // Current wallet value pinned at the top of the screen, with the search shortcut.
-export function WalletHeader({ label = 'Carteira', value, isNegative = false, onPressSearch }: WalletHeaderProps) {
+export function WalletHeader({
+  label = 'Carteira',
+  value,
+  isNegative = false,
+  onPressValue,
+  onPressSearch,
+}: WalletHeaderProps) {
   return (
     <View style={styles.container}>
-      <View style={styles.texts}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Ajustar saldo da carteira"
+        disabled={!onPressValue}
+        onPress={onPressValue}
+        style={styles.texts}
+      >
         <Text style={styles.label}>{label}</Text>
         <Text style={[styles.value, isNegative ? styles.valueNegative : null]}>{value}</Text>
-      </View>
+      </Pressable>
       {onPressSearch ? (
         <Pressable
           accessibilityRole="button"
