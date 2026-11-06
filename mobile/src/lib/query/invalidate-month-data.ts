@@ -6,6 +6,7 @@ const MONTH_DATA_QUERY_KEYS: QueryKey[] = [
   ['month-dashboard'],
   ['category-details'],
   ['planned-entries'],
+  ['month-search'],
   ['month-snapshot'],
   ['annual-summary'],
   ['month-opening-balance'],
