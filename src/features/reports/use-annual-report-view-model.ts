@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { useCategoryAppearance } from '@/features/categories/use-category-appearance';
+import { useCategoryAppearance } from '@/features/categories';
 import {
   toAnnualCategoryView,
   toAnnualMonthRow,

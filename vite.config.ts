@@ -1,6 +1,6 @@
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 const WEB_EXTENSIONS = ['.web.tsx', '.web.ts', '.web.js', '.tsx', '.ts', '.jsx', '.js', '.json'];
 
@@ -23,5 +23,10 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+  },
+  // Unit tests cover pure rules only (no DOM), and live next to the code they test.
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
   },
 });

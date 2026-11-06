@@ -2,9 +2,9 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { EmptyStateCard } from '@/shared/ui/cards/empty-state-card';
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
-import type { BulkCategorizeResult } from '@/features/statements/bulk-categorization';
-import { BulkResultBanner } from '@/features/statements/bulk-result-banner';
-import { InvoicesSection } from '@/features/statements/invoices-section';
+import type { BulkCategorizeResult } from '@/features/statements';
+import { BulkResultBanner } from '@/features/statements';
+import { InvoicesSection } from '@/features/statements';
 
 type PendingListHeaderProps = {
   isLoading: boolean;

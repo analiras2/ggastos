@@ -1,7 +1,7 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
-import { monthDashboardSchema, type MonthDashboard } from '@/features/dashboard/dashboard-schema';
+import { monthDashboardSchema, type MonthDashboard } from '@/features/dashboard/contract';
 
 export const monthDashboardKey = (month: string) => ['month-dashboard', month];
 

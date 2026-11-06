@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { AppShell } from '@/features/app-shell/app-shell';
-import { AuthBootstrapScreen } from '@/features/auth/auth-bootstrap-screen';
-import { AuthProvider } from '@/features/auth/auth-provider';
-import { LoginScreen } from '@/features/auth/login-screen';
-import { useAppBootstrapViewModel } from '@/features/auth/use-app-bootstrap-view-model';
+import { AppShell } from '@/features/app-shell';
+import { AuthBootstrapScreen } from '@/features/auth';
+import { AuthProvider } from '@/features/auth';
+import { LoginScreen } from '@/features/auth';
+import { useAppBootstrapViewModel } from '@/features/auth';
 import { loadAppFonts } from '@/shared/lib/fonts';
 import { AppQueryProvider } from '@/shared/lib/query/query-provider';
 

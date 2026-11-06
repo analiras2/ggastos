@@ -3,18 +3,18 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import { currentMonthKey, monthLabel, shiftMonthKey } from '@/shared/lib/month';
-import type { CategoryName } from '@/features/categories/use-categories';
+import type { CategoryName } from '@/features/categories';
 import {
   useCancelPlannedEntry,
   useConfirmPlannedEntryManually,
   usePlannedEntries,
   useUndoManualConfirmation,
-} from '@/features/planned-entries/use-planned-entries';
-import { useArchivePlanningTemplate, usePlanningTemplates } from '@/features/templates/use-planning-templates';
-import { useCategoryNames } from '@/features/categories/use-categories';
+} from '@/features/planned-entries';
+import { useArchivePlanningTemplate, usePlanningTemplates } from '@/features/templates';
+import { useCategoryNames } from '@/features/categories';
 import type { ImpactType } from '@/shared/contracts/finance';
-import type { PlannedEntry } from '@/features/planned-entries/contract';
-import type { PlanningTemplate } from '@/features/templates/contract';
+import type { PlannedEntry } from '@/features/planned-entries';
+import type { PlanningTemplate } from '@/features/templates';
 
 type EntryKind = 'despesa' | 'receita' | 'investimento' | 'transferencia';
 

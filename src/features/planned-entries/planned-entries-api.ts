@@ -1,6 +1,11 @@
 import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 import { buildPaidFields } from '@/features/planned-entries/paid-entry-rules';
-import { createPlannedEntrySchema, plannedEntrySchema, type CreatePlannedEntryInput, type PlannedEntry } from '@/features/planned-entries/contract';
+import {
+  createPlannedEntrySchema,
+  plannedEntrySchema,
+  type CreatePlannedEntryInput,
+  type PlannedEntry,
+} from '@/features/planned-entries/contract';
 
 export const plannedEntriesKey = (month: string) => ['planned-entries', month];
 

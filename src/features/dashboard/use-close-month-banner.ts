@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
-import { getFormattedCloseMonthError, useCloseMonth } from '@/features/closing/use-close-month';
+import { getFormattedCloseMonthError, useCloseMonth } from '@/features/closing';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import type { BannerState } from '@/features/dashboard/dashboard-view-model-types';
 

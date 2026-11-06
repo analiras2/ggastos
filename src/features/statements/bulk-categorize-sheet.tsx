@@ -5,7 +5,7 @@ import { Button } from '@/shared/ui/core/button';
 import { Icon } from '@/shared/ui/core/icon';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
-import { CategoryField } from '@/features/categories/category-field';
+import { CategoryField } from '@/features/categories';
 import { countLabel } from '@/shared/lib/counts';
 import type { BulkCategorizeViewModel } from '@/features/statements/use-bulk-categorize-view-model';
 

@@ -1,7 +1,7 @@
 import type { EntryKind, StatusChipStatus } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
-import type { CategoryDetails } from '@/features/dashboard/dashboard-schema';
-import { paymentMethodLabel } from '@/features/planned-entries/paid-entry-rules';
+import type { CategoryDetails } from '@/features/dashboard/contract';
+import { paymentMethodLabel } from '@/features/planned-entries';
 import { formatIsoDateToBrazilian } from '@/shared/lib/form-utils';
 import type { ImpactType, PlanningStatus } from '@/shared/contracts/finance';
 

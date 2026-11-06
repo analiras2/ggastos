@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { categoryColor } from '@/shared/theme/category-colors';
 import { impactTypeSchema, type ImpactType } from '@/shared/contracts/finance';
-import { categoriesKey, categoryNamesKey, type CategoryOption } from '@/features/categories/use-categories';
+import { categoriesKey, categoryNamesKey, type CategoryOption } from '@/features/categories';
 import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 
 type CategoryManagementViewModel = {

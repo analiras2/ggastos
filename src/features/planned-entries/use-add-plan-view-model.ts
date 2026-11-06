@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { useCategories, type CategoryOption } from '@/features/categories/use-categories';
+import { useCategories, type CategoryOption } from '@/features/categories';
 import { useCreatePlannedEntry } from '@/features/planned-entries/use-planned-entries';
 import { resolveEntryTitle } from '@/features/planned-entries/paid-entry-rules';
 import { usePaidEntryState, type PaidEntryState } from '@/features/planned-entries/use-paid-entry-state';

@@ -1,6 +1,12 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { EntryKind, GgastosColors, GgastosType, KindColors, StatusChipStatus } from '@/shared/theme/ggastos-theme';
+import {
+  EntryKind,
+  GgastosColors,
+  GgastosType,
+  KindColors,
+  StatusChipStatus,
+} from '@/shared/theme/ggastos-theme';
 import { Icon } from '@/shared/ui/core/icon';
 
 type PlannedEntryRowProps = {

@@ -6,7 +6,7 @@ import {
 } from '@/shared/lib/form-utils';
 import type { RecurrenceFrequency } from '@/shared/contracts/finance';
 import type { CreatePlanningTemplateInput } from '@/features/templates/contract';
-import type { CategoryOption } from '@/features/categories/use-categories';
+import type { CategoryOption } from '@/features/categories';
 
 export type TemplateMode = 'RECURRING' | 'INSTALLMENT';
 

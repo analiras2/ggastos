@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { useCategories, type CategoryOption } from '@/features/categories/use-categories';
+import { useCategories, type CategoryOption } from '@/features/categories';
 import {
   collectRuleValues,
   describeBulkCategorizeError,

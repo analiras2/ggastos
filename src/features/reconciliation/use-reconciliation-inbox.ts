@@ -4,7 +4,7 @@ import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 import {
   reconciliationInboxResponseSchema,
   type ReconciliationSuggestion,
-} from '@/features/reconciliation/reconciliation-schema';
+} from '@/features/reconciliation/contract';
 
 export const reconciliationInboxKey = (month: string) => ['reconciliation-inbox', month];
 

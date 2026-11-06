@@ -6,7 +6,7 @@ import {
   formatReconciliationSuggestion,
   type ReconciliationSuggestionView,
 } from '@/features/reconciliation/format-reconciliation';
-import type { ReconciliationSuggestion } from '@/features/reconciliation/reconciliation-schema';
+import type { ReconciliationSuggestion } from '@/features/reconciliation/contract';
 import {
   getFormattedReconciliationDecisionError,
   useConfirmMatch,

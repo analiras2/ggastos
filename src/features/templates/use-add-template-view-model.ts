@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { buildTemplateInput, type TemplateMode } from '@/features/templates/build-template-input';
 import { centsFromMaskedInput } from '@/shared/lib/form-utils';
 import type { RecurrenceFrequency } from '@/shared/contracts/finance';
-import { useCategories, type CategoryOption } from '@/features/categories/use-categories';
+import { useCategories, type CategoryOption } from '@/features/categories';
 import { useCreatePlanningTemplate } from '@/features/templates/use-planning-templates';
 
 export type { TemplateMode } from '@/features/templates/build-template-input';

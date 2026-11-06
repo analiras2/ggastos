@@ -3,14 +3,14 @@ import { StyleSheet, View } from 'react-native';
 
 import { GgastosColors } from '@/shared/theme/ggastos-theme';
 import { BottomTabBar, BottomTabKey } from '@/shared/ui/navigation/bottom-tab-bar';
-import { DashboardScreen } from '@/features/dashboard/dashboard-screen';
+import { DashboardScreen } from '@/features/dashboard';
 import { currentMonthKey } from '@/shared/lib/month';
-import { PendingScreen } from '@/features/reconciliation/pending-screen';
-import { PlanningScreen } from '@/features/planning/planning-screen';
-import { useReconciliationInbox } from '@/features/reconciliation/use-reconciliation-inbox';
-import { AnnualReportScreen } from '@/features/reports/annual-report-screen';
-import { SettingsScreen } from '@/features/settings/settings-screen';
-import { useUncategorizedTransactions } from '@/features/statements/use-uncategorized-transactions';
+import { PendingScreen } from '@/features/reconciliation';
+import { PlanningScreen } from '@/features/planning';
+import { useReconciliationInbox } from '@/features/reconciliation';
+import { AnnualReportScreen } from '@/features/reports';
+import { SettingsScreen } from '@/features/settings';
+import { useUncategorizedTransactions } from '@/features/statements';
 
 export function AppShell() {
   const [activeTab, setActiveTab] = useState<BottomTabKey>('mes');

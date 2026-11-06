@@ -10,7 +10,7 @@ import { KpiComparisonCard } from '@/shared/ui/cards/kpi-comparison-card';
 import { DashboardCategoriesSection } from '@/features/dashboard/dashboard-categories-section';
 import { DashboardSheets } from '@/features/dashboard/dashboard-sheets';
 import { useDashboardViewModel } from '@/features/dashboard/use-dashboard-view-model';
-import { OpeningBalanceCard } from '@/features/opening-balance/opening-balance-card';
+import { OpeningBalanceCard } from '@/features/opening-balance';
 
 export function DashboardScreen() {
   const viewModel = useDashboardViewModel();

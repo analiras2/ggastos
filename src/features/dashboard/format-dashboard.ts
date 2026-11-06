@@ -1,10 +1,6 @@
-import {
-  resolveCategoryColor,
-  resolveCategoryIcon,
-  type CategoryAppearanceMap,
-} from '@/features/categories/category-appearance';
+import { resolveCategoryColor, resolveCategoryIcon, type CategoryAppearanceMap } from '@/features/categories';
 import type { CategoryBudget, DashboardData } from '@/features/dashboard/dashboard-data';
-import type { MonthDashboard } from '@/features/dashboard/dashboard-schema';
+import type { MonthDashboard } from '@/features/dashboard/contract';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import { monthLabel } from '@/shared/lib/month';
 

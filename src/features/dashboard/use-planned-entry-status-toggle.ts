@@ -1,9 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import {
-  useConfirmPlannedEntryManually,
-  useUndoManualConfirmation,
-} from '@/features/planned-entries/use-planned-entries';
+import { useConfirmPlannedEntryManually, useUndoManualConfirmation } from '@/features/planned-entries';
 
 interface PlannedEntryStatusToggle {
   togglingEntryId: string | null;

@@ -1,7 +1,7 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
-import { annualSummarySchema, type AnnualSummary } from '@/features/reports/annual-summary-schema';
+import { annualSummarySchema, type AnnualSummary } from '@/features/reports/contract';
 
 /** Must stay ['annual-summary', year] — invalidated by use-close-month.ts on close. */
 export const annualSummaryKey = (year: number) => ['annual-summary', year];

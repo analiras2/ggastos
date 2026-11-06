@@ -2,7 +2,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
-import { CategoryField } from '@/features/categories/category-field';
+import { CategoryField } from '@/features/categories';
 import { DateField } from '@/shared/ui/forms/date-field';
 import { SegmentedToggle } from '@/shared/ui/forms/segmented-toggle';
 import type { RecurrenceFrequency } from '@/shared/contracts/finance';

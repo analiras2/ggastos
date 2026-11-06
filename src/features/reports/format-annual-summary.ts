@@ -1,6 +1,6 @@
-import { resolveCategoryColor, type CategoryAppearanceMap } from '@/features/categories/category-appearance';
+import { resolveCategoryColor, type CategoryAppearanceMap } from '@/features/categories';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
-import type { AnnualCategory, AnnualMonth } from '@/features/reports/annual-summary-schema';
+import type { AnnualCategory, AnnualMonth } from '@/features/reports/contract';
 
 // Mirrors the full PT-BR month names used in dashboard/month-utils.ts. Kept
 // local (not imported) because that array isn't exported and this feature

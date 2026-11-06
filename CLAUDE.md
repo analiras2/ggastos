@@ -6,8 +6,9 @@ React Query, Supabase (Postgres, RLS, Edge Functions). Deploy do front na Vercel
 ## Comandos
 ```bash
 npm run web                 # dev server Vite (Node 22+)
-npx tsc --noEmit            # tipos
-npm run lint                # eslint
+npm run typecheck           # tsc --noEmit
+npm run lint                # eslint (inclui as fronteiras entre features)
+npm test                    # vitest: regras puras e contratos
 npm run build:web           # build para dist/
 supabase start              # backend local (Docker)
 supabase db reset           # migrations + seed no banco LOCAL
@@ -18,28 +19,38 @@ Para testar a UI, use o Supabase local e um usuário de teste criado nele; nunca
 ## Estrutura
 ```
 src/main.tsx  src/app/app.tsx   # bootstrap: providers, fontes, auth gate
-src/features/<feature>/     # uma fatia por funcionalidade (tela, view-model, queries, schema)
-src/components/ggastos/     # UI compartilhada (cards, rows, forms, navigation)
-src/constants/              # tema (tokens), cores e ícones de categoria
-src/lib/                    # supabase client, query client, invalidate-month-data
-public/                     # manifest, service worker, ícones (PWA)
-supabase/migrations/        # schema versionado
-supabase/functions/         # Edge Functions; código compartilhado em _shared/
-supabase/tests/             # testes do backend (.mjs)
-docs/  .specs/              # produto, arquitetura, decisões
+src/features/<feature>/         # uma fatia por funcionalidade
+  index.ts                      #   API pública: o único ponto de entrada para outras features
+  contract.ts                   #   schemas zod e tipos de entrada/saída (quando a feature tem)
+  use-*-view-model.ts, *-sheet.tsx, *-screen.tsx, use-*.ts (queries), *.test.ts
+src/shared/ui/                  # componentes compartilhados (cards, core, forms, navigation, rows)
+src/shared/theme/               # tokens, cores e ícones de categoria
+src/shared/lib/                 # supabase, query client, invalidate-month-data, formatadores, hooks
+src/shared/contracts/finance.ts # vocabulário comum: ImpactType, PlanningStatus, month, centavos
+public/                         # manifest, service worker, ícones (PWA)
+supabase/migrations/            # schema versionado
+supabase/functions/             # Edge Functions; código compartilhado em _shared/
+supabase/tests/                 # testes do backend (.mjs)
+docs/  .specs/                  # produto, arquitetura, decisões
 ```
-Features: auth, app-shell, dashboard, planning, categories, statements, reconciliation,
-closing, reports, opening-balance, search, settings.
+Features: app-shell, auth, categories, closing, dashboard, opening-balance, planned-entries,
+planning (aba Planejamento), reconciliation, reports, search, settings, statements, templates.
+
+Dependências (sem ciclos): `shared` não conhece features; `categories` é base de
+`planned-entries`/`templates`/`statements`; `dashboard` compõe a aba do mês (abre as sheets de
+planned-entries, templates, search, statements); `app-shell` compõe as abas.
 
 ## Convenções
 - Arquivo com no máximo 150 linhas; quebre por responsabilidade.
+- Uma feature só importa de outra por `@/features/<nome>` (o `index.ts`). O ESLint barra imports
+  profundos e barra `shared/` importando features. Precisa de algo novo? Exporte no `index.ts`.
 - MVVM funcional: tela só renderiza; estado e regras ficam em `use-<feature>-view-model.ts`
-  e em funções puras (`format-*`, `*-rules`).
-- Contratos com zod (`*-schema.ts`); sem `any`; identificadores em inglês, textos de UI em pt-BR.
+  e em funções puras (`format-*`, `*-rules`), que ganham teste ao lado (`*.test.ts`).
+- Contratos com zod em `contract.ts`; sem `any`; identificadores em inglês, textos de UI em pt-BR.
 - Sem números mágicos: constantes nomeadas. Estilos com `StyleSheet` e tokens de
-  `src/constants/ggastos-theme.ts`.
+  `src/shared/theme/ggastos-theme.ts`.
 - Depois de qualquer mutação que mexa em lançamentos, chame `invalidateMonthData`
-  (`src/lib/query/invalidate-month-data.ts`) para o mês, as categorias e os relatórios não ficarem velhos.
+  (`src/shared/lib/query/invalidate-month-data.ts`) para o mês, as categorias e os relatórios não ficarem velhos.
 - Toda mudança de dados vai por migration em `supabase/migrations/`; RPCs `security invoker`.
 
 ## Regras de operação

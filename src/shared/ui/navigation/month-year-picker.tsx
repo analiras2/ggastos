@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { GgastosColors, GgastosRadius, GgastosShadow, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
+import {
+  GgastosColors,
+  GgastosRadius,
+  GgastosShadow,
+  GgastosSpacing,
+  GgastosType,
+} from '@/shared/theme/ggastos-theme';
 import { Icon } from '@/shared/ui/core/icon';
 import { buildMonthKey, MONTH_LABELS, parseMonthKey } from '@/shared/lib/month';
 

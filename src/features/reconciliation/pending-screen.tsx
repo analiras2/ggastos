@@ -6,16 +6,16 @@ import { GgastosColors, GgastosSpacing } from '@/shared/theme/ggastos-theme';
 import { PendingListHeader } from '@/features/reconciliation/pending-list-header';
 import { ReconciliationSection } from '@/features/reconciliation/reconciliation-section';
 import { usePendingViewModel } from '@/features/reconciliation/use-pending-view-model';
-import { BulkCategorizeSheet } from '@/features/statements/bulk-categorize-sheet';
-import { CategoriesToolbar } from '@/features/statements/categories-toolbar';
+import { BulkCategorizeSheet } from '@/features/statements';
+import { CategoriesToolbar } from '@/features/statements';
 import {
   SelectableTransactionRow,
   TRANSACTION_ROW_GAP,
   getTransactionRowLayout,
-} from '@/features/statements/selectable-transaction-row';
-import { SelectionActionBar } from '@/features/statements/selection-action-bar';
-import { UncategorizedTransactionReviewSheet } from '@/features/statements/uncategorized-transaction-review-sheet';
-import type { UncategorizedTransaction } from '@/features/statements/use-uncategorized-transactions';
+} from '@/features/statements';
+import { SelectionActionBar } from '@/features/statements';
+import { UncategorizedTransactionReviewSheet } from '@/features/statements';
+import type { UncategorizedTransaction } from '@/features/statements';
 
 const LIST_BOTTOM_PADDING = 100;
 

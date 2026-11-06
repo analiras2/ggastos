@@ -5,8 +5,10 @@ import { Button } from '@/shared/ui/core/button';
 import { Icon } from '@/shared/ui/core/icon';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
-import { CategoryField } from '@/features/categories/category-field';
-import { useUncategorizedTransactionReviewViewModel } from '@/features/statements/use-uncategorized-transaction-review-view-model';
+import { CategoryField } from '@/features/categories';
+import {
+  useUncategorizedTransactionReviewViewModel,
+} from '@/features/statements/use-uncategorized-transaction-review-view-model';
 
 type UncategorizedTransactionReviewSheetProps = {
   batchId?: string | null;

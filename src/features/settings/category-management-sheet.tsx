@@ -4,7 +4,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/shared/ui/core/button';
 import { Icon } from '@/shared/ui/core/icon';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
-import { CategoryAppearancePicker } from '@/features/categories/category-appearance-picker';
+import { CategoryAppearancePicker } from '@/features/categories';
 import { useCategoryManagementViewModel } from '@/features/settings/use-category-management-view-model';
 
 type CategoryManagementSheetProps = { visible: boolean; onClose: () => void };

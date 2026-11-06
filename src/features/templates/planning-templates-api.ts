@@ -1,5 +1,10 @@
 import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
-import { createPlanningTemplateSchema, planningTemplateSchema, type CreatePlanningTemplateInput, type PlanningTemplate } from '@/features/templates/contract';
+import {
+  createPlanningTemplateSchema,
+  planningTemplateSchema,
+  type CreatePlanningTemplateInput,
+  type PlanningTemplate,
+} from '@/features/templates/contract';
 
 export const planningTemplatesKey = (month?: string) => ['planning-templates', month ?? 'all'];
 

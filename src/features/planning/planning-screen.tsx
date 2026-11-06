@@ -5,10 +5,10 @@ import { EmptyStateCard } from '@/shared/ui/cards/empty-state-card';
 import { Icon } from '@/shared/ui/core/icon';
 import { MonthHeader } from '@/shared/ui/navigation/month-header';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
-import { AddPlanSheet } from '@/features/planned-entries/add-plan-sheet';
-import { AddTemplateSheet } from '@/features/templates/add-template-sheet';
-import { EditTemplateSheet } from '@/features/templates/edit-template-sheet';
-import { PlanningEntryListRow } from '@/features/planned-entries/planning-entry-list-row';
+import { AddPlanSheet } from '@/features/planned-entries';
+import { AddTemplateSheet } from '@/features/templates';
+import { EditTemplateSheet } from '@/features/templates';
+import { PlanningEntryListRow } from '@/features/planned-entries';
 import { usePlanningViewModel } from '@/features/planning/use-planning-view-model';
 
 export function PlanningScreen() {

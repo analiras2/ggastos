@@ -1,7 +1,7 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
-import { categoryDetailsSchema, type CategoryDetails } from '@/features/dashboard/dashboard-schema';
+import { categoryDetailsSchema, type CategoryDetails } from '@/features/dashboard/contract';
 
 export const categoryDetailsKey = (month: string, categoryId: string) => [
   'category-details',

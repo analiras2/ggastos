@@ -10,7 +10,7 @@ import {
 } from '@supabase/supabase-js';
 
 import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
-import { monthDashboardKey } from '@/features/dashboard/use-month-dashboard';
+import { invalidateMonthData } from '@/shared/lib/query/invalidate-month-data';
 
 export const monthSnapshotKey = (month: string) => ['month-snapshot', month];
 
@@ -22,7 +22,6 @@ export type MonthSnapshotResult = {
 };
 
 /** T7's annual-summary hook should key its query as ['annual-summary', year] to match this prefix. */
-const annualSummaryKeyPrefix = ['annual-summary'];
 
 function formatCloseMonthError(error: unknown): string {
   if (error instanceof FunctionsRelayError) {
@@ -87,13 +86,8 @@ export function useCloseMonth(): UseMutationResult<
 
   return useMutation({
     mutationFn: invokeCloseMonth,
-    onSuccess: async (_data, month) => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: monthDashboardKey(month) }),
-        queryClient.invalidateQueries({ queryKey: monthSnapshotKey(month) }),
-        queryClient.invalidateQueries({ queryKey: annualSummaryKeyPrefix }),
-      ]);
-    },
+    // Closing writes the snapshot that the month, the details and the annual report read.
+    onSuccess: () => invalidateMonthData(queryClient),
     throwOnError: false,
     meta: {
       errorFormatter: formatCloseMonthError,

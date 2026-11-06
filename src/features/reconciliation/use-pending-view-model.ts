@@ -1,21 +1,14 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import type { ReconciliationSuggestionView } from '@/features/reconciliation/format-reconciliation';
-import { useReconciliationInboxViewModel } from '@/features/reconciliation/use-reconciliation-inbox-view-model';
-import type { BulkCategorizeResult } from '@/features/statements/bulk-categorization';
-import { signedAmountCents } from '@/features/statements/selection-state';
 import {
-  useBulkCategorizeViewModel,
-  type BulkCategorizeViewModel,
-} from '@/features/statements/use-bulk-categorize-view-model';
-import {
-  useSelectionViewModel,
-  type SelectionViewModel,
-} from '@/features/statements/use-selection-view-model';
-import {
-  useUncategorizedTransactions,
-  type UncategorizedTransaction,
-} from '@/features/statements/use-uncategorized-transactions';
+  useReconciliationInboxViewModel,
+} from '@/features/reconciliation/use-reconciliation-inbox-view-model';
+import type { BulkCategorizeResult } from '@/features/statements';
+import { signedAmountCents } from '@/features/statements';
+import { useBulkCategorizeViewModel, type BulkCategorizeViewModel } from '@/features/statements';
+import { useSelectionViewModel, type SelectionViewModel } from '@/features/statements';
+import { useUncategorizedTransactions, type UncategorizedTransaction } from '@/features/statements';
 
 interface PendingViewModel {
   reconciliationSuggestions: ReconciliationSuggestionView[];

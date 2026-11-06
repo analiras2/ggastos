@@ -10,7 +10,7 @@ import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 import {
   monthOpeningBalanceSchema,
   type MonthOpeningBalance,
-} from '@/features/opening-balance/opening-balance-schema';
+} from '@/features/opening-balance/contract';
 
 export const monthOpeningBalanceKey = (month: string) => ['month-opening-balance', month];
 

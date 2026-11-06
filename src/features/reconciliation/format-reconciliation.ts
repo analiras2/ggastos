@@ -1,5 +1,5 @@
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
-import type { ReconciliationSuggestion } from '@/features/reconciliation/reconciliation-schema';
+import type { ReconciliationSuggestion } from '@/features/reconciliation/contract';
 
 export type ReconciliationSuggestionView = {
   transactionId: string;

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useAuth } from '@/features/auth/use-auth';
+import { useAuth } from '@/features/auth';
 
 type SettingsViewModel = {
   accountLabel: string;

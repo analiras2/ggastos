@@ -2,10 +2,10 @@ import { useCallback, useMemo, useState } from 'react';
 
 import type { EntryKind } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
-import { paymentMethodLabel } from '@/features/planned-entries/paid-entry-rules';
+import { paymentMethodLabel } from '@/features/planned-entries';
 import { formatIsoDateToBrazilian } from '@/shared/lib/form-utils';
 import type { ImpactType } from '@/shared/contracts/finance';
-import { useCategories } from '@/features/categories/use-categories';
+import { useCategories } from '@/features/categories';
 import { matchesSearch, normalizeSearchText } from '@/shared/lib/search-text';
 import { useMonthSearchItems, type MonthSearchItem } from '@/features/search/use-month-search-items';
 

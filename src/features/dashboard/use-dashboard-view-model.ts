@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { useCategoryAppearance } from '@/features/categories/use-category-appearance';
-import { useMonthSnapshot } from '@/features/closing/use-month-snapshot';
+import { useCategoryAppearance } from '@/features/categories';
+import { useMonthSnapshot } from '@/features/closing';
 import type { DashboardData } from '@/features/dashboard/dashboard-data';
 import type { DashboardViewModel } from '@/features/dashboard/dashboard-view-model-types';
 import { emptyDashboardData, formatDashboardData } from '@/features/dashboard/format-dashboard';
@@ -10,7 +10,7 @@ import { useCategoryDetailsPanel } from '@/features/dashboard/use-category-detai
 import { useCloseMonthBanner } from '@/features/dashboard/use-close-month-banner';
 import { useDashboardSheets } from '@/features/dashboard/use-dashboard-sheets';
 import { useMonthDashboard } from '@/features/dashboard/use-month-dashboard';
-import { useMonthOpeningBalance } from '@/features/opening-balance/use-month-opening-balance';
+import { useMonthOpeningBalance } from '@/features/opening-balance';
 
 export function useDashboardViewModel(): DashboardViewModel {
   const [monthKey, setMonthKey] = useState<string>(currentMonthKey);
