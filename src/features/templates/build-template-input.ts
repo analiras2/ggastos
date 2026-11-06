@@ -4,17 +4,16 @@ import {
   installmentCountFromInput,
   monthKeyFromIsoDate,
 } from '@/shared/lib/form-utils';
-import type { RecurrenceFrequency } from '@/shared/contracts/finance';
+import type { ImpactType, RecurrenceFrequency } from '@/shared/contracts/finance';
 import type { CreatePlanningTemplateInput } from '@/features/templates/contract';
-import type { CategoryOption } from '@/features/categories';
 
 export type TemplateMode = 'RECURRING' | 'INSTALLMENT';
 
 type TemplateFormValues = {
   mode: TemplateMode;
   title: string;
-  category: CategoryOption | undefined;
-  hasCategorySelected: boolean;
+  impactType: ImpactType;
+  categoryId: string | null;
   startDate: Date | null;
   amountCents: number;
   recurrenceFrequency: RecurrenceFrequency;
@@ -25,20 +24,17 @@ type BuildResult = { input: CreatePlanningTemplateInput } | { error: string };
 
 // Validates the form and shapes the request. Returns the first problem as a user-facing message.
 export function buildTemplateInput(values: TemplateFormValues): BuildResult {
-  const { mode, category, startDate, amountCents } = values;
+  const { mode, categoryId, startDate, amountCents } = values;
   const title = values.title.trim();
 
   if (!title) {
     return { error: 'Informe um título.' };
   }
-  if (!values.hasCategorySelected) {
+  if (!categoryId) {
     return { error: 'Selecione uma categoria.' };
   }
-  if (!category) {
-    return { error: 'Categoria inválida. Selecione novamente.' };
-  }
   if (!startDate) {
-    return { error: 'Selecione a data de início.' };
+    return { error: 'Selecione a data.' };
   }
   if (amountCents <= 0) {
     return { error: 'Informe um valor maior que zero.' };
@@ -57,8 +53,8 @@ export function buildTemplateInput(values: TemplateFormValues): BuildResult {
   return {
     input: {
       title,
-      impactType: category.impactType,
-      categoryId: category.id,
+      impactType: values.impactType,
+      categoryId,
       defaultAmountCents: isInstallment ? (perInstallmentCents as number) : amountCents,
       recurrenceFrequency: isInstallment ? 'NONE' : values.recurrenceFrequency,
       recurrenceInterval: 1,

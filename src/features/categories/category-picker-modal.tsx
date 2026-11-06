@@ -15,6 +15,7 @@ type CategoryPickerModalProps = {
   selectedCategoryId: string | null;
   impactTypes: ImpactType[];
   initialImpactType: ImpactType;
+  showAllTypes?: boolean;
   onSelect: (id: string) => void;
   onClose: () => void;
 };
@@ -32,10 +33,11 @@ export function CategoryPickerModal({
   selectedCategoryId,
   impactTypes,
   initialImpactType,
+  showAllTypes = false,
   onSelect,
   onClose,
 }: CategoryPickerModalProps) {
-  const picker = useCategoryPickerState({ categories, initialImpactType, onSelect });
+  const picker = useCategoryPickerState({ categories, initialImpactType, showAllTypes, onSelect });
   const { search, impactType, canCreate, isChoosingAppearance, creationError } = picker;
 
   return (
@@ -55,11 +57,13 @@ export function CategoryPickerModal({
             </Pressable>
           </View>
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
-            <SegmentedToggle
-              options={IMPACT_TYPE_OPTIONS.filter((option) => impactTypes.includes(option.value))}
-              value={impactType}
-              onChange={picker.setImpactType}
-            />
+            {showAllTypes ? null : (
+              <SegmentedToggle
+                options={IMPACT_TYPE_OPTIONS.filter((option) => impactTypes.includes(option.value))}
+                value={impactType}
+                onChange={picker.setImpactType}
+              />
+            )}
             <TextInput
               autoFocus
               onChangeText={picker.setSearch}

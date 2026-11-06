@@ -64,7 +64,6 @@ function mapEntry(entry: PlannedEntry, categories: CategoryName[]): PlanningEntr
 export function usePlanningViewModel() {
   const [month, setMonth] = useState(currentMonthKey);
   const [isAddPlanVisible, setIsAddPlanVisible] = useState(false);
-  const [isAddTemplateVisible, setIsAddTemplateVisible] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<PlanningTemplate | null>(null);
   const [updatingEntryId, setUpdatingEntryId] = useState<string | null>(null);
   const entriesQuery = usePlannedEntries(month);
@@ -122,7 +121,6 @@ export function usePlanningViewModel() {
     isLoading: entriesQuery.isLoading || categoryNamesQuery.isLoading,
     isError: entriesQuery.isError || categoryNamesQuery.isError,
     isAddPlanVisible,
-    isAddTemplateVisible,
     selectedTemplate,
     updatingEntryId,
     archivingTemplateId: archiveTemplate.isPending ? archiveTemplate.variables.id : null,
@@ -132,8 +130,6 @@ export function usePlanningViewModel() {
     handleSelectMonth: setMonth,
     handleOpenAddPlan: () => setIsAddPlanVisible(true),
     handleCloseAddPlan: () => setIsAddPlanVisible(false),
-    handleOpenAddTemplate: () => setIsAddTemplateVisible(true),
-    handleCloseAddTemplate: () => setIsAddTemplateVisible(false),
     handleOpenEditTemplate: (template: PlanningTemplate) => setSelectedTemplate(template),
     handleCloseEditTemplate: () => setSelectedTemplate(null),
     handleToggleEntryStatus,

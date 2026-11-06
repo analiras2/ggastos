@@ -240,6 +240,19 @@ function buildTests({ userA, userB }) {
     assertEqual(response.body, [], "foreign read");
   });
 
+  test("dashboard: the entry type does not follow its category, so each type gets its own category row", async () => {
+    const month = "2026-11";
+    const expense = await userRest(userA, "POST", "planned_entries", plannedEntry(userA, month, 3000));
+    const income = await userRest(userA, "POST", "planned_entries", plannedEntry(userA, month, 700, { impact_type: "INCOME" }));
+    assert(expense.ok && income.ok, `expected 201, got ${expense.status}/${income.status}`);
+    const rows = (await dashboard(month)).categories.filter((row) => row.categoryId === userA.expenseCategoryId);
+    assertEqual(
+      rows.map((row) => [row.impactType, row.plannedCents]).sort(),
+      [["EXPENSE", 3000], ["INCOME", 700]],
+      "one row per entry type, never summed together",
+    );
+  });
+
   return tests;
 }
 

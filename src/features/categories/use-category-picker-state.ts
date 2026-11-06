@@ -7,11 +7,18 @@ import { normalizeSearchText } from '@/shared/lib/search-text';
 type CategoryPickerStateInput = {
   categories: CategoryOption[];
   initialImpactType: ImpactType;
+  // When true every category is listed, whatever its type; new ones get `initialImpactType`.
+  showAllTypes?: boolean;
   onSelect: (id: string) => void;
 };
 
 // Search, impact type and "create category" flow of the category picker.
-export function useCategoryPickerState({ categories, initialImpactType, onSelect }: CategoryPickerStateInput) {
+export function useCategoryPickerState({
+  categories,
+  initialImpactType,
+  showAllTypes = false,
+  onSelect,
+}: CategoryPickerStateInput) {
   const [search, setSearchState] = useState('');
   const [creationError, setCreationError] = useState<string | null>(null);
   const [isChoosingAppearance, setIsChoosingAppearance] = useState(false);
@@ -23,9 +30,10 @@ export function useCategoryPickerState({ categories, initialImpactType, onSelect
     () =>
       categories.filter(
         (category) =>
-          category.impactType === impactType && normalizeSearchText(category.name).includes(normalizedSearch)
+          (showAllTypes || category.impactType === impactType) &&
+          normalizeSearchText(category.name).includes(normalizedSearch)
       ),
-    [categories, impactType, normalizedSearch]
+    [categories, impactType, normalizedSearch, showAllTypes]
   );
 
   const canCreate =

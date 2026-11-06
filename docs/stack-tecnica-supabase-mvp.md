@@ -58,8 +58,18 @@ flowchart LR
 ### Tabelas principais
 `profiles`, `categories`, `financial_connections`, `financial_accounts`, `imported_transactions`,
 `statement_import_batches`, `planning_templates`, `planned_entries`, `reconciliation_matches`,
-`user_category_rules`, `month_snapshots`, `month_opening_balances`, `sync_events`.
+`user_category_rules`, `month_snapshots`, `wallet_settings`, `sync_events`.
 Contrato completo em [`data-contract-schema-spec.md`](data-contract-schema-spec.md).
+
+**Carteira.** É o saldo de hoje, não de um mês. `wallet_settings` guarda o mês de início e o saldo
+inicial; `get_wallet(mês atual)` soma o movimento liquidado de cada mês desde o início, e
+`set_wallet_balance` recalcula o saldo inicial para a carteira mostrar o valor informado. Meses
+anteriores ao início (faturas antigas importadas só para o histórico) nunca alteram a carteira.
+`month_opening_balances` e suas RPCs não são mais usadas pelo app.
+
+**Tipo do lançamento.** `planned_entries.impact_type` e `planning_templates.impact_type` são
+escolhidos no formulário e não precisam coincidir com o da categoria. `get_month_dashboard`
+devolve uma linha por categoria e por tipo.
 
 ## Padrões de acesso a dados
 

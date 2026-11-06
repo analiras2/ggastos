@@ -28,7 +28,7 @@ export function SegmentedToggle<TValue extends string>({
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
             onPress={() => onChange(option.value)}
-            style={[styles.option, isSelected && styles.optionSelected]}
+            style={[styles.option, options.length === 3 && styles.optionThird, isSelected && styles.optionSelected]}
           >
             <Text style={[styles.label, isSelected && styles.labelSelected]}>{option.label}</Text>
           </Pressable>
@@ -53,6 +53,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: GgastosColors.lineSoft,
     backgroundColor: GgastosColors.bgSurface,
+  },
+  // Three options share one row.
+  optionThird: {
+    minWidth: '30%',
   },
   optionSelected: {
     borderColor: GgastosColors.brandPrimary,

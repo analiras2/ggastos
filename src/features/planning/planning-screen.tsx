@@ -6,7 +6,6 @@ import { Icon } from '@/shared/ui/core/icon';
 import { MonthHeader } from '@/shared/ui/navigation/month-header';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { AddPlanSheet } from '@/features/planned-entries';
-import { AddTemplateSheet } from '@/features/templates';
 import { EditTemplateSheet } from '@/features/templates';
 import { PlanningEntryListRow } from '@/features/planned-entries';
 import { usePlanningViewModel } from '@/features/planning/use-planning-view-model';
@@ -45,7 +44,7 @@ export function PlanningScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <View><Text style={styles.sectionTitle}>Templates</Text><Text style={styles.sectionSubtitle}>Recorrências e parcelas para os próximos meses.</Text></View>
-            <Pressable accessibilityRole="button" onPress={viewModel.handleOpenAddTemplate} style={styles.templateAction}><Text style={styles.templateActionText}>Novo</Text></Pressable>
+            <Pressable accessibilityRole="button" onPress={viewModel.handleOpenAddPlan} style={styles.templateAction}><Text style={styles.templateActionText}>Novo</Text></Pressable>
           </View>
           {viewModel.templates.length === 0 ? <Text style={styles.status}>Nenhum template ativo.</Text> : null}
           {viewModel.templates.map((template) => (
@@ -57,7 +56,6 @@ export function PlanningScreen() {
         </View>
       </ScrollView>
       <AddPlanSheet visible={viewModel.isAddPlanVisible} onClose={viewModel.handleCloseAddPlan} />
-      <AddTemplateSheet visible={viewModel.isAddTemplateVisible} onClose={viewModel.handleCloseAddTemplate} />
       <EditTemplateSheet key={viewModel.selectedTemplate?.id ?? 'closed'} template={viewModel.selectedTemplate} effectiveMonth={viewModel.month} onClose={viewModel.handleCloseEditTemplate} />
     </SafeAreaView>
   );
