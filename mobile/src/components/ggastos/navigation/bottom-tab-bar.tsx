@@ -29,19 +29,17 @@ export function BottomTabBar({ active = 'mes', onChange, badge }: BottomTabBarPr
             key={tab.key}
             accessibilityRole="button"
             onPress={() => onChange?.(tab.key)}
-            style={styles.tab}
+            style={[styles.tab, isActive && styles.activeTab]}
           >
-            <View style={{ opacity: isActive ? 1 : 0.55 }}>
-              <Icon name={tab.icon} size={22} />
+            <View style={styles.iconWrap}>
+              <Icon name={tab.icon} size={22} color={isActive ? GgastosColors.brandPrimary : GgastosColors.inkFaint} />
             </View>
             {tab.key === 'revisar' && !!badge && badge > 0 ? (
               <View style={styles.badge}>
                 <Text style={styles.badgeLabel}>{badge}</Text>
               </View>
             ) : null}
-            <Text style={[styles.label, { color: isActive ? GgastosColors.brandPrimary : GgastosColors.inkFaint }]}>
-              {tab.label}
-            </Text>
+            {isActive ? <Text style={styles.label}>{tab.label}</Text> : null}
           </Pressable>
         );
       })}
@@ -57,14 +55,27 @@ const styles = StyleSheet.create({
     backgroundColor: GgastosColors.bgSurfaceRaised,
     borderTopWidth: 1,
     borderTopColor: GgastosColors.lineSofter,
-    paddingVertical: 10,
-    paddingHorizontal: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    minHeight: 76,
   },
   tab: {
+    minWidth: 48,
+    height: 54,
     alignItems: 'center',
-    gap: 4,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
+    justifyContent: 'center',
+    gap: 3,
+    paddingHorizontal: 8,
+    borderRadius: GgastosRadius.pill,
+  },
+  activeTab: {
+    minWidth: 84,
+    paddingHorizontal: 16,
+    backgroundColor: GgastosColors.brandPrimarySoft,
+  },
+  iconWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   badge: {
     position: 'absolute',
@@ -83,7 +94,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   label: {
-    ...GgastosType.micro,
-    fontWeight: '600',
+    ...GgastosType.label,
+    color: GgastosColors.brandPrimary,
   },
 });
