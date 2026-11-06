@@ -1,11 +1,11 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/components/ggastos/core/button';
-import { Icon } from '@/components/ggastos/core/icon';
-import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
-import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
-import { CategoryField } from '@/features/planning/category-field';
+import { Button } from '@/shared/ui/core/button';
+import { Icon } from '@/shared/ui/core/icon';
+import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
+import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { CategoryField } from '@/features/categories/category-field';
 import { useUncategorizedTransactionReviewViewModel } from '@/features/statements/use-uncategorized-transaction-review-view-model';
 
 type UncategorizedTransactionReviewSheetProps = {

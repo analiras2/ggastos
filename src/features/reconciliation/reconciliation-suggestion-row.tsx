@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Button } from '@/components/ggastos/core/button';
-import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { Button } from '@/shared/ui/core/button';
+import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import type { ReconciliationSuggestionView } from '@/features/reconciliation/format-reconciliation';
 
 type ReconciliationSuggestionRowProps = {

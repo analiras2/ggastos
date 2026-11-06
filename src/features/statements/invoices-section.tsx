@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { InvoiceRow } from '@/features/statements/invoice-row';
 import { useInvoicesViewModel } from '@/features/statements/use-invoices-view-model';
 

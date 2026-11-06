@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
-import { Button } from '@/components/ggastos/core/button';
-import { hexToHsv, hsvToHex, isValidHex, type Hsv } from '@/constants/color-utils';
-import { GgastosColors, GgastosRadius, GgastosShadow, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { Button } from '@/shared/ui/core/button';
+import { hexToHsv, hsvToHex, isValidHex, type Hsv } from '@/shared/theme/color-utils';
+import { GgastosColors, GgastosRadius, GgastosShadow, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { BrightnessSlider } from '@/features/categories/brightness-slider';
 import { ColorWheel } from '@/features/categories/color-wheel';
 

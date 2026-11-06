@@ -1,10 +1,10 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { EmptyStateCard } from '@/components/ggastos/cards/empty-state-card';
-import { Icon } from '@/components/ggastos/core/icon';
-import { TransactionRow } from '@/components/ggastos/rows/transaction-row';
-import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { EmptyStateCard } from '@/shared/ui/cards/empty-state-card';
+import { Icon } from '@/shared/ui/core/icon';
+import { TransactionRow } from '@/shared/ui/rows/transaction-row';
+import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { useMonthSearchViewModel } from '@/features/search/use-month-search-view-model';
 
 type MonthSearchSheetProps = {

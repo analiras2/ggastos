@@ -1,10 +1,10 @@
 import { memo, useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Button } from '@/components/ggastos/core/button';
-import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
-import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
-import { monthLabel } from '@/features/dashboard/month-utils';
+import { Button } from '@/shared/ui/core/button';
+import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
+import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { monthLabel } from '@/shared/lib/month';
 import type { StatementInvoice } from '@/features/statements/use-statement-invoices';
 
 type InvoiceRowProps = {

@@ -1,7 +1,7 @@
 import { CategoryDetailsSheet } from '@/features/dashboard/category-details-sheet';
 import type { DashboardViewModel } from '@/features/dashboard/dashboard-view-model-types';
-import { AddPlanSheet } from '@/features/planning/add-plan-sheet';
-import { AddTemplateSheet } from '@/features/planning/add-template-sheet';
+import { AddPlanSheet } from '@/features/planned-entries/add-plan-sheet';
+import { AddTemplateSheet } from '@/features/templates/add-template-sheet';
 import { MonthSearchSheet } from '@/features/search/month-search-sheet';
 import { StatementImportSheet } from '@/features/statements/statement-import-sheet';
 import { UncategorizedTransactionReviewSheet } from '@/features/statements/uncategorized-transaction-review-sheet';

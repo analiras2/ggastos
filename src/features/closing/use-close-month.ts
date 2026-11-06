@@ -9,7 +9,7 @@ import {
   FunctionsRelayError,
 } from '@supabase/supabase-js';
 
-import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
+import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 import { monthDashboardKey } from '@/features/dashboard/use-month-dashboard';
 
 export const monthSnapshotKey = (month: string) => ['month-snapshot', month];

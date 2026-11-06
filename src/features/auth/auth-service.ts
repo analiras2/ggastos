@@ -1,6 +1,6 @@
 import type { User } from '@supabase/supabase-js';
 
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/shared/lib/supabase/client';
 
 const PROFILE_FALLBACK_EMAIL_DOMAIN = 'users.ggastos.local';
 

@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
-import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
-import { monthLabel } from '@/features/dashboard/month-utils';
+import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { monthLabel } from '@/shared/lib/month';
 import {
   useCarryOverOpeningBalance,
   useClearOpeningBalance,

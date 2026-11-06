@@ -1,9 +1,9 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { EmptyStateCard } from '@/components/ggastos/cards/empty-state-card';
-import { Icon } from '@/components/ggastos/core/icon';
-import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { EmptyStateCard } from '@/shared/ui/cards/empty-state-card';
+import { Icon } from '@/shared/ui/core/icon';
+import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { AnnualMonthRow } from '@/features/reports/annual-month-row';
 import { AnnualCategoryBars } from '@/features/reports/annual-category-bars';
 import { useAnnualReportViewModel } from '@/features/reports/use-annual-report-view-model';

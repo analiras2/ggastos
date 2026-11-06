@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
-import { Button } from '@/components/ggastos/core/button';
+import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
+import { Button } from '@/shared/ui/core/button';
 import { useOpeningBalanceViewModel } from '@/features/opening-balance/use-opening-balance-view-model';
 
 type OpeningBalanceCardProps = {

@@ -4,7 +4,7 @@ import type {
   StatementBank,
   StatementPaymentStatus,
 } from '@/features/statements/use-import-card-statement';
-import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
+import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 
 export type StatementInvoice = {
   id: string;

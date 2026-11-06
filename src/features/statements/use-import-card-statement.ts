@@ -5,8 +5,8 @@ import {
 } from '@tanstack/react-query';
 import { FunctionsHttpError } from '@supabase/supabase-js';
 
-import { invalidateMonthData } from '@/lib/query/invalidate-month-data';
-import { requireSupabase } from '@/lib/supabase/require-supabase';
+import { invalidateMonthData } from '@/shared/lib/query/invalidate-month-data';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 import {
   formatImportError,
   getHttpErrorMessage,

@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, Path, RadialGradient, Stop } from 'react-native-svg';
 
-import { hsvToHex } from '@/constants/color-utils';
-import { useDragPosition } from '@/lib/use-drag-position';
+import { hsvToHex } from '@/shared/theme/color-utils';
+import { useDragPosition } from '@/shared/lib/use-drag-position';
 
 const WEDGE_COUNT = 180;
 const WEDGE_DEGREES = 360 / WEDGE_COUNT;

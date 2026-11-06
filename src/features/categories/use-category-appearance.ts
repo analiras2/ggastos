@@ -1,8 +1,8 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import type { CategoryAppearanceMap } from '@/features/categories/category-appearance';
-import { categoriesKey } from '@/features/planning/use-categories';
-import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
+import { categoriesKey } from '@/features/categories/use-categories';
+import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 
 // Under the ['categories'] prefix so creating or editing a category refreshes it.
 export const categoryAppearanceKey = [...categoriesKey, 'appearance'];

@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { FlatList, StyleSheet, View, type ListRenderItemInfo } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { GgastosColors, GgastosSpacing } from '@/constants/ggastos-theme';
+import { GgastosColors, GgastosSpacing } from '@/shared/theme/ggastos-theme';
 import { PendingListHeader } from '@/features/reconciliation/pending-list-header';
 import { ReconciliationSection } from '@/features/reconciliation/reconciliation-section';
 import { usePendingViewModel } from '@/features/reconciliation/use-pending-view-model';

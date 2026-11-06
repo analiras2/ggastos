@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { GgastosColors } from '@/constants/ggastos-theme';
-import { BottomTabBar, BottomTabKey } from '@/components/ggastos/navigation/bottom-tab-bar';
+import { GgastosColors } from '@/shared/theme/ggastos-theme';
+import { BottomTabBar, BottomTabKey } from '@/shared/ui/navigation/bottom-tab-bar';
 import { DashboardScreen } from '@/features/dashboard/dashboard-screen';
-import { currentMonthKey } from '@/features/dashboard/month-utils';
+import { currentMonthKey } from '@/shared/lib/month';
 import { PendingScreen } from '@/features/reconciliation/pending-screen';
 import { PlanningScreen } from '@/features/planning/planning-screen';
 import { useReconciliationInbox } from '@/features/reconciliation/use-reconciliation-inbox';

@@ -1,10 +1,10 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/components/ggastos/core/button';
-import { Icon } from '@/components/ggastos/core/icon';
-import { SegmentedControl } from '@/components/ggastos/forms/segmented-control';
-import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { Button } from '@/shared/ui/core/button';
+import { Icon } from '@/shared/ui/core/icon';
+import { SegmentedControl } from '@/shared/ui/forms/segmented-control';
+import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { PaymentStatusField } from '@/features/statements/payment-status-field';
 import { StatementFileField } from '@/features/statements/statement-file-field';
 import { StatementImportResult } from '@/features/statements/statement-import-result';

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Button } from '@/components/ggastos/core/button';
-import { CATEGORY_COLORS } from '@/constants/category-colors';
-import { GgastosColors, GgastosRadius, GgastosSpacing } from '@/constants/ggastos-theme';
+import { Button } from '@/shared/ui/core/button';
+import { CATEGORY_COLORS } from '@/shared/theme/category-colors';
+import { GgastosColors, GgastosRadius, GgastosSpacing } from '@/shared/theme/ggastos-theme';
 import { CategoryAppearancePicker } from '@/features/categories/category-appearance-picker';
 
 const DEFAULT_ICON = 'tag';

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 
-import { Button } from '@/components/ggastos/core/button';
-import { Icon } from '@/components/ggastos/core/icon';
-import { GgastosColors, GgastosShadow, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
-import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
-import { countLabel } from '@/features/statements/counts';
+import { Button } from '@/shared/ui/core/button';
+import { Icon } from '@/shared/ui/core/icon';
+import { GgastosColors, GgastosShadow, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
+import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { countLabel } from '@/shared/lib/counts';
 
 const ICON_SIZE = 18;
 const ENTRANCE_MS = 180;

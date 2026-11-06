@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import {
   useConfirmPlannedEntryManually,
   useUndoManualConfirmation,
-} from '@/features/planning/use-planned-entries';
+} from '@/features/planned-entries/use-planned-entries';
 
 interface PlannedEntryStatusToggle {
   togglingEntryId: string | null;

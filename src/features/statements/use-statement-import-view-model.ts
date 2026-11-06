@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { pickFile } from '@/lib/pick-file';
+import { pickFile } from '@/shared/lib/pick-file';
 import {
   describePaymentStatus,
   isPaymentChoice,

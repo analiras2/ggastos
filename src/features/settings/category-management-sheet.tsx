@@ -1,9 +1,9 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/components/ggastos/core/button';
-import { Icon } from '@/components/ggastos/core/icon';
-import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { Button } from '@/shared/ui/core/button';
+import { Icon } from '@/shared/ui/core/icon';
+import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { CategoryAppearancePicker } from '@/features/categories/category-appearance-picker';
 import { useCategoryManagementViewModel } from '@/features/settings/use-category-management-view-model';
 

@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { GgastosColors, GgastosType } from '@/constants/ggastos-theme';
+import { GgastosColors, GgastosType } from '@/shared/theme/ggastos-theme';
 
 type AnnualMonthRowProps = {
   label: string;

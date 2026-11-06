@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 
 import { getFormattedCloseMonthError, useCloseMonth } from '@/features/closing/use-close-month';
-import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
+import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import type { BannerState } from '@/features/dashboard/dashboard-view-model-types';
 
 const CLOSED_MESSAGE = 'Mês fechado. O snapshot pode ser recalculado a qualquer momento.';

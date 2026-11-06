@@ -7,7 +7,7 @@ import {
 } from 'react';
 import type { Session } from '@supabase/supabase-js';
 
-import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
+import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 import { ensureProfile } from '@/features/auth/auth-service';
 
 type AuthContextValue = {

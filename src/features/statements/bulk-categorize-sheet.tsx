@@ -1,12 +1,12 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/components/ggastos/core/button';
-import { Icon } from '@/components/ggastos/core/icon';
-import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
-import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
-import { CategoryField } from '@/features/planning/category-field';
-import { countLabel } from '@/features/statements/counts';
+import { Button } from '@/shared/ui/core/button';
+import { Icon } from '@/shared/ui/core/icon';
+import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
+import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { CategoryField } from '@/features/categories/category-field';
+import { countLabel } from '@/shared/lib/counts';
 import type { BulkCategorizeViewModel } from '@/features/statements/use-bulk-categorize-view-model';
 
 const ICON_SIZE = 18;

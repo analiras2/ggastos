@@ -1,9 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Icon } from '@/components/ggastos/core/icon';
-import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { Icon } from '@/shared/ui/core/icon';
+import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import type { BulkCategorizeResult } from '@/features/statements/bulk-categorization';
-import { countLabel } from '@/features/statements/counts';
+import { countLabel } from '@/shared/lib/counts';
 
 const ICON_SIZE = 18;
 

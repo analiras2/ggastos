@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tan
 
 import type { TransactionDirection } from '@/features/statements/selection-state';
 import { saveCategoryRule } from '@/features/statements/save-category-rule';
-import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
+import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 
 export type UncategorizedTransaction = {
   id: string;

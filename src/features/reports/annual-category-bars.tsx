@@ -2,8 +2,8 @@ import { ArrowDownWideNarrow, ArrowUpNarrowWide } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
-import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
+import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
+import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import type { AnnualCategoryView } from '@/features/reports/format-annual-summary';
 import { sortAnnualCategories, type CategorySortOrder } from '@/features/reports/sort-annual-categories';
 

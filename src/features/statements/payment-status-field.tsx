@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { SegmentedControl } from '@/components/ggastos/forms/segmented-control';
-import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { SegmentedControl } from '@/shared/ui/forms/segmented-control';
+import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import type { PaymentChoice } from '@/features/statements/payment-status-labels';
 
 type PaymentStatusFieldProps = {

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { impactTypeSchema, monthSchema } from '@/features/planning/planning-schema';
+import { impactTypeSchema, monthSchema } from '@/shared/contracts/finance';
 
 const centsSchema = z.number().int();
 

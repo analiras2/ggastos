@@ -9,7 +9,7 @@ import {
   FunctionsRelayError,
 } from '@supabase/supabase-js';
 
-import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
+import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 
 export type ReconciliationAction = 'confirm' | 'reject' | 'undo';
 

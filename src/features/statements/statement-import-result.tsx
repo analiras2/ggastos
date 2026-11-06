@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Icon } from '@/components/ggastos/core/icon';
-import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { Icon } from '@/shared/ui/core/icon';
+import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import type { ImportSummaryRow } from '@/features/statements/statement-import-summary';
 
 type StatementImportResultProps = {

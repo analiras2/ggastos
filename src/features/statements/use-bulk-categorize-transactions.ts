@@ -12,7 +12,7 @@ import {
   UNCATEGORIZED_TRANSACTIONS_ROOT_KEY,
   type UncategorizedTransaction,
 } from '@/features/statements/use-uncategorized-transactions';
-import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
+import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 
 export type BulkCategorizeInput = {
   transactions: readonly UncategorizedTransaction[];

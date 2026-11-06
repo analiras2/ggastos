@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Button } from '@/components/ggastos/core/button';
-import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
-import { countLabel } from '@/features/statements/counts';
+import { Button } from '@/shared/ui/core/button';
+import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
+import { countLabel } from '@/shared/lib/counts';
 
 type CategoriesToolbarProps = {
   totalCount: number;

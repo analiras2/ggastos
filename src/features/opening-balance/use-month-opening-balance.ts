@@ -6,7 +6,7 @@ import {
   type UseQueryResult,
 } from '@tanstack/react-query';
 
-import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
+import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 import {
   monthOpeningBalanceSchema,
   type MonthOpeningBalance,

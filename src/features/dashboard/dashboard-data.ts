@@ -1,4 +1,4 @@
-import { EntryKind } from '@/constants/ggastos-theme';
+import { EntryKind } from '@/shared/theme/ggastos-theme';
 
 export type CategoryBudget = {
   categoryId: string;

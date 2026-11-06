@@ -1,4 +1,4 @@
-import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
+import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import type { ReconciliationSuggestion } from '@/features/reconciliation/reconciliation-schema';
 
 export type ReconciliationSuggestionView = {

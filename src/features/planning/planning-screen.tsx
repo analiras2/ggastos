@@ -1,14 +1,14 @@
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { EmptyStateCard } from '@/components/ggastos/cards/empty-state-card';
-import { Icon } from '@/components/ggastos/core/icon';
-import { MonthHeader } from '@/components/ggastos/navigation/month-header';
-import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
-import { AddPlanSheet } from '@/features/planning/add-plan-sheet';
-import { AddTemplateSheet } from '@/features/planning/add-template-sheet';
-import { EditTemplateSheet } from '@/features/planning/edit-template-sheet';
-import { PlanningEntryListRow } from '@/features/planning/planning-entry-list-row';
+import { EmptyStateCard } from '@/shared/ui/cards/empty-state-card';
+import { Icon } from '@/shared/ui/core/icon';
+import { MonthHeader } from '@/shared/ui/navigation/month-header';
+import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
+import { AddPlanSheet } from '@/features/planned-entries/add-plan-sheet';
+import { AddTemplateSheet } from '@/features/templates/add-template-sheet';
+import { EditTemplateSheet } from '@/features/templates/edit-template-sheet';
+import { PlanningEntryListRow } from '@/features/planned-entries/planning-entry-list-row';
 import { usePlanningViewModel } from '@/features/planning/use-planning-view-model';
 
 export function PlanningScreen() {

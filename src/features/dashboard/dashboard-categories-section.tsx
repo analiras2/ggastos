@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { GgastosColors, GgastosType } from '@/constants/ggastos-theme';
-import { CategoryBudgetRow } from '@/components/ggastos/rows/category-budget-row';
+import { GgastosColors, GgastosType } from '@/shared/theme/ggastos-theme';
+import { CategoryBudgetRow } from '@/shared/ui/rows/category-budget-row';
 import type { CategoryBudget } from '@/features/dashboard/dashboard-data';
 
 type DashboardCategoriesSectionProps = {

@@ -1,9 +1,9 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
-import { Icon } from '@/components/ggastos/core/icon';
-import { EmptyStateCard } from '@/components/ggastos/cards/empty-state-card';
+import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
+import { Icon } from '@/shared/ui/core/icon';
+import { EmptyStateCard } from '@/shared/ui/cards/empty-state-card';
 import { CategoryDetailsList } from '@/features/dashboard/category-details-list';
 import type { CategoryDetailsView } from '@/features/dashboard/format-category-details';
 

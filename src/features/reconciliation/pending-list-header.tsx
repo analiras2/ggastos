@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { EmptyStateCard } from '@/components/ggastos/cards/empty-state-card';
-import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { EmptyStateCard } from '@/shared/ui/cards/empty-state-card';
+import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import type { BulkCategorizeResult } from '@/features/statements/bulk-categorization';
 import { BulkResultBanner } from '@/features/statements/bulk-result-banner';
 import { InvoicesSection } from '@/features/statements/invoices-section';

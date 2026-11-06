@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
 
-import { currentMonthKey } from '@/features/dashboard/month-utils';
+import { currentMonthKey } from '@/shared/lib/month';
 import {
   formatReconciliationSuggestion,
   type ReconciliationSuggestionView,

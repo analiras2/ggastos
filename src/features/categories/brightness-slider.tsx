@@ -1,8 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
-import { GgastosRadius } from '@/constants/ggastos-theme';
-import { useDragPosition } from '@/lib/use-drag-position';
+import { GgastosRadius } from '@/shared/theme/ggastos-theme';
+import { useDragPosition } from '@/shared/lib/use-drag-position';
 
 const TRACK_HEIGHT = 18;
 const THUMB_SIZE = 26;

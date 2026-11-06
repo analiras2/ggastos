@@ -5,13 +5,8 @@ import {
 } from '@/features/categories/category-appearance';
 import type { CategoryBudget, DashboardData } from '@/features/dashboard/dashboard-data';
 import type { MonthDashboard } from '@/features/dashboard/dashboard-schema';
-import { monthLabel } from '@/features/dashboard/month-utils';
-
-const currencyFormatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-
-export function formatCurrencyCents(cents: number): string {
-  return currencyFormatter.format(cents / 100);
-}
+import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { monthLabel } from '@/shared/lib/month';
 
 function formatSignedCurrencyCents(cents: number): string {
   const formatted = formatCurrencyCents(Math.abs(cents));

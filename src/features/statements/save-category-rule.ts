@@ -1,5 +1,5 @@
 import { merchantKey, normalizeMerchantText } from '@/features/statements/merchant-key';
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/shared/lib/supabase/client';
 
 const DESCRIPTION_CONTAINS_RULE_TYPE = 'DESCRIPTION_CONTAINS';
 

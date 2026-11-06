@@ -1,8 +1,8 @@
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/components/ggastos/core/button';
-import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { Button } from '@/shared/ui/core/button';
+import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { useLoginViewModel } from '@/features/auth/use-login-view-model';
 
 export function LoginScreen() {

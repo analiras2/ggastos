@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { PlannedEntryRow } from '@/components/ggastos/rows/planned-entry-row';
-import { TransactionRow } from '@/components/ggastos/rows/transaction-row';
-import { GgastosColors, GgastosType } from '@/constants/ggastos-theme';
+import { PlannedEntryRow } from '@/shared/ui/rows/planned-entry-row';
+import { TransactionRow } from '@/shared/ui/rows/transaction-row';
+import { GgastosColors, GgastosType } from '@/shared/theme/ggastos-theme';
 import type { CategoryDetailsView } from '@/features/dashboard/format-category-details';
 
 type CategoryDetailsListProps = {

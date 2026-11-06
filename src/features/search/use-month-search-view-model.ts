@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import type { EntryKind } from '@/constants/ggastos-theme';
-import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
-import { paymentMethodLabel } from '@/features/planning/paid-entry-rules';
-import { formatIsoDateToBrazilian } from '@/features/planning/planning-form-utils';
-import type { ImpactType } from '@/features/planning/planning-schema';
-import { useCategories } from '@/features/planning/use-categories';
-import { matchesSearch, normalizeSearchText } from '@/features/search/search-text';
+import type { EntryKind } from '@/shared/theme/ggastos-theme';
+import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { paymentMethodLabel } from '@/features/planned-entries/paid-entry-rules';
+import { formatIsoDateToBrazilian } from '@/shared/lib/form-utils';
+import type { ImpactType } from '@/shared/contracts/finance';
+import { useCategories } from '@/features/categories/use-categories';
+import { matchesSearch, normalizeSearchText } from '@/shared/lib/search-text';
 import { useMonthSearchItems, type MonthSearchItem } from '@/features/search/use-month-search-items';
 
 const KIND_BY_IMPACT: Record<ImpactType, EntryKind> = {

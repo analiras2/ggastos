@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-import { GgastosRadius } from '@/constants/ggastos-theme';
+import { GgastosRadius } from '@/shared/theme/ggastos-theme';
 
 const SWATCH_SIZE = 32;
 const RING_BORDER_WIDTH = 2;

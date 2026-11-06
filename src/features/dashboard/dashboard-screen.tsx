@@ -1,12 +1,12 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
-import { MonthHeader } from '@/components/ggastos/navigation/month-header';
-import { QuickActionRow } from '@/components/ggastos/navigation/quick-action-row';
-import { SyncStatusBanner } from '@/components/ggastos/navigation/sync-status-banner';
-import { MetricHeroCard } from '@/components/ggastos/cards/metric-hero-card';
-import { KpiComparisonCard } from '@/components/ggastos/cards/kpi-comparison-card';
+import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
+import { MonthHeader } from '@/shared/ui/navigation/month-header';
+import { QuickActionRow } from '@/shared/ui/navigation/quick-action-row';
+import { SyncStatusBanner } from '@/shared/ui/navigation/sync-status-banner';
+import { MetricHeroCard } from '@/shared/ui/cards/metric-hero-card';
+import { KpiComparisonCard } from '@/shared/ui/cards/kpi-comparison-card';
 import { DashboardCategoriesSection } from '@/features/dashboard/dashboard-categories-section';
 import { DashboardSheets } from '@/features/dashboard/dashboard-sheets';
 import { useDashboardViewModel } from '@/features/dashboard/use-dashboard-view-model';

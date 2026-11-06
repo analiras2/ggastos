@@ -1,18 +1,20 @@
 import { Alert } from 'react-native';
 import { useCallback, useMemo, useState } from 'react';
 
-import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
-import { currentMonthKey, monthLabel, shiftMonthKey } from '@/features/dashboard/month-utils';
-import type { CategoryName } from '@/features/planning/use-categories';
+import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { currentMonthKey, monthLabel, shiftMonthKey } from '@/shared/lib/month';
+import type { CategoryName } from '@/features/categories/use-categories';
 import {
   useCancelPlannedEntry,
   useConfirmPlannedEntryManually,
   usePlannedEntries,
   useUndoManualConfirmation,
-} from '@/features/planning/use-planned-entries';
-import { useArchivePlanningTemplate, usePlanningTemplates } from '@/features/planning/use-planning-templates';
-import { useCategoryNames } from '@/features/planning/use-categories';
-import type { ImpactType, PlannedEntry, PlanningTemplate } from '@/features/planning/planning-schema';
+} from '@/features/planned-entries/use-planned-entries';
+import { useArchivePlanningTemplate, usePlanningTemplates } from '@/features/templates/use-planning-templates';
+import { useCategoryNames } from '@/features/categories/use-categories';
+import type { ImpactType } from '@/shared/contracts/finance';
+import type { PlannedEntry } from '@/features/planned-entries/contract';
+import type { PlanningTemplate } from '@/features/templates/contract';
 
 type EntryKind = 'despesa' | 'receita' | 'investimento' | 'transferencia';
 

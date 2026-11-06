@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { GgastosColors, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import type { ReconciliationSuggestionView } from '@/features/reconciliation/format-reconciliation';
 import { ReconciliationSuggestionRow } from '@/features/reconciliation/reconciliation-suggestion-row';
 

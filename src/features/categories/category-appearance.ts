@@ -1,4 +1,4 @@
-import { categoryColor } from '@/constants/category-colors';
+import { categoryColor } from '@/shared/theme/category-colors';
 
 export type CategoryAppearance = { icon: string | null; color: string | null };
 export type CategoryAppearanceMap = Record<string, CategoryAppearance>;

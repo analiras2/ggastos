@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { CategoryIcon } from '@/components/ggastos/core/category-icon';
-import { CATEGORY_COLORS, categoryIconColor } from '@/constants/category-colors';
-import { CATEGORY_ICON_OPTIONS } from '@/constants/category-icons';
-import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/constants/ggastos-theme';
+import { CategoryIcon } from '@/shared/ui/core/category-icon';
+import { CATEGORY_COLORS, categoryIconColor } from '@/shared/theme/category-colors';
+import { CATEGORY_ICON_OPTIONS } from '@/shared/theme/category-icons';
+import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { CustomColorModal } from '@/features/categories/custom-color-modal';
 import { CustomColorSwatch } from '@/features/categories/custom-color-swatch';
 

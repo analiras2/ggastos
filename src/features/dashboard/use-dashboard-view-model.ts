@@ -5,7 +5,7 @@ import { useMonthSnapshot } from '@/features/closing/use-month-snapshot';
 import type { DashboardData } from '@/features/dashboard/dashboard-data';
 import type { DashboardViewModel } from '@/features/dashboard/dashboard-view-model-types';
 import { emptyDashboardData, formatDashboardData } from '@/features/dashboard/format-dashboard';
-import { currentMonthKey, shiftMonthKey } from '@/features/dashboard/month-utils';
+import { currentMonthKey, shiftMonthKey } from '@/shared/lib/month';
 import { useCategoryDetailsPanel } from '@/features/dashboard/use-category-details-panel';
 import { useCloseMonthBanner } from '@/features/dashboard/use-close-month-banner';
 import { useDashboardSheets } from '@/features/dashboard/use-dashboard-sheets';

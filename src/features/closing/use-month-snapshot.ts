@@ -1,6 +1,6 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
-import { missingSupabaseEnv, supabase } from '@/lib/supabase/client';
+import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 import { monthSnapshotKey, type MonthSnapshotResult } from '@/features/closing/use-close-month';
 
 async function fetchMonthSnapshot(month: string): Promise<MonthSnapshotResult | null> {

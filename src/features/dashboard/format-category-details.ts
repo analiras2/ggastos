@@ -1,9 +1,9 @@
-import type { EntryKind, StatusChipStatus } from '@/constants/ggastos-theme';
-import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
+import type { EntryKind, StatusChipStatus } from '@/shared/theme/ggastos-theme';
+import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import type { CategoryDetails } from '@/features/dashboard/dashboard-schema';
-import { paymentMethodLabel } from '@/features/planning/paid-entry-rules';
-import { formatIsoDateToBrazilian } from '@/features/planning/planning-form-utils';
-import type { ImpactType, PlanningStatus } from '@/features/planning/planning-schema';
+import { paymentMethodLabel } from '@/features/planned-entries/paid-entry-rules';
+import { formatIsoDateToBrazilian } from '@/shared/lib/form-utils';
+import type { ImpactType, PlanningStatus } from '@/shared/contracts/finance';
 
 const IMPACT_TYPE_TO_KIND: Record<ImpactType, EntryKind> = {
   INCOME: 'receita',
