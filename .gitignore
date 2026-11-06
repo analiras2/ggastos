@@ -26,3 +26,13 @@ AGENTS.md
 .specs/quick/
 # Card statements (personal financial data) — never committed
 docs/faturas/
+
+# App build and local env
+dist/
+web-build/
+.expo/
+expo-env.d.ts
+.env
+.env*.local
+*.tsbuildinfo
+.metro-health-check*

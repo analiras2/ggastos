@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "GGastos",
-    "slug": "ggastos-mobile",
+    "slug": "ggastos",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
