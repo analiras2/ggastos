@@ -10,12 +10,11 @@ import { useCategoryDetailsPanel } from '@/features/dashboard/use-category-detai
 import { useCloseMonthBanner } from '@/features/dashboard/use-close-month-banner';
 import { useDashboardSheets } from '@/features/dashboard/use-dashboard-sheets';
 import { useMonthDashboard } from '@/features/dashboard/use-month-dashboard';
-import { useMonthOpeningBalance } from '@/features/opening-balance';
+import { useWalletPanel } from '@/features/dashboard/use-wallet-panel';
 
 export function useDashboardViewModel(): DashboardViewModel {
   const [monthKey, setMonthKey] = useState<string>(currentMonthKey);
   const monthDashboardQuery = useMonthDashboard(monthKey);
-  const openingBalanceQuery = useMonthOpeningBalance(monthKey);
   const categoryAppearanceQuery = useCategoryAppearance();
   const monthSnapshotQuery = useMonthSnapshot(monthKey);
   const sheets = useDashboardSheets();
@@ -25,33 +24,20 @@ export function useDashboardViewModel(): DashboardViewModel {
     monthKey,
     monthDashboardQuery.data?.summary.openExpenseCents ?? 0
   );
+  const walletPanel = useWalletPanel(handleCloseMonth);
 
   const data = useMemo<DashboardData>(() => {
     if (monthDashboardQuery.data) {
-      return formatDashboardData(
-        monthDashboardQuery.data,
-        openingBalanceQuery.data?.openingBalanceCents ?? 0,
-        categoryAppearanceQuery.data
-      );
+      return formatDashboardData(monthDashboardQuery.data, categoryAppearanceQuery.data);
     }
     return emptyDashboardData(monthKey);
-  }, [monthDashboardQuery.data, openingBalanceQuery.data?.openingBalanceCents, categoryAppearanceQuery.data, monthKey]);
+  }, [monthDashboardQuery.data, categoryAppearanceQuery.data, monthKey]);
 
-  const importBanner = useMemo(() => {
-    if (monthDashboardQuery.isLoading) {
-      return { state: 'pending' as const, message: 'Carregando o mês...' };
-    }
-
-    if (monthDashboardQuery.isError) {
-      return { state: 'error' as const, message: 'Não foi possível carregar os dados do mês.' };
-    }
-
-    return {
-      state: 'ok' as const,
-      message: 'Importe a fatura do cartão para atualizar os gastos realizados.',
-      actionLabel: 'Importar CSV',
-    };
-  }, [monthDashboardQuery.isError, monthDashboardQuery.isLoading]);
+  const loadStatus: DashboardViewModel['loadStatus'] = monthDashboardQuery.isLoading
+    ? 'loading'
+    : monthDashboardQuery.isError
+      ? 'error'
+      : 'ready';
 
   const handlePrevMonth = useCallback(() => setMonthKey((current) => shiftMonthKey(current, -1)), []);
   const handleNextMonth = useCallback(() => setMonthKey((current) => shiftMonthKey(current, 1)), []);
@@ -74,9 +60,10 @@ export function useDashboardViewModel(): DashboardViewModel {
     ...sheets,
     data,
     monthKey,
-    importBanner,
+    loadStatus,
     categoryDetails,
     isCurrentMonth: monthKey === currentMonthKey(),
+    canCloseMonth: monthKey <= currentMonthKey(),
     isMonthClosed: monthSnapshotQuery.data?.status === 'CLOSED',
     isClosingMonth,
     closeMonthBanner,
@@ -87,6 +74,7 @@ export function useDashboardViewModel(): DashboardViewModel {
     handleOpenCategory,
     handleCloseCategoryDetails,
     handleSelectSearchCategory,
-    handleCloseMonth,
+    ...walletPanel,
+    handleCloseMonth: walletPanel.handleRequestCloseMonth,
   };
 }

@@ -9,7 +9,7 @@ const MONTH_DATA_QUERY_KEYS: QueryKey[] = [
   ['month-search'],
   ['month-snapshot'],
   ['annual-summary'],
-  ['month-opening-balance'],
+  ['wallet'],
 ];
 
 // Call after any change that moves money between months, categories or statuses,

@@ -1,21 +1,27 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
+import type { ImpactType } from '@/shared/contracts/finance';
 import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 import { categoryDetailsSchema, type CategoryDetails } from '@/features/dashboard/contract';
 
-export const categoryDetailsKey = (month: string, categoryId: string) => [
+export const categoryDetailsKey = (month: string, categoryId: string, impactType: ImpactType) => [
   'category-details',
   month,
   categoryId,
+  impactType,
 ];
 
-async function fetchCategoryDetails(month: string, categoryId: string): Promise<CategoryDetails> {
+async function fetchCategoryDetails(
+  month: string,
+  categoryId: string,
+  impactType: ImpactType
+): Promise<CategoryDetails> {
   if (!supabase) {
     throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
   }
 
   const [categoryResult, plannedResult, transactionsResult] = await Promise.all([
-    supabase.from('categories').select('code,name,impact_type').eq('id', categoryId).single(),
+    supabase.from('categories').select('code,name').eq('id', categoryId).single(),
     supabase
       .from('planned_entries')
       .select(
@@ -23,6 +29,7 @@ async function fetchCategoryDetails(month: string, categoryId: string): Promise<
       )
       .eq('month', month)
       .eq('category_id', categoryId)
+      .eq('impact_type', impactType)
       .neq('status', 'CANCELLED')
       .order('created_at', { ascending: true }),
     supabase
@@ -30,6 +37,7 @@ async function fetchCategoryDetails(month: string, categoryId: string): Promise<
       .select('id,description,amount_cents,posted_at,merchant_name,payment_method')
       .eq('competency_month', month)
       .eq('internal_category_id', categoryId)
+      .eq('impact_type', impactType)
       .is('deleted_at', null)
       .order('posted_at', { ascending: false }),
   ]);
@@ -49,7 +57,7 @@ async function fetchCategoryDetails(month: string, categoryId: string): Promise<
     categoryId,
     categoryCode: categoryResult.data.code,
     name: categoryResult.data.name,
-    impactType: categoryResult.data.impact_type,
+    impactType,
     plannedEntries: (plannedResult.data ?? []).map((row) => ({
       id: row.id,
       title: row.title,
@@ -74,11 +82,12 @@ async function fetchCategoryDetails(month: string, categoryId: string): Promise<
 
 export function useCategoryDetails(
   month: string,
-  categoryId: string | null
+  categoryId: string | null,
+  impactType: ImpactType | null
 ): UseQueryResult<CategoryDetails, Error> {
   return useQuery({
-    queryKey: categoryDetailsKey(month, categoryId ?? ''),
-    queryFn: () => fetchCategoryDetails(month, categoryId as string),
-    enabled: categoryId !== null,
+    queryKey: categoryDetailsKey(month, categoryId ?? '', impactType ?? 'EXPENSE'),
+    queryFn: () => fetchCategoryDetails(month, categoryId as string, impactType as ImpactType),
+    enabled: categoryId !== null && impactType !== null,
   });
 }

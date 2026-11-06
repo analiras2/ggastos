@@ -10,7 +10,7 @@ import { usePlannedEntryStatusToggle } from '@/features/dashboard/use-planned-en
 export function useCategoryDetailsPanel(monthKey: string) {
   const [selectedCategory, setSelectedCategory] = useState<CategoryBudget | null>(null);
   const categoryId = selectedCategory?.categoryId ?? null;
-  const detailsQuery = useCategoryDetails(monthKey, categoryId);
+  const detailsQuery = useCategoryDetails(monthKey, categoryId, selectedCategory?.impactType ?? null);
   const { togglingEntryId, handleToggleStatus } = usePlannedEntryStatusToggle(monthKey, categoryId);
 
   const categoryDetails = useMemo<CategoryDetailsPanel>(

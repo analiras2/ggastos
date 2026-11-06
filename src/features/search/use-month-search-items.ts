@@ -1,5 +1,6 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
+import type { ImpactType } from '@/shared/contracts/finance';
 import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 
 export type MonthSearchItem = {
@@ -8,6 +9,8 @@ export type MonthSearchItem = {
   // Planned entries created by hand may have no title.
   title: string | null;
   categoryId: string | null;
+  // Type of the entry itself, which can differ from its category's.
+  impactType: ImpactType | null;
   amountCents: number;
   // ISO date or timestamp used for ordering and display.
   date: string | null;
@@ -25,12 +28,12 @@ async function fetchMonthSearchItems(month: string): Promise<MonthSearchItem[]> 
   const [plannedResult, transactionsResult] = await Promise.all([
     supabase
       .from('planned_entries')
-      .select('id,title,amount_cents,status,due_date,category_id,payment_method')
+      .select('id,title,amount_cents,status,due_date,category_id,impact_type,payment_method')
       .eq('month', month)
       .neq('status', 'CANCELLED'),
     supabase
       .from('imported_transactions')
-      .select('id,description,merchant_name,amount_cents,posted_at,internal_category_id,payment_method')
+      .select('id,description,merchant_name,amount_cents,posted_at,internal_category_id,impact_type,payment_method')
       .eq('competency_month', month)
       .is('deleted_at', null),
   ]);
@@ -47,6 +50,7 @@ async function fetchMonthSearchItems(month: string): Promise<MonthSearchItem[]> 
     source: 'PLANNED',
     title: row.title,
     categoryId: row.category_id,
+    impactType: row.impact_type,
     amountCents: row.amount_cents,
     date: row.due_date,
     status: row.status,
@@ -58,6 +62,7 @@ async function fetchMonthSearchItems(month: string): Promise<MonthSearchItem[]> 
     source: 'REALIZED',
     title: row.merchant_name ?? row.description,
     categoryId: row.internal_category_id,
+    impactType: row.impact_type,
     amountCents: row.amount_cents,
     date: row.posted_at,
     status: null,

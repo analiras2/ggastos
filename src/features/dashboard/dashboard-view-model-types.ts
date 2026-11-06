@@ -1,3 +1,4 @@
+import type { WalletSheetMode } from '@/features/wallet';
 import type { CategoryBudget, DashboardData } from '@/features/dashboard/dashboard-data';
 import type { CategoryDetailsView } from '@/features/dashboard/format-category-details';
 
@@ -14,18 +15,26 @@ export interface CategoryDetailsPanel {
 
 export interface DashboardViewModel {
   data: DashboardData;
-  importBanner: {
-    state: BannerState;
-    message: string;
-    actionLabel?: string;
+  wallet: {
+    value: string;
+    balanceCents: number;
+    isNegative: boolean;
+    isConfigured: boolean;
+    isLoading: boolean;
   };
+  walletSheetMode: WalletSheetMode | null;
+  handleOpenWalletSheet: () => void;
+  handleCloseWalletSheet: () => void;
+  handleRequestCloseMonth: () => void;
+  handleWalletSheetDone: () => void;
+  loadStatus: 'loading' | 'error' | 'ready';
+  canCloseMonth: boolean;
   categoryDetails: CategoryDetailsPanel;
   isSearchVisible: boolean;
   handleOpenSearch: () => void;
   handleCloseSearch: () => void;
   handleSelectSearchCategory: (categoryId: string) => void;
   isAddPlanVisible: boolean;
-  isAddTemplateVisible: boolean;
   isStatementImportVisible: boolean;
   categoryReviewBatchId: string | null;
   monthKey: string;
@@ -41,8 +50,6 @@ export interface DashboardViewModel {
   handleCloseCategoryDetails: () => void;
   handleAddPlan: () => void;
   handleCloseAddPlan: () => void;
-  handleAddTemplate: () => void;
-  handleCloseAddTemplate: () => void;
   handleOpenStatementImport: () => void;
   handleCloseStatementImport: () => void;
   handleOpenCategoryReview: (batchId: string) => void;

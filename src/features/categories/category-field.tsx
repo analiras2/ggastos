@@ -12,6 +12,8 @@ type CategoryFieldProps = {
   selectedCategoryId: string | null;
   onSelect: (id: string) => void;
   impactTypes?: ImpactType[];
+  // Lists every category whatever its type; `newCategoryImpactType` is the type of ones created here.
+  newCategoryImpactType?: ImpactType;
 };
 
 const ALL_IMPACT_TYPES: ImpactType[] = ['EXPENSE', 'INCOME', 'INVESTMENT', 'TRANSFER'];
@@ -23,6 +25,7 @@ export function CategoryField({
   selectedCategoryId,
   onSelect,
   impactTypes = ALL_IMPACT_TYPES,
+  newCategoryImpactType,
 }: CategoryFieldProps) {
   const [isPickerVisible, setIsPickerVisible] = useState(false);
   const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
@@ -50,7 +53,8 @@ export function CategoryField({
           categories={categories}
           selectedCategoryId={selectedCategoryId}
           impactTypes={impactTypes}
-          initialImpactType={selectedCategory?.impactType ?? impactTypes[0]}
+          initialImpactType={newCategoryImpactType ?? selectedCategory?.impactType ?? impactTypes[0]}
+          showAllTypes={newCategoryImpactType !== undefined}
           onSelect={handleSelect}
           onClose={() => setIsPickerVisible(false)}
         />

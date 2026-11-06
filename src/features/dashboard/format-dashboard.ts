@@ -1,5 +1,6 @@
 import { resolveCategoryColor, resolveCategoryIcon, type CategoryAppearanceMap } from '@/features/categories';
 import type { CategoryBudget, DashboardData } from '@/features/dashboard/dashboard-data';
+import { categoryDisplayName, splitCategoryIds } from '@/features/dashboard/category-display-name';
 import type { MonthDashboard } from '@/features/dashboard/contract';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import { monthLabel } from '@/shared/lib/month';
@@ -33,6 +34,7 @@ function iconForCategory(categoryCode: string): string {
 
 function toCategoryBudget(
   category: MonthDashboard['categories'][number],
+  isSplit: boolean,
   appearance?: CategoryAppearanceMap
 ): CategoryBudget {
   const progress =
@@ -50,7 +52,8 @@ function toCategoryBudget(
 
   return {
     categoryId: category.categoryId,
-    name: category.name,
+    impactType: category.impactType,
+    name: categoryDisplayName(category.name, category.impactType, isSplit),
     icon: resolveCategoryIcon(category.categoryId, iconForCategory(category.categoryCode), appearance),
     color: resolveCategoryColor(category.categoryId, appearance),
     planned: category.plannedCents > 0 ? formatCurrencyCents(category.plannedCents) : null,
@@ -62,28 +65,20 @@ function toCategoryBudget(
 
 export function formatDashboardData(
   monthDashboard: MonthDashboard,
-  openingBalanceCents = 0,
   appearance?: CategoryAppearanceMap
 ): DashboardData {
   const { summary } = monthDashboard;
-  // Cash balance: only what was actually paid. Unpaid (open) statements are counted in
-  // committedRemainingCents instead (see get_month_dashboard).
-  const heroDeltaCents = summary.expectedBalanceCents - summary.currentBalanceCents;
-  const totalActual = summary.currentBalanceCents + openingBalanceCents;
+  const splitIds = splitCategoryIds(monthDashboard.categories);
 
   return {
     month: monthLabel(monthDashboard.month),
-    hero: {
-      value: formatCurrencyCents(totalActual),
-      delta: formatSignedCurrencyCents(heroDeltaCents),
-      deltaLabel: 'até o momento',
-      status: totalActual >= 0 ? 'healthy' : 'tight',
-    },
-    previsto: formatCurrencyCents(summary.expectedBalanceCents + openingBalanceCents),
+    previsto: formatCurrencyCents(summary.expectedBalanceCents),
     commitment: { value: formatCurrencyCents(summary.committedRemainingCents) },
     openInvoices:
       summary.openExpenseCents > 0 ? { value: formatCurrencyCents(summary.openExpenseCents) } : null,
-    categories: monthDashboard.categories.map((category) => toCategoryBudget(category, appearance)),
+    categories: monthDashboard.categories.map((category) =>
+      toCategoryBudget(category, splitIds.has(category.categoryId), appearance)
+    ),
     pendingReviewCount: 0,
   };
 }
@@ -91,12 +86,6 @@ export function formatDashboardData(
 export function emptyDashboardData(monthKey: string): DashboardData {
   return {
     month: monthLabel(monthKey),
-    hero: {
-      value: formatCurrencyCents(0),
-      delta: formatCurrencyCents(0),
-      deltaLabel: 'vs. realizado até agora',
-      status: 'healthy',
-    },
     previsto: formatCurrencyCents(0),
     commitment: { value: formatCurrencyCents(0) },
     openInvoices: null,
