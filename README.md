@@ -1,91 +1,78 @@
 # GGastos
 
-App mobile pessoal de finanças centrado em `planejado vs. realizado`. A rota ativa
-do produto importa faturas de cartão em CSV, concilia as linhas com o
-planejamento e mantém dashboard, inbox de revisão e fechamento mensal.
+App web (PWA) pessoal de finanças centrado em `planejado vs. realizado`. Importa
+faturas de cartão em CSV, concilia as linhas com o planejamento e mantém
+dashboard, inbox de revisão e fechamento mensal.
 
 ## Estrutura
-- [`mobile/`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/mobile): app Expo/React Native.
-- [`supabase/`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/supabase): schema, Edge Functions e testes de RLS.
-- [`docs/`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs): documentação ativa de produto, arquitetura e operação.
-- [`.specs/`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/.specs): especificações e histórico de decisões.
+- [`src/`](src): app React (react-native-web), organizado por feature em `src/features/`.
+- [`public/`](public): manifest, service worker e ícones do PWA.
+- [`supabase/`](supabase): schema, Edge Functions e testes.
+- [`docs/`](docs): documentação de produto, arquitetura e operação.
+- [`.specs/`](.specs): especificações e histórico de decisões.
+
+Guia para agentes e convenções do projeto: [`CLAUDE.md`](CLAUDE.md).
 
 ## Como rodar localmente
 
 ### Pré-requisitos
 
-- Node.js compatível com o Expo SDK 57.
+- Node.js 22 ou superior.
 - Docker Desktop em execução (necessário para o Supabase local).
 - [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started) instalada.
-- Para executar no iOS, Xcode e um simulador configurados; para Android, Android Studio e um emulador configurados.
 
 ### 1. Inicie o backend
 
-Em um terminal, na raiz do repositório, inicie os serviços locais e aplique o
-schema com os dados de seed:
+Na raiz do repositório:
 
 ```bash
-cd supabase
 supabase start
 supabase db reset
 ```
 
-O comando `supabase db reset` executa todas as migrations e carrega
-`supabase/seed.sql`. Para consultar a URL e a chave pública usadas pelo app,
-execute:
+`supabase db reset` executa todas as migrations e carrega `supabase/seed.sql`.
+Para consultar a URL e a chave pública usadas pelo app:
 
 ```bash
 supabase status
 ```
 
-Mantenha os serviços do Supabase em execução enquanto utiliza o aplicativo.
+Mantenha os serviços do Supabase em execução enquanto usa o app.
 
-### 2. Configure e inicie o app mobile
-
-Em outro terminal, crie o arquivo de ambiente a partir do exemplo:
+### 2. Configure e inicie o app
 
 ```bash
-cp mobile/.env.example mobile/.env
+cp .env.example .env.local
 ```
 
-Edite `mobile/.env` e preencha `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` com a
-chave **Publishable** exibida por `supabase status`. A URL local padrão já é
-`http://127.0.0.1:54321`. O app exibe uma tela de login (e-mail e senha) e
-mantém a sessão persistida. Não coloque senhas em variáveis `EXPO_PUBLIC_*`.
-
-Instale as dependências e escolha uma plataforma:
+Edite `.env.local` e preencha `VITE_SUPABASE_PUBLISHABLE_KEY` com a chave
+**Publishable** exibida por `supabase status`. A URL local padrão já é
+`http://127.0.0.1:54321`. O login é por e-mail e senha. Variáveis
+`VITE_*` vão para o bundle: nunca coloque senhas nelas.
 
 ```bash
-cd mobile
 npm install
-npm start
-```
-
-Com o servidor Expo ativo, use o menu interativo para abrir o simulador ou
-emulador. Você também pode iniciar diretamente:
-
-```bash
-npm run ios
-npm run android
 npm run web
 ```
 
 ### Verificações úteis
 
 ```bash
-cd mobile
+npm run typecheck
 npm run lint
-npx tsc --noEmit
-npx expo install --check
+npm test
+npm run test:backend   # Node 22+
+npm run build:web
 ```
 
 ## Documentos principais
-- [PRD](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/prd-ggastos-v2.md)
-- [TDD](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/tdd-ggastos-v2.md)
-- [Data Contract / Schema Spec](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/data-contract-schema-spec.md)
-- [Stack Técnica Supabase MVP](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/stack-tecnica-supabase-mvp.md)
-- [Importação de fatura CSV](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/card-statement-import.md)
-- [Roadmap](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/.specs/project/ROADMAP.md)
+Índice completo, com o que é vigente e o que é histórico: [`docs/README.md`](docs/README.md).
+
+- [Arquitetura e stack](docs/stack-tecnica-supabase-mvp.md)
+- [Importação de fatura CSV](docs/card-statement-import.md)
+- [PRD](docs/prd-ggastos-v2.md) e [TDD](docs/tdd-ggastos-v2.md) (baselines de produto)
+- [Data Contract / Schema Spec](docs/data-contract-schema-spec.md)
+- [Specs e roadmap](.specs/README.md)
 
 ## Estratégia ativa
 
@@ -98,8 +85,3 @@ npx expo install --check
 
 A integração Pluggy foi preservada apenas como histórico na branch
 `pluggy-integration-snapshot`; não é um destino de deploy nem um fluxo ativo.
-
-## Diretriz
-O desenvolvimento novo deve partir de `docs/` e da spec
-[`card-statement-import`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/.specs/features/card-statement-import/spec.md).
-As seções de Pluggy nos documentos históricos existem apenas para consulta.

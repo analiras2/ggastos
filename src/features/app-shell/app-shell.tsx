@@ -1,0 +1,43 @@
+import { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import { GgastosColors } from '@/shared/theme/ggastos-theme';
+import { BottomTabBar, BottomTabKey } from '@/shared/ui/navigation/bottom-tab-bar';
+import { DashboardScreen } from '@/features/dashboard';
+import { currentMonthKey } from '@/shared/lib/month';
+import { PendingScreen } from '@/features/reconciliation';
+import { PlanningScreen } from '@/features/planning';
+import { useReconciliationInbox } from '@/features/reconciliation';
+import { AnnualReportScreen } from '@/features/reports';
+import { SettingsScreen } from '@/features/settings';
+import { useUncategorizedTransactions } from '@/features/statements';
+
+export function AppShell() {
+  const [activeTab, setActiveTab] = useState<BottomTabKey>('mes');
+  const inboxQuery = useReconciliationInbox(currentMonthKey());
+  const uncategorizedTransactionsQuery = useUncategorizedTransactions();
+  const pendingSuggestionsCount = (inboxQuery.data?.length ?? 0) + (uncategorizedTransactionsQuery.data?.length ?? 0);
+
+  return (
+    <View style={styles.shell}>
+      <View style={styles.content}>
+        {activeTab === 'mes' ? <DashboardScreen /> : null}
+        {activeTab === 'revisar' ? <PendingScreen /> : null}
+        {activeTab === 'anual' ? <AnnualReportScreen /> : null}
+        {activeTab === 'ajustes' ? <SettingsScreen /> : null}
+        {activeTab === 'planejamento' ? <PlanningScreen /> : null}
+      </View>
+      <BottomTabBar active={activeTab} onChange={setActiveTab} badge={pendingSuggestionsCount} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  shell: {
+    flex: 1,
+    backgroundColor: GgastosColors.bgBase,
+  },
+  content: {
+    flex: 1,
+  },
+});

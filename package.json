@@ -1,0 +1,44 @@
+{
+  "name": "ggastos",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@expo-google-fonts/manrope": "^0.4.2",
+    "@expo-google-fonts/space-grotesk": "^0.4.1",
+    "@supabase/supabase-js": "^2.110.2",
+    "@tanstack/react-query": "^5.101.2",
+    "lucide-react-native": "^1.68.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.2",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-svg": "15.15.4",
+    "react-native-web": "~0.21.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/react": "~19.2.2",
+    "@types/react-dom": "~19.2.0",
+    "@vitejs/plugin-react": "^6.2.1",
+    "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.14.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "vite": "^8.3.6",
+    "vitest": "^4.1.12"
+  },
+  "scripts": {
+    "dev": "vite",
+    "web": "vite",
+    "build": "vite build",
+    "build:web": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:backend": "node --test \"supabase/functions/**/*.test.mjs\"",
+    "lint": "eslint src"
+  },
+  "private": true
+}

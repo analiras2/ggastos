@@ -20,7 +20,7 @@ e usa a inbox de conciliação para casos ambíguos.
 | Bradesco | CSV ISO-8859-1 separado por ponto e vírgula | Ignora metadados/resumos; reconhece fatura atual e lançamentos programados. |
 
 Arquivos reais nunca devem ser versionados. Os testes usam somente fixtures
-sintéticas em [`.specs/features/card-statement-import/fixtures/`](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/.specs/features/card-statement-import/fixtures).
+sintéticas em [`.specs/features/card-statement-import/fixtures/`](../.specs/features/card-statement-import/fixtures).
 
 ## Fluxo de processamento
 
@@ -63,21 +63,39 @@ Cada fatura (lote) é **paga** (`PAID`, linhas `POSTED`) ou **em aberto** (`OPEN
   "pago" paga linhas em aberto. Sugestões não mudam linhas já existentes.
 - **Depois:** em Pendências, a seção "Faturas" tem **Marcar como paga** e **Reabrir**
   (função `set_statement_payment_status`, que atualiza lote e linhas juntos).
-- **Painel:** fatura em aberto sai do "Saldo atual" e entra em "Comprometido restante"
+- **Painel:** fatura em aberto sai da "Carteira" e entra em "Pendente"
   (exceto despesas já conciliadas com um planejamento, para não contar em dobro); o card
   "Faturas em aberto" mostra o total. Categorias e relatório anual continuam contando
   tudo, e a tela anual avisa isso.
 - **Fechar o mês:** não é bloqueado com fatura em aberto; o aviso aparece depois de
   fechar. Pague a fatura e use "Recalcular mês" para atualizar o fechamento.
 
-Detalhes e decisões: [plano](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/statement-payment-status-plan.md).
+Detalhes e decisões: [plano](archive/statement-payment-status-plan.md).
+
+## Parcelas futuras
+
+Depois de gravar as linhas, a importação chama a função SQL `plan_future_installments`. Para cada
+linha parcelada (por exemplo, 2/5) ela cria como **previstas** as parcelas seguintes (3, 4 e 5)
+nos meses que vêm depois, com o mesmo valor, de modo que o mês já mostre o que vem aí sem esperar
+a próxima fatura.
+
+- **Só do mês atual em diante:** meses passados não ganham previsto.
+- **Idempotente:** cada previsto tem uma `source_key` única; reimportar não duplica e um previsto
+  cancelado continua cancelado. Se a fatura daquele mês já foi importada, a parcela real existe e
+  o previsto não é criado.
+- **Sem categoria própria:** usa a categoria geral de despesa.
+- **Conciliação:** quando a fatura do mês chega, a parcela real concilia com o previsto
+  (o sinal de parcela já faz parte da pontuação).
+- **Apagar uma importação:** remove os previstos dela que ainda estão como previstos; o que já foi
+  conciliado, confirmado ou cancelado fica.
+- **Falha não derruba a importação:** o erro é registrado e o resumo devolve `installmentsPlanned: 0`.
 
 ## Forma de pagamento
 
 Toda linha importada de fatura é gravada com `payment_method = CREDIT_CARD`. Lançamentos feitos
 à mão e já pagos (dinheiro, Pix, débito/transferência, outro) usam a mesma coluna em
 `planned_entries`. Cartão não é oferecido no formulário: compra no cartão entra pela fatura, e
-lançar de novo contaria em dobro. Detalhes: [plano](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/paid-entries-plan.md).
+lançar de novo contaria em dobro. Detalhes: [plano](archive/paid-entries-plan.md).
 
 ## Limites atuais
 
@@ -88,7 +106,9 @@ lançar de novo contaria em dobro. Detalhes: [plano](/Users/analirascalabrini/Pr
 
 ## Referências técnicas
 
-- [Especificação detalhada](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/.specs/features/card-statement-import/spec.md)
-- [Design técnico](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/.specs/features/card-statement-import/design.md)
-- [Contrato de dados](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/docs/data-contract-schema-spec.md)
-- [Implementação da Edge Function](/Users/analirascalabrini/Projects/ascal/ggastos/ggastos/supabase/functions/import-card-statement/index.ts)
+- [Especificação detalhada](../.specs/features/card-statement-import/spec.md)
+- [Design técnico](../.specs/features/card-statement-import/design.md)
+- [Contrato de dados](data-contract-schema-spec.md)
+- [Edge Function (HTTP, auth e erros)](../supabase/functions/import-card-statement/index.ts)
+- [Fluxo da importação, por etapa](../supabase/functions/_shared/statement-import/run-import.ts)
+- [Parcelas futuras (migration)](../supabase/migrations/20261105120000_plan_future_card_installments.sql)
