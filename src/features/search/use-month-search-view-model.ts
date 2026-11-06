@@ -78,7 +78,7 @@ export function useMonthSearchViewModel(month: string, visible: boolean): MonthS
           title: displayTitle(item),
           category: category?.name ?? NO_CATEGORY_LABEL,
           amount: formatCurrencyCents(item.amountCents),
-          kind: category ? KIND_BY_IMPACT[category.impactType] : 'despesa',
+          kind: KIND_BY_IMPACT[item.impactType ?? category?.impactType ?? 'EXPENSE'],
           date: withDetails(item),
         };
       });

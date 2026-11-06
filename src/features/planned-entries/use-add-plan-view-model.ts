@@ -1,14 +1,14 @@
 import { useCallback, useState } from 'react';
 
 import { useCategories, type CategoryOption } from '@/features/categories';
-import { useCreatePlannedEntry } from '@/features/planned-entries/use-planned-entries';
-import { resolveEntryTitle } from '@/features/planned-entries/paid-entry-rules';
+import type { ImpactType } from '@/shared/contracts/finance';
 import { usePaidEntryState, type PaidEntryState } from '@/features/planned-entries/use-paid-entry-state';
 import {
-  centsFromMaskedInput,
-  formatDateToIso,
-  monthKeyFromIsoDate,
-} from '@/shared/lib/form-utils';
+  usePlanRecurrenceState,
+  type PlanRecurrenceState,
+} from '@/features/planned-entries/use-plan-recurrence-state';
+import { useSubmitPlan } from '@/features/planned-entries/use-submit-plan';
+import { centsFromMaskedInput } from '@/shared/lib/form-utils';
 
 interface AddPlanViewModel {
   title: string;
@@ -19,10 +19,13 @@ interface AddPlanViewModel {
   setSelectedDate: (date: Date) => void;
   amountCents: number;
   handleAmountChange: (text: string) => void;
+  impactType: ImpactType;
+  setImpactType: (value: ImpactType) => void;
   categories: CategoryOption[];
   isLoadingCategories: boolean;
   selectedCategoryId: string | null;
   setSelectedCategoryId: (id: string) => void;
+  recurrence: PlanRecurrenceState;
   paidEntry: PaidEntryState;
   errorMessage: string | null;
   isSubmitting: boolean;
@@ -32,28 +35,32 @@ interface AddPlanViewModel {
 
 export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
   const categoriesQuery = useCategories();
-  const createPlannedEntry = useCreatePlannedEntry();
+  const { submit, isSubmitting } = useSubmitPlan();
 
   const [title, setTitle] = useState('');
   const [tagsInput, setTagsInput] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [amountCents, setAmountCents] = useState(0);
+  const [impactType, setImpactType] = useState<ImpactType>('EXPENSE');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const selectedCategory = categoriesQuery.data?.find((item) => item.id === selectedCategoryId);
-  const paidEntry = usePaidEntryState(selectedCategory?.impactType, selectedDate);
-  const { settlement, paymentMethod, reset: resetPaidEntry } = paidEntry;
+  const recurrence = usePlanRecurrenceState();
+  const paidEntry = usePaidEntryState(impactType, selectedDate);
+  const { reset: resetRecurrence } = recurrence;
+  const { reset: resetPaidEntry } = paidEntry;
 
   const reset = useCallback(() => {
     setTitle('');
     setTagsInput('');
     setSelectedDate(new Date());
     setAmountCents(0);
+    setImpactType('EXPENSE');
     setSelectedCategoryId(null);
+    resetRecurrence();
     resetPaidEntry();
     setErrorMessage(null);
-  }, [resetPaidEntry]);
+  }, [resetRecurrence, resetPaidEntry]);
 
   const handleAmountChange = useCallback((text: string) => {
     setAmountCents(centsFromMaskedInput(text));
@@ -61,60 +68,43 @@ export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
 
   const handleSubmit = useCallback(async () => {
     setErrorMessage(null);
-
-    if (!selectedCategoryId) {
-      setErrorMessage('Selecione uma categoria.');
-      return;
-    }
-
     const category = categoriesQuery.data?.find((item) => item.id === selectedCategoryId);
-    if (!category) {
-      setErrorMessage('Categoria inválida. Selecione novamente.');
+
+    const error = await submit({
+      kind: recurrence.kind,
+      title,
+      tagsInput,
+      impactType,
+      categoryId: category?.id ?? null,
+      categoryName: category?.name,
+      date: selectedDate,
+      amountCents,
+      frequency: recurrence.frequency,
+      installmentCountInput: recurrence.installmentCountInput,
+      settlement: paidEntry.settlement,
+      paymentMethod: paidEntry.paymentMethod,
+    });
+
+    if (error) {
+      setErrorMessage(error);
       return;
     }
-
-    if (!selectedDate) {
-      setErrorMessage('Selecione uma data.');
-      return;
-    }
-
-    if (amountCents <= 0) {
-      setErrorMessage('Informe um valor maior que zero.');
-      return;
-    }
-
-    const dueDate = formatDateToIso(selectedDate);
-
-    try {
-      await createPlannedEntry.mutateAsync({
-        title: resolveEntryTitle(title, category.name, settlement),
-        tags: tagsInput.split(/\s+/).filter((tag) => /^#[\p{L}\p{N}_-]+$/u.test(tag)),
-        impactType: category.impactType,
-        categoryId: category.id,
-        amountCents,
-        dueDate,
-        month: monthKeyFromIsoDate(dueDate),
-        settlement,
-        paymentMethod: settlement === 'PAID' ? paymentMethod : null,
-      });
-
-      reset();
-      onSuccess();
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Não foi possível criar o planejamento.';
-      setErrorMessage(message);
-    }
+    reset();
+    onSuccess();
   }, [
+    submit,
+    categoriesQuery.data,
+    selectedCategoryId,
+    recurrence.kind,
+    recurrence.frequency,
+    recurrence.installmentCountInput,
     title,
     tagsInput,
-    selectedCategoryId,
-    categoriesQuery.data,
+    impactType,
     selectedDate,
     amountCents,
-    settlement,
-    paymentMethod,
-    createPlannedEntry,
+    paidEntry.settlement,
+    paidEntry.paymentMethod,
     reset,
     onSuccess,
   ]);
@@ -128,13 +118,16 @@ export function useAddPlanViewModel(onSuccess: () => void): AddPlanViewModel {
     setSelectedDate,
     amountCents,
     handleAmountChange,
+    impactType,
+    setImpactType,
     categories: categoriesQuery.data ?? [],
     isLoadingCategories: categoriesQuery.isLoading,
     selectedCategoryId,
     setSelectedCategoryId,
+    recurrence,
     paidEntry,
     errorMessage,
-    isSubmitting: createPlannedEntry.isPending,
+    isSubmitting,
     handleSubmit,
     reset,
   };

@@ -1,7 +1,6 @@
 import { CategoryDetailsSheet } from '@/features/dashboard/category-details-sheet';
 import type { DashboardViewModel } from '@/features/dashboard/dashboard-view-model-types';
 import { AddPlanSheet } from '@/features/planned-entries';
-import { AddTemplateSheet } from '@/features/templates';
 import { MonthSearchSheet } from '@/features/search';
 import { StatementImportSheet } from '@/features/statements';
 import { UncategorizedTransactionReviewSheet } from '@/features/statements';
@@ -33,7 +32,6 @@ export function DashboardSheets({ viewModel: vm }: DashboardSheetsProps) {
 
       <AddPlanSheet visible={vm.isAddPlanVisible} onClose={vm.handleCloseAddPlan} />
 
-      <AddTemplateSheet visible={vm.isAddTemplateVisible} onClose={vm.handleCloseAddTemplate} />
 
       <StatementImportSheet
         visible={vm.isStatementImportVisible}

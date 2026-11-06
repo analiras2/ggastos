@@ -2,22 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import { buildTemplateInput } from '@/features/templates/build-template-input';
 
-const category = {
-  id: '11111111-1111-4111-8111-111111111111',
-  code: 'rent',
-  name: 'Aluguel',
-  impactType: 'EXPENSE' as const,
-  isPersonal: true,
-  isActive: true,
-  icon: null,
-  color: null,
-};
+const categoryId = '11111111-1111-4111-8111-111111111111';
 
 const valid = {
   mode: 'RECURRING' as const,
   title: 'Aluguel',
-  category,
-  hasCategorySelected: true,
+  impactType: 'EXPENSE' as const,
+  categoryId: categoryId as string | null,
   startDate: new Date(2026, 10, 5),
   amountCents: 150000,
   recurrenceFrequency: 'MONTHLY' as const,
@@ -30,7 +21,7 @@ describe('buildTemplateInput', () => {
       input: {
         title: 'Aluguel',
         impactType: 'EXPENSE',
-        categoryId: category.id,
+        categoryId,
         defaultAmountCents: 150000,
         recurrenceFrequency: 'MONTHLY',
         recurrenceInterval: 1,
@@ -59,11 +50,16 @@ describe('buildTemplateInput', () => {
     });
   });
 
+  it('uses the impact type chosen on the entry, not the category', () => {
+    expect(buildTemplateInput({ ...valid, impactType: 'INCOME' })).toMatchObject({
+      input: { impactType: 'INCOME', categoryId },
+    });
+  });
+
   it.each([
     [{ title: '  ' }, 'Informe um título.'],
-    [{ hasCategorySelected: false }, 'Selecione uma categoria.'],
-    [{ category: undefined }, 'Categoria inválida. Selecione novamente.'],
-    [{ startDate: null }, 'Selecione a data de início.'],
+    [{ categoryId: null }, 'Selecione uma categoria.'],
+    [{ startDate: null }, 'Selecione a data.'],
     [{ amountCents: 0 }, 'Informe um valor maior que zero.'],
     [{ mode: 'INSTALLMENT' as const, installmentCountInput: '' }, 'Informe o número de parcelas.'],
   ])('reports the first problem: %j', (override, message) => {

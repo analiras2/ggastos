@@ -22,7 +22,6 @@ export interface DashboardViewModel {
   handleCloseSearch: () => void;
   handleSelectSearchCategory: (categoryId: string) => void;
   isAddPlanVisible: boolean;
-  isAddTemplateVisible: boolean;
   isStatementImportVisible: boolean;
   categoryReviewBatchId: string | null;
   monthKey: string;
@@ -38,8 +37,6 @@ export interface DashboardViewModel {
   handleCloseCategoryDetails: () => void;
   handleAddPlan: () => void;
   handleCloseAddPlan: () => void;
-  handleAddTemplate: () => void;
-  handleCloseAddTemplate: () => void;
   handleOpenStatementImport: () => void;
   handleCloseStatementImport: () => void;
   handleOpenCategoryReview: (batchId: string) => void;

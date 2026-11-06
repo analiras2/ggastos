@@ -1,7 +1,10 @@
+import type { ImpactType } from '@/shared/contracts/finance';
 import { EntryKind } from '@/shared/theme/ggastos-theme';
 
 export type CategoryBudget = {
   categoryId: string;
+  // One row per category and entry type, so a category can show up once per type.
+  impactType: ImpactType;
   name: string;
   icon: string;
   color: string;
