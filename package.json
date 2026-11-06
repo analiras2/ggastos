@@ -37,6 +37,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:backend": "node --test \"supabase/functions/**/*.test.mjs\"",
     "lint": "eslint src"
   },
   "private": true

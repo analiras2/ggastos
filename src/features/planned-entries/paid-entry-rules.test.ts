@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  SELECTABLE_PAYMENT_METHODS,
   buildPaidFields,
   isFutureDate,
   paymentMethodLabel,
@@ -26,7 +27,29 @@ describe('buildPaidFields', () => {
   });
 });
 
+describe('paid entry details', () => {
+  it('may have no payment method', () => {
+    expect(buildPaidFields('PAID', null, '2026-11-03').paymentMethod).toBeNull();
+  });
+
+  it('keeps the chosen day in every time zone', () => {
+    const confirmedAt = new Date(buildPaidFields('PAID', 'CASH', '2026-11-03').manuallyConfirmedAt as string);
+    for (const offsetHours of [-11, -3, 0, 5, 11]) {
+      const local = new Date(confirmedAt.getTime() + offsetHours * 3_600_000);
+      expect(local.toISOString().slice(0, 10)).toBe('2026-11-03');
+    }
+  });
+
+  it('does not offer credit card in the form', () => {
+    expect([...SELECTABLE_PAYMENT_METHODS]).toEqual(['CASH', 'PIX', 'DEBIT_TRANSFER', 'OTHER']);
+  });
+});
+
 describe('resolveEntryTitle', () => {
+  it('keeps the typed title for a planned entry too', () => {
+    expect(resolveEntryTitle('  Feira  ', 'Mercado', 'PLANNED')).toBe('Feira');
+  });
+
   it('uses the typed title, trimmed', () => {
     expect(resolveEntryTitle('  Luz ', 'Moradia', 'PLANNED')).toBe('Luz');
   });

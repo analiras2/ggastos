@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { preserveUserEdits } from "../functions/_shared/statements/preserve-user-edits.ts";
+import { preserveUserEdits } from "./preserve-user-edits.ts";
 
 const CATEGORY_FOOD = "00000000-0000-4000-8000-000000000001";
 const CATEGORY_RULE = "00000000-0000-4000-8000-000000000002";

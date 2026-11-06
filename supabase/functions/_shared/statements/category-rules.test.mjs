@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { resolveStatementCategory } from "../functions/_shared/statements/category-rules.ts";
+import { resolveStatementCategory } from "./category-rules.ts";
 
 test("uses the lowest-priority DESCRIPTION_CONTAINS rule that matches the statement description", () => {
   const categoryId = resolveStatementCategory("Netflix.com", [

@@ -12,7 +12,8 @@ npm test                    # vitest: regras puras e contratos
 npm run build:web           # build para dist/
 supabase start              # backend local (Docker)
 supabase db reset           # migrations + seed no banco LOCAL
-node supabase/tests/<arquivo>.test.mjs   # testes unitários do backend
+npm run test:backend        # testes unitários das Edge Functions (Node 22+), ao lado do código
+node supabase/tests/<suite>.mjs   # suítes de integração (precisam do Supabase local)
 ```
 Para testar a UI, use o Supabase local e um usuário de teste criado nele; nunca use a conta real.
 
@@ -29,8 +30,10 @@ src/shared/lib/                 # supabase, query client, invalidate-month-data,
 src/shared/contracts/finance.ts # vocabulário comum: ImpactType, PlanningStatus, month, centavos
 public/                         # manifest, service worker, ícones (PWA)
 supabase/migrations/            # schema versionado
-supabase/functions/             # Edge Functions; código compartilhado em _shared/
-supabase/tests/                 # testes do backend (.mjs)
+supabase/functions/<fn>/index.ts      # só HTTP, auth e erros (poucas dezenas de linhas)
+supabase/functions/_shared/<domínio>/ # regra de negócio por domínio (statement-import, statements,
+                                      #   reconciliation, closing) com *.test.mjs ao lado
+supabase/tests/                 # suítes de integração (RLS, reimport...) que usam o banco local
 docs/  .specs/                  # produto, arquitetura, decisões
 ```
 Features: app-shell, auth, categories, closing, dashboard, opening-balance, planned-entries,

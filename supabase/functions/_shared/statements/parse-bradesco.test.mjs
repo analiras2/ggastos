@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { parseBradescoStatement } from "../functions/_shared/statements/parse-bradesco.ts";
+import { parseBradescoStatement } from "./parse-bradesco.ts";
 
 function buildStatement(generatedAt, rows) {
   return [

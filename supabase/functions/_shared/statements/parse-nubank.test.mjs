@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { parseNubankStatement } from "../functions/_shared/statements/parse-nubank.ts";
+import { parseNubankStatement } from "./parse-nubank.ts";
 
 const CONTENTS = [
   "date,title,amount",

@@ -8,7 +8,7 @@ import {
   resolvePaymentStatus,
   resolveRowStatus,
   rowStatusFor,
-} from "../functions/_shared/statements/payment-status.ts";
+} from "./payment-status.ts";
 
 const TODAY = "2026-10-27";
 
