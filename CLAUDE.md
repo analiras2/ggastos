@@ -1,11 +1,11 @@
 # GGastos — guia para agentes
 
-App web/PWA de finanças pessoais (planejado vs. realizado). React + react-native-web,
+App web/PWA de finanças pessoais (planejado vs. realizado). React + react-native-web (bundler Vite),
 React Query, Supabase (Postgres, RLS, Edge Functions). Deploy do front na Vercel.
 
 ## Comandos
 ```bash
-npm run web                 # dev server (Node 22+)
+npm run web                 # dev server Vite (Node 22+)
 npx tsc --noEmit            # tipos
 npm run lint                # eslint
 npm run build:web           # build para dist/
@@ -17,7 +17,7 @@ Para testar a UI, use o Supabase local e um usuário de teste criado nele; nunca
 
 ## Estrutura
 ```
-src/app/                    # rota única + layout (providers, fontes)
+src/main.tsx  src/app/app.tsx   # bootstrap: providers, fontes, auth gate
 src/features/<feature>/     # uma fatia por funcionalidade (tela, view-model, queries, schema)
 src/components/ggastos/     # UI compartilhada (cards, rows, forms, navigation)
 src/constants/              # tema (tokens), cores e ícones de categoria
@@ -45,6 +45,6 @@ closing, reports, opening-balance, search, settings.
 ## Regras de operação
 - Não aplique migration nem faça deploy de Edge Function em produção sem pedido explícito.
   Valide SQL no banco local ou em transação com rollback.
-- Não escreva senhas nem chaves em variáveis `EXPO_PUBLIC_*` (vão para o bundle).
+- Não escreva senhas nem chaves em variáveis `VITE_*` (vão para o bundle).
 - Importação de fatura (Nubank/Bradesco): reimportar é idempotente por fingerprint;
   detalhes em `docs/card-statement-import.md`.

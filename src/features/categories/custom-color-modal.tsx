@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { Button } from '@/components/ggastos/core/button';
 import { hexToHsv, hsvToHex, isValidHex, type Hsv } from '@/constants/color-utils';
@@ -24,13 +23,13 @@ type CustomColorModalProps = {
 export function CustomColorModal({ visible, initialColor, onConfirm, onClose }: CustomColorModalProps) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <GestureHandlerRootView style={styles.root}>
+      <View style={styles.root}>
         <Pressable accessibilityLabel="Fechar" style={styles.backdrop} onPress={onClose}>
           <Pressable style={styles.card}>
             {visible ? <CustomColorSheet initialColor={initialColor} onConfirm={onConfirm} onCancel={onClose} /> : null}
           </Pressable>
         </Pressable>
-      </GestureHandlerRootView>
+      </View>
     </Modal>
   );
 }

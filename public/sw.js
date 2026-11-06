@@ -2,7 +2,7 @@
 // offline. Supabase requests are cross-origin and are never intercepted or cached.
 const CACHE_VERSION = 'ggastos-v1';
 const SHELL_URLS = ['/', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png'];
-const STATIC_PREFIXES = ['/_expo/', '/assets/', '/icons/'];
+const STATIC_PREFIXES = ['/assets/', '/icons/'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
-import * as DocumentPicker from 'expo-document-picker';
-import { File as ExpoFile } from 'expo-file-system';
 
+import { pickFile } from '@/lib/pick-file';
 import {
   describePaymentStatus,
   isPaymentChoice,
@@ -87,22 +86,10 @@ function decodeBytes(bytes: ArrayBuffer, bank: StatementBank): string | null {
   return new TextDecoder('utf-8').decode(bytes);
 }
 
-async function readPickedAsset(
-  asset: DocumentPicker.DocumentPickerAsset
-): Promise<SelectedStatementFile> {
-  if (asset.file) {
-    const bytes = await asset.file.arrayBuffer();
-    return {
-      name: asset.name,
-      bytes,
-      fallbackContents: decodeBytes(bytes, 'NUBANK') ?? await asset.file.text(),
-    };
-  }
-
-  const file = new ExpoFile(asset.uri);
+async function readPickedFile(file: File): Promise<SelectedStatementFile> {
   const bytes = await file.arrayBuffer();
   return {
-    name: asset.name,
+    name: file.name,
     bytes,
     fallbackContents: decodeBytes(bytes, 'NUBANK') ?? await file.text(),
   };
@@ -168,24 +155,12 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
     setIsPickingFile(true);
 
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: CSV_MIME_TYPES,
-        multiple: false,
-        copyToCacheDirectory: true,
-        base64: false,
-      });
-
-      if (result.canceled) {
+      const pickedFile = await pickFile(CSV_MIME_TYPES);
+      if (!pickedFile) {
         return;
       }
 
-      const [asset] = result.assets;
-      if (!asset) {
-        setErrorMessage('Nenhum arquivo foi selecionado.');
-        return;
-      }
-
-      const file = await readPickedAsset(asset);
+      const file = await readPickedFile(pickedFile);
       if (!file.name.toLowerCase().endsWith('.csv')) {
         setErrorMessage('Selecione um arquivo CSV.');
         return;

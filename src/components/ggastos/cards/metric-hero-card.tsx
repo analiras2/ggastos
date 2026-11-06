@@ -10,7 +10,7 @@ type MetricHeroCardProps = {
   status?: 'healthy' | 'tight';
 };
 
-export function MetricHeroCard({ label, value, delta, deltaLabel, status = 'healthy' }: MetricHeroCardProps) {
+export function MetricHeroCard({ label, value, status = 'healthy' }: MetricHeroCardProps) {
   const accent = status === 'tight' ? GgastosColors.expense : GgastosColors.brandPrimary;
   const accentSoft = status === 'tight' ? GgastosColors.expenseSoft : GgastosColors.brandPrimarySoft;
 

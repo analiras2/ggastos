@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Svg, { Circle, Defs, Path, RadialGradient, Stop } from 'react-native-svg';
 
 import { hsvToHex } from '@/constants/color-utils';
+import { useDragPosition } from '@/lib/use-drag-position';
 
 const WEDGE_COUNT = 180;
 const WEDGE_DEGREES = 360 / WEDGE_COUNT;
@@ -55,25 +55,18 @@ export function ColorWheel({ size, hue, saturation, value, onChange }: ColorWhee
     [center, radius]
   );
 
-  const pan = Gesture.Pan()
-    .runOnJS(true)
-    .minDistance(0)
-    .onBegin((event) => emit(event.x, event.y))
-    .onUpdate((event) => emit(event.x, event.y));
-
-  function emit(x: number, y: number) {
+  const { ref, panHandlers } = useDragPosition((x, y) => {
     const deltaX = x - center;
     const deltaY = y - center;
     const angleDegrees = (Math.atan2(deltaY, deltaX) * HALF_TURN_DEGREES) / Math.PI;
     const nextHue = (angleDegrees - BOTTOM_OFFSET_DEGREES + FULL_TURN_DEGREES) % FULL_TURN_DEGREES;
     onChange(nextHue, Math.min(Math.hypot(deltaX, deltaY) / radius, 1));
-  }
+  });
 
   const thumb = pointOnWheel(center, saturation * radius, hue);
 
   return (
-    <GestureDetector gesture={pan}>
-      <View style={{ width: size, height: size }} accessibilityLabel="Círculo de cores">
+    <View ref={ref} {...panHandlers} style={{ width: size, height: size }} accessibilityLabel="Círculo de cores">
         <Svg width={size} height={size}>
           <Defs>
             <RadialGradient id="saturation" cx="50%" cy="50%" r="50%">
@@ -91,8 +84,7 @@ export function ColorWheel({ size, hue, saturation, value, onChange }: ColorWhee
           pointerEvents="none"
           style={[styles.thumb, { left: thumb.x - THUMB_SIZE / 2, top: thumb.y - THUMB_SIZE / 2 }]}
         />
-      </View>
-    </GestureDetector>
+    </View>
   );
 }
 

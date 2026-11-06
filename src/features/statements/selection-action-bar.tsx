@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
+import { useEffect, useState } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/ggastos/core/button';
 import { Icon } from '@/components/ggastos/core/icon';
@@ -8,6 +8,8 @@ import { formatCurrencyCents } from '@/features/dashboard/format-dashboard';
 import { countLabel } from '@/features/statements/counts';
 
 const ICON_SIZE = 18;
+const ENTRANCE_MS = 180;
+const ENTRANCE_OFFSET = 16;
 
 type SelectionActionBarProps = {
   selectedCount: number;
@@ -17,9 +19,16 @@ type SelectionActionBarProps = {
 
 export function SelectionActionBar({ selectedCount, selectedTotalCents, onCategorize }: SelectionActionBarProps) {
   const hasSelection = selectedCount > 0;
+  const [entrance] = useState(() => new Animated.Value(0));
+
+  useEffect(() => {
+    Animated.timing(entrance, { toValue: 1, duration: ENTRANCE_MS, useNativeDriver: false }).start();
+  }, [entrance]);
+
+  const slideIn = entrance.interpolate({ inputRange: [0, 1], outputRange: [ENTRANCE_OFFSET, 0] });
 
   return (
-    <Animated.View entering={FadeInDown} exiting={FadeOutDown} style={styles.bar}>
+    <Animated.View style={[styles.bar, { opacity: entrance, transform: [{ translateY: slideIn }] }]}>
       <View style={styles.summary}>
         <Text style={styles.count}>{countLabel(selectedCount, 'selecionado', 'selecionados')}</Text>
         <Text style={styles.total}>{hasSelection ? formatCurrencyCents(selectedTotalCents) : 'Nenhum lançamento'}</Text>

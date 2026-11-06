@@ -45,10 +45,10 @@ Mantenha os serviços do Supabase em execução enquanto usa o app.
 cp .env.example .env.local
 ```
 
-Edite `.env.local` e preencha `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` com a chave
+Edite `.env.local` e preencha `VITE_SUPABASE_PUBLISHABLE_KEY` com a chave
 **Publishable** exibida por `supabase status`. A URL local padrão já é
 `http://127.0.0.1:54321`. O login é por e-mail e senha. Variáveis
-`EXPO_PUBLIC_*` vão para o bundle: nunca coloque senhas nelas.
+`VITE_*` vão para o bundle: nunca coloque senhas nelas.
 
 ```bash
 npm install

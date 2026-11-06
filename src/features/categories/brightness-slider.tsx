@@ -1,8 +1,8 @@
 import { StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
 import { GgastosRadius } from '@/constants/ggastos-theme';
+import { useDragPosition } from '@/lib/use-drag-position';
 
 const TRACK_HEIGHT = 18;
 const THUMB_SIZE = 26;
@@ -19,19 +19,12 @@ type BrightnessSliderProps = {
 export function BrightnessSlider({ width, brightColor, value, onChange }: BrightnessSliderProps) {
   const usableWidth = width - THUMB_SIZE;
 
-  function emit(x: number) {
+  const { ref, panHandlers } = useDragPosition((x) => {
     onChange(Math.min(Math.max((x - THUMB_SIZE / 2) / usableWidth, 0), 1));
-  }
-
-  const pan = Gesture.Pan()
-    .runOnJS(true)
-    .minDistance(0)
-    .onBegin((event) => emit(event.x))
-    .onUpdate((event) => emit(event.x));
+  });
 
   return (
-    <GestureDetector gesture={pan}>
-      <View style={{ width, height: THUMB_SIZE }} accessibilityLabel="Brilho">
+    <View ref={ref} {...panHandlers} style={{ width, height: THUMB_SIZE }} accessibilityLabel="Brilho">
         <View style={[styles.track, { top: (THUMB_SIZE - TRACK_HEIGHT) / 2 }]}>
           <Svg width={width} height={TRACK_HEIGHT}>
             <Defs>
@@ -44,8 +37,7 @@ export function BrightnessSlider({ width, brightColor, value, onChange }: Bright
           </Svg>
         </View>
         <View pointerEvents="none" style={[styles.thumb, { left: value * usableWidth }]} />
-      </View>
-    </GestureDetector>
+    </View>
   );
 }
 
