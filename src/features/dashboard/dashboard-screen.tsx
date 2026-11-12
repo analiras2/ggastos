@@ -34,8 +34,6 @@ export function DashboardScreen() {
           monthKey={monthKey}
           onSelectMonth={viewModel.handleSelectMonth}
           isCurrentMonth={viewModel.isCurrentMonth}
-          onPrev={viewModel.handlePrevMonth}
-          onNext={viewModel.handleNextMonth}
           onPressMonth={viewModel.handleGoToCurrentMonth}
         />
 

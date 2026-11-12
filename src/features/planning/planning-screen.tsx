@@ -17,7 +17,7 @@ export function PlanningScreen() {
   return (
     <SafeAreaView style={styles.screen} edges={[]}>
       <ScrollView contentContainerStyle={styles.content}>
-        <MonthHeader month={viewModel.monthLabel} monthKey={viewModel.month} onSelectMonth={viewModel.handleSelectMonth} isCurrentMonth={viewModel.isCurrentMonth} onPrev={viewModel.handlePreviousMonth} onNext={viewModel.handleNextMonth} onPressMonth={viewModel.handleCurrentMonth} />
+        <MonthHeader month={viewModel.monthLabel} monthKey={viewModel.month} onSelectMonth={viewModel.handleSelectMonth} isCurrentMonth={viewModel.isCurrentMonth} onPressMonth={viewModel.handleCurrentMonth} />
         <View style={styles.header}>
           <View>
             <Text style={styles.title}>Planejamento</Text>

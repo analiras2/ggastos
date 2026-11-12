@@ -15,8 +15,6 @@ export function StatisticsPeriodNav({ viewModel }: StatisticsPeriodNavProps) {
         month={viewModel.monthTitle}
         monthKey={viewModel.monthKey}
         isCurrentMonth={viewModel.isCurrentMonth}
-        onPrev={viewModel.handlePrevious}
-        onNext={viewModel.handleNext}
         onPressMonth={viewModel.handleGoToCurrentMonth}
         onSelectMonth={viewModel.handleSelectMonth}
       />
