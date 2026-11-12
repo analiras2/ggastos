@@ -33,8 +33,10 @@ export function Icon({ name, size = 20, color = GgastosColors.inkStrong }: IconP
       {name === 'file-up' ? <><Path {...common} d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><Polyline {...common} points="14 2 14 8 20 8" /><Polyline {...common} points="12 18 12 12" /><Polyline {...common} points="9 15 12 12 15 15" /></> : null}
       {name === 'upload' ? <><Path {...common} d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><Polyline {...common} points="17 8 12 3 7 8" /><Line {...common} x1="12" y1="3" x2="12" y2="15" /></> : null}
       {name === 'tags' ? <><Path {...common} d="m15 5 4 4-8.5 8.5a2.1 2.1 0 0 1-3 0L3 13V5z" /><Circle {...common} cx="7" cy="9" r="1" /><Path {...common} d="m10 2 12 12" /></> : null}
+      {name === 'chart-pie' ? <><Path {...common} d="M21.21 15.89A10 10 0 1 1 8 2.83" /><Path {...common} d="M22 12A10 10 0 0 0 12 2v10z" /></> : null}
+      {name === 'bar-chart' ? <><Line {...common} x1="6" y1="20" x2="6" y2="11" /><Line {...common} x1="12" y1="20" x2="12" y2="4" /><Line {...common} x1="18" y1="20" x2="18" y2="14" /></> : null}
       {name === 'search' ? <><Circle {...common} cx="11" cy="11" r="7" /><Line {...common} x1="21" y1="21" x2="16.5" y2="16.5" /></> : null}
-      {!['plus', 'search', 'x', 'check', 'check-check', 'chevron-left', 'chevron-right', 'chevron-down', 'circle', 'check-circle-2', 'circle-alert', 'clock', 'calendar', 'calendar-check', 'calendar-range', 'calendar-plus', 'list-checks', 'list-todo', 'repeat', 'settings', 'user', 'inbox', 'file-up', 'upload', 'tags'].includes(name) ? <Circle {...common} cx="12" cy="12" r="8" /> : null}
+      {!['plus', 'search', 'x', 'check', 'check-check', 'chevron-left', 'chevron-right', 'chevron-down', 'circle', 'check-circle-2', 'circle-alert', 'clock', 'calendar', 'calendar-check', 'calendar-range', 'calendar-plus', 'list-checks', 'list-todo', 'repeat', 'settings', 'user', 'inbox', 'chart-pie', 'bar-chart', 'file-up', 'upload', 'tags'].includes(name) ? <Circle {...common} cx="12" cy="12" r="8" /> : null}
     </Svg>
   );
 }

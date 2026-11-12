@@ -11,7 +11,7 @@ import {
   FLOATING_NAV_MAX_WIDTH,
 } from '@/shared/ui/navigation/floating-nav-metrics';
 
-export type BottomTabKey = 'mes' | 'plano' | 'anual' | 'ajustes';
+export type BottomTabKey = 'mes' | 'plano' | 'estatisticas' | 'ajustes';
 
 type TabItem = { key: BottomTabKey; label: string; icon: string; edge?: 'start' | 'end' };
 
@@ -20,7 +20,7 @@ const TABS_BEFORE_ADD: TabItem[] = [
   { key: 'plano', label: 'Plano', icon: 'list-checks' },
 ];
 const TABS_AFTER_ADD: TabItem[] = [
-  { key: 'anual', label: 'Anual', icon: 'calendar-range' },
+  { key: 'estatisticas', label: 'Estatísticas', icon: 'chart-pie' },
   { key: 'ajustes', label: 'Perfil', icon: 'user', edge: 'end' },
 ];
 

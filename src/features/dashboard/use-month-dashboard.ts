@@ -1,4 +1,4 @@
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { useQueries, useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 import { monthDashboardSchema, type MonthDashboard } from '@/features/dashboard/contract';
@@ -25,6 +25,16 @@ async function fetchMonthDashboard(month: string): Promise<MonthDashboard> {
   }
 
   return monthDashboardSchema.parse(data);
+}
+
+// Several months at once (a quarter), sharing the cache of the single-month query.
+export function useMonthDashboards(months: string[]): UseQueryResult<MonthDashboard, Error>[] {
+  return useQueries({
+    queries: months.map((month) => ({
+      queryKey: monthDashboardKey(month),
+      queryFn: () => fetchMonthDashboard(month),
+    })),
+  });
 }
 
 export function useMonthDashboard(month: string): UseQueryResult<MonthDashboard, Error> {

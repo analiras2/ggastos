@@ -8,7 +8,7 @@ import { BottomTabBar, BottomTabKey } from '@/shared/ui/navigation/bottom-tab-ba
 import { DashboardScreen } from '@/features/dashboard';
 import { currentMonthKey } from '@/shared/lib/month';
 import { useReconciliationInbox } from '@/features/reconciliation';
-import { AnnualReportScreen } from '@/features/reports';
+import { StatisticsScreen } from '@/features/reports';
 import { SettingsScreen } from '@/features/settings';
 import { useUncategorizedTransactions } from '@/features/statements';
 import { AddMenuSheets } from '@/features/app-shell/add-menu-sheets';
@@ -36,7 +36,7 @@ export function AppShell() {
         <View style={styles.content}>
           {activeTab === 'mes' ? <DashboardScreen /> : null}
           {activeTab === 'plano' ? <PlanHubScreen pendingCount={pendingSuggestionsCount} /> : null}
-          {activeTab === 'anual' ? <AnnualReportScreen /> : null}
+          {activeTab === 'estatisticas' ? <StatisticsScreen /> : null}
           {activeTab === 'ajustes' ? <SettingsScreen /> : null}
         </View>
         <AddMenu visible={addMenu.isMenuOpen} actions={addMenu.actions} onClose={addMenu.closeMenu} />

@@ -7,14 +7,14 @@ import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import type { AnnualCategoryView } from '@/features/reports/format-annual-summary';
 import { sortAnnualCategories, type CategorySortOrder } from '@/features/reports/sort-annual-categories';
 
-type AnnualCategoryBarsProps = { categories: AnnualCategoryView[] };
+type AnnualCategoryBarsProps = { categories: AnnualCategoryView[]; totalLabel?: string };
 
 const SORT_ICON_SIZE = 20;
 const BAR_HEIGHT = 10;
 const PERCENT_FACTOR = 100;
 const MIN_BAR_PERCENT = 2;
 
-export function AnnualCategoryBars({ categories }: AnnualCategoryBarsProps) {
+export function AnnualCategoryBars({ categories, totalLabel = 'Gastos' }: AnnualCategoryBarsProps) {
   const [order, setOrder] = useState<CategorySortOrder>('desc');
   const items = useMemo(() => sortAnnualCategories(categories, order), [categories, order]);
   const total = items.reduce((sum, category) => sum + category.actualCents, 0);
@@ -25,7 +25,7 @@ export function AnnualCategoryBars({ categories }: AnnualCategoryBarsProps) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.total}>Gastos {formatCurrencyCents(total)}</Text>
+        <Text style={styles.total}>{totalLabel} {formatCurrencyCents(total)}</Text>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={sortLabel}
