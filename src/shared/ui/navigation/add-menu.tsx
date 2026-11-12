@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { GgastosColors, GgastosRadius, GgastosShadow, GgastosType } from '@/shared/theme/ggastos-theme';
+import { GgastosColors, GgastosRadius, GgastosType } from '@/shared/theme/ggastos-theme';
+import { GlassSurface } from '@/shared/ui/core/glass-surface';
 import { Icon } from '@/shared/ui/core/icon';
 import {
   FLOATING_NAV_FAB_RAISE,
@@ -71,9 +72,7 @@ export function AddMenu({ visible, actions, onClose }: AddMenuProps) {
     <>
       <Pressable accessibilityLabel="Fechar menu" onPress={onClose} style={styles.backdrop} />
       <View pointerEvents="box-none" style={[styles.anchor, { bottom: bottomOffset }]}>
-        <Animated.View
-          style={[styles.menu, GgastosShadow.raised, { opacity: progress, transform: [{ translateY }, { scale }] }]}
-        >
+        <GlassSurface variant="menu" style={[styles.menu, { opacity: progress, transform: [{ translateY }, { scale }] }]}>
           {actions.map((action) => (
             <Pressable
               key={action.label}
@@ -88,7 +87,7 @@ export function AddMenu({ visible, actions, onClose }: AddMenuProps) {
               <Text style={styles.label}>{action.label}</Text>
             </Pressable>
           ))}
-        </Animated.View>
+        </GlassSurface>
       </View>
     </>
   );
@@ -98,11 +97,10 @@ const styles = StyleSheet.create({
   backdrop: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 },
   anchor: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
   menu: {
-    backgroundColor: GgastosColors.bgSurfaceRaised,
+    transformOrigin: 'bottom',
     borderRadius: GgastosRadius.md,
     paddingVertical: 6,
     minWidth: MENU_MIN_WIDTH,
-    transformOrigin: 'bottom',
   },
   item: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, paddingHorizontal: 16 },
   label: { ...GgastosType.bodyMd, color: GgastosColors.inkStrong },

@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
-import { Animated, StyleSheet, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, type Animated, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { GgastosColors, GgastosRadius, GgastosSpacing } from '@/shared/theme/ggastos-theme';
+import { GgastosRadius, GgastosSpacing } from '@/shared/theme/ggastos-theme';
+import { GlassSurface } from '@/shared/ui/core/glass-surface';
 
 type HeroHeaderProps = {
   children: ReactNode;
@@ -11,15 +12,15 @@ type HeroHeaderProps = {
   onLayout?: (event: LayoutChangeEvent) => void;
 };
 
-// Primary-color block at the top of a screen: it reaches under the status bar and has rounded
-// bottom corners. Children should use the "onPrimary" tone.
+// Primary-color glass block at the top of a screen: it reaches under the status bar, has rounded bottom
+// corners and lets the page show through when it floats over it. Children should use the "onPrimary" tone.
 export function HeroHeader({ children, style, onLayout }: HeroHeaderProps) {
   const insets = useSafeAreaInsets();
 
   return (
-    <Animated.View onLayout={onLayout} style={[styles.hero, { paddingTop: insets.top + GgastosSpacing.space4 }, style]}>
+    <GlassSurface variant="hero" onLayout={onLayout} style={[styles.hero, { paddingTop: insets.top + GgastosSpacing.space4 }, style]}>
       {children}
-    </Animated.View>
+    </GlassSurface>
   );
 }
 
@@ -30,6 +31,6 @@ const styles = StyleSheet.create({
     paddingBottom: GgastosSpacing.space5,
     borderBottomLeftRadius: GgastosRadius.lg,
     borderBottomRightRadius: GgastosRadius.lg,
-    backgroundColor: GgastosColors.brandPrimary,
+    borderWidth: 0,
   },
 });

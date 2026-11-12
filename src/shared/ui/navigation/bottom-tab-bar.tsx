@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GgastosColors, GgastosRadius, GgastosType } from '@/shared/theme/ggastos-theme';
+import { GlassSurface } from '@/shared/ui/core/glass-surface';
 import { Icon } from '@/shared/ui/core/icon';
 import { AddFabIcon } from '@/shared/ui/navigation/add-fab-icon';
 import {
@@ -25,16 +26,8 @@ const TABS_AFTER_ADD: TabItem[] = [
   { key: 'ajustes', label: 'Perfil', icon: 'user', edge: 'end' },
 ];
 
-// Shadow that falls only below the pill, so nothing shows above it as an outline.
-const DOWNWARD_SHADOW = {
-  shadowColor: '#1F1A17',
-  shadowOpacity: 0.1,
-  shadowRadius: 6,
-  shadowOffset: { width: 0, height: 3 },
-  elevation: 3,
-} as const;
-
 const ADD_SLOT_WIDTH = 84;
+const ACTIVE_TAB_TINT = 'rgba(31, 107, 87, 0.14)';
 const NAV_RADIUS = FLOATING_NAV_HEIGHT / 2;
 
 type BottomTabBarProps = {
@@ -77,7 +70,7 @@ export function BottomTabBar({ active, onChange, badge, isAddOpen, onPressAdd }:
 
   return (
     <View pointerEvents="box-none" style={[styles.anchor, { paddingBottom: FLOATING_NAV_MARGIN + insets.bottom }]}>
-      <View style={styles.nav}>
+      <GlassSurface style={styles.nav}>
         {TABS_BEFORE_ADD.map(renderTab)}
         <View style={styles.addSlot}>
           <Pressable
@@ -90,7 +83,7 @@ export function BottomTabBar({ active, onChange, badge, isAddOpen, onPressAdd }:
           </Pressable>
         </View>
         {TABS_AFTER_ADD.map(renderTab)}
-      </View>
+      </GlassSurface>
     </View>
   );
 }
@@ -111,9 +104,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    backgroundColor: GgastosColors.bgSurfaceRaised,
     borderRadius: NAV_RADIUS,
-    ...DOWNWARD_SHADOW,
   },
   tab: {
     flex: 1,
@@ -122,8 +113,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 2,
   },
+  // A tint instead of a solid color, so the glass shows through the selected tab.
   activeTab: {
-    backgroundColor: GgastosColors.brandPrimarySoft,
+    backgroundColor: ACTIVE_TAB_TINT,
   },
   // Middle tabs are square; edge tabs only round the outer side, following the pill.
   startEdgeTab: { borderTopLeftRadius: NAV_RADIUS, borderBottomLeftRadius: NAV_RADIUS },

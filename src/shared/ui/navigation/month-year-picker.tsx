@@ -4,10 +4,10 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import {
   GgastosColors,
   GgastosRadius,
-  GgastosShadow,
   GgastosSpacing,
   GgastosType,
 } from '@/shared/theme/ggastos-theme';
+import { GlassSurface } from '@/shared/ui/core/glass-surface';
 import { Icon } from '@/shared/ui/core/icon';
 import { buildMonthKey, MONTH_LABELS, parseMonthKey } from '@/shared/lib/month';
 
@@ -36,7 +36,8 @@ export function MonthYearPicker({ visible, monthKey, onSelect, onClose }: MonthY
   return (
     <Modal visible={visible} transparent animationType="fade" onShow={handleShow} onRequestClose={onClose}>
       <Pressable accessibilityLabel="Fechar seletor" style={styles.backdrop} onPress={onClose}>
-        <Pressable style={styles.card}>
+        <Pressable>
+          <GlassSurface variant="menu" style={styles.card}>
           <View style={styles.yearRow}>
             <Pressable
               accessibilityRole="button"
@@ -77,6 +78,7 @@ export function MonthYearPicker({ visible, monthKey, onSelect, onClose }: MonthY
               );
             })}
           </View>
+          </GlassSurface>
         </Pressable>
       </Pressable>
     </Modal>
@@ -97,8 +99,6 @@ const styles = StyleSheet.create({
     gap: GgastosSpacing.space4,
     padding: GgastosSpacing.space5,
     borderRadius: GgastosRadius.lg,
-    backgroundColor: GgastosColors.bgSurfaceRaised,
-    ...GgastosShadow.card,
   },
   yearRow: {
     flexDirection: 'row',

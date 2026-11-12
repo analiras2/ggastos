@@ -14,7 +14,7 @@ import {
   TRANSACTION_ROW_GAP,
   getTransactionRowLayout,
 } from '@/features/statements';
-import { SelectionActionBar } from '@/features/statements';
+import { SELECTION_BAR_CLEARANCE, SelectionActionBar } from '@/features/statements';
 import { UncategorizedTransactionReviewSheet } from '@/features/statements';
 import type { UncategorizedTransaction } from '@/features/statements';
 
@@ -97,7 +97,7 @@ export function PendingScreen() {
         ItemSeparatorComponent={RowSeparator}
         ListHeaderComponent={header}
         ListFooterComponent={footer}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, isSelectionMode && { paddingBottom: LIST_BOTTOM_PADDING + SELECTION_BAR_CLEARANCE }]}
       />
 
       {isSelectionMode && hasTransactions ? (

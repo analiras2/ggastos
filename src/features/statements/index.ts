@@ -5,7 +5,7 @@ export { BulkResultBanner } from './bulk-result-banner';
 export { CategoriesToolbar } from './categories-toolbar';
 export { InvoicesSection } from './invoices-section';
 export { SelectableTransactionRow, TRANSACTION_ROW_GAP, getTransactionRowLayout } from './selectable-transaction-row';
-export { SelectionActionBar } from './selection-action-bar';
+export { SELECTION_BAR_CLEARANCE, SelectionActionBar } from './selection-action-bar';
 export { signedAmountCents } from './selection-state';
 export { StatementImportSheet } from './statement-import-sheet';
 export { UncategorizedTransactionReviewSheet } from './uncategorized-transaction-review-sheet';
