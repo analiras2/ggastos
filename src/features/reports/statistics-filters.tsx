@@ -1,17 +1,9 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { GgastosColors, GgastosRadius, GgastosSpacing } from '@/shared/theme/ggastos-theme';
-import { Icon } from '@/shared/ui/core/icon';
+import { GgastosSpacing } from '@/shared/theme/ggastos-theme';
+import { ChartViewToggle } from '@/shared/ui/forms/chart-view-toggle';
 import { ImpactTypeDropdown } from '@/features/reports/impact-type-dropdown';
 import type { ChartView, StatisticsImpactType } from '@/features/reports/use-statistics-view-model';
-
-const CHART_OPTIONS: { key: ChartView; icon: string; label: string }[] = [
-  { key: 'bars', icon: 'bar-chart', label: 'Ver em barras' },
-  { key: 'donut', icon: 'chart-pie', label: 'Ver em rosca' },
-];
-
-const TOUCH_SIZE = 44;
-const INSET = 4;
 
 type StatisticsFiltersProps = {
   impactType: StatisticsImpactType;
@@ -25,41 +17,11 @@ export function StatisticsFilters({ impactType, chartView, onChangeImpactType, o
   return (
     <View style={styles.row}>
       <ImpactTypeDropdown value={impactType} onChange={onChangeImpactType} />
-      <View style={styles.toggle}>
-        {CHART_OPTIONS.map((option) => {
-          const isActive = option.key === chartView;
-          return (
-            <Pressable
-              key={option.key}
-              accessibilityRole="button"
-              accessibilityLabel={option.label}
-              accessibilityState={{ selected: isActive }}
-              onPress={() => onChangeChartView(option.key)}
-              style={[styles.toggleButton, isActive && styles.toggleButtonActive]}
-            >
-              <Icon name={option.icon} size={20} color={isActive ? GgastosColors.brandPrimary : GgastosColors.inkFaint} />
-            </Pressable>
-          );
-        })}
-      </View>
+      <ChartViewToggle value={chartView} onChange={onChangeChartView} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: GgastosSpacing.space3 },
-  toggle: {
-    flexDirection: 'row',
-    padding: INSET,
-    borderRadius: GgastosRadius.pill,
-    backgroundColor: GgastosColors.lineSofter,
-  },
-  toggleButton: {
-    width: TOUCH_SIZE,
-    height: TOUCH_SIZE - INSET * 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: GgastosRadius.pill,
-  },
-  toggleButtonActive: { backgroundColor: GgastosColors.bgSurfaceRaised },
 });

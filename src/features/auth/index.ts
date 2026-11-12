@@ -4,3 +4,4 @@ export { AuthProvider } from './auth-provider';
 export { LoginScreen } from './login-screen';
 export { useAppBootstrapViewModel } from './use-app-bootstrap-view-model';
 export { useAuth } from './use-auth';
+export { signOut, updateDisplayName } from './auth-service';

@@ -32,11 +32,15 @@ export function Icon({ name, size = 20, color = GgastosColors.inkStrong }: IconP
       {name === 'inbox' ? <><Path {...common} d="M4 4h16v12l-3 4H7l-3-4z" /><Path {...common} d="M4 16h5l2 2h2l2-2h5" /></> : null}
       {name === 'file-up' ? <><Path {...common} d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><Polyline {...common} points="14 2 14 8 20 8" /><Polyline {...common} points="12 18 12 12" /><Polyline {...common} points="9 15 12 12 15 15" /></> : null}
       {name === 'upload' ? <><Path {...common} d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><Polyline {...common} points="17 8 12 3 7 8" /><Line {...common} x1="12" y1="3" x2="12" y2="15" /></> : null}
-      {name === 'tags' ? <><Path {...common} d="m15 5 4 4-8.5 8.5a2.1 2.1 0 0 1-3 0L3 13V5z" /><Circle {...common} cx="7" cy="9" r="1" /><Path {...common} d="m10 2 12 12" /></> : null}
+      {name === 'tags' ? <><Path {...common} d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" /><Circle {...common} cx="7.5" cy="7.5" r=".5" /></> : null}
       {name === 'chart-pie' ? <><Path {...common} d="M21.21 15.89A10 10 0 1 1 8 2.83" /><Path {...common} d="M22 12A10 10 0 0 0 12 2v10z" /></> : null}
       {name === 'bar-chart' ? <><Line {...common} x1="6" y1="20" x2="6" y2="11" /><Line {...common} x1="12" y1="20" x2="12" y2="4" /><Line {...common} x1="18" y1="20" x2="18" y2="14" /></> : null}
+      {name === 'mail' ? <><Rect {...common} x="2" y="4" width="20" height="16" rx="2" /><Path {...common} d="m22 7-10 5L2 7" /></> : null}
+      {name === 'log-out' ? <><Path {...common} d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><Polyline {...common} points="16 17 21 12 16 7" /><Line {...common} x1="21" y1="12" x2="9" y2="12" /></> : null}
+      {name === 'wallet' ? <><Path {...common} d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" /><Path {...common} d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" /></> : null}
+      {name === 'pencil' ? <><Path {...common} d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><Path {...common} d="m15 5 4 4" /></> : null}
       {name === 'search' ? <><Circle {...common} cx="11" cy="11" r="7" /><Line {...common} x1="21" y1="21" x2="16.5" y2="16.5" /></> : null}
-      {!['plus', 'search', 'x', 'check', 'check-check', 'chevron-left', 'chevron-right', 'chevron-down', 'circle', 'check-circle-2', 'circle-alert', 'clock', 'calendar', 'calendar-check', 'calendar-range', 'calendar-plus', 'list-checks', 'list-todo', 'repeat', 'settings', 'user', 'inbox', 'chart-pie', 'bar-chart', 'file-up', 'upload', 'tags'].includes(name) ? <Circle {...common} cx="12" cy="12" r="8" /> : null}
+      {!['plus', 'search', 'x', 'check', 'check-check', 'chevron-left', 'chevron-right', 'chevron-down', 'circle', 'check-circle-2', 'circle-alert', 'clock', 'calendar', 'calendar-check', 'calendar-range', 'calendar-plus', 'list-checks', 'list-todo', 'repeat', 'settings', 'user', 'inbox', 'chart-pie', 'bar-chart', 'pencil', 'mail', 'log-out', 'wallet', 'file-up', 'upload', 'tags'].includes(name) ? <Circle {...common} cx="12" cy="12" r="8" /> : null}
     </Svg>
   );
 }

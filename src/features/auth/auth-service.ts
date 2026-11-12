@@ -35,6 +35,34 @@ export async function signInWithPassword(email: string, password: string) {
   }
 }
 
+// Saves the name on the account (so it is in the session) and on the profile row.
+export async function updateDisplayName(user: User, displayName: string) {
+  if (!supabase) {
+    throw new Error('Supabase is not configured.');
+  }
+
+  const { error: authError } = await supabase.auth.updateUser({ data: { display_name: displayName } });
+  if (authError) {
+    throw authError;
+  }
+
+  const { error: profileError } = await supabase.from('profiles').update({ display_name: displayName }).eq('id', user.id);
+  if (profileError) {
+    throw profileError;
+  }
+}
+
+export async function signOut() {
+  if (!supabase) {
+    return;
+  }
+
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    throw error;
+  }
+}
+
 function getDisplayName(user: User): string | null {
   if (typeof user.user_metadata?.display_name === 'string') {
     return user.user_metadata.display_name;

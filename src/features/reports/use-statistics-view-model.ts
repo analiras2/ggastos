@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import type { ImpactType } from '@/shared/contracts/finance';
+import { readChartPreference, type ChartView } from '@/shared/lib/chart-preference';
 import { currentMonthKey, monthLabel, parseMonthKey, shiftMonthKey } from '@/shared/lib/month';
 import { buildDonutSlices, type DonutSlice } from '@/features/reports/donut-slices';
 import { toAnnualMonthRow, type AnnualMonthRowView } from '@/features/reports/format-annual-summary';
@@ -14,13 +15,13 @@ import {
 } from '@/features/reports/statistics-period-rules';
 import { useStatisticsData } from '@/features/reports/use-statistics-data';
 
-export type ChartView = 'donut' | 'bars';
+export type { ChartView };
 export type StatisticsImpactType = Extract<ImpactType, 'EXPENSE' | 'INCOME' | 'INVESTMENT'>;
 
 export function useStatisticsViewModel() {
   const [period, setPeriod] = useState<StatisticsPeriod>('month');
   const [impactType, setImpactType] = useState<StatisticsImpactType>('EXPENSE');
-  const [chartView, setChartView] = useState<ChartView>('bars');
+  const [chartView, setChartView] = useState<ChartView>(readChartPreference);
   const [monthKey, setMonthKey] = useState(currentMonthKey);
   const [quarter, setQuarter] = useState<Quarter>(() => quarterOfMonth(currentMonthKey()));
   const [year, setYear] = useState(() => new Date().getFullYear());
