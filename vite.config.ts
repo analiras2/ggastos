@@ -14,12 +14,14 @@ export default defineConfig({
     },
     extensions: WEB_EXTENSIONS,
   },
+  // react-native-web's Animated cancels frames through `global`, which browsers do not have.
   define: {
     __DEV__: JSON.stringify(process.env.NODE_ENV !== 'production'),
+    global: 'globalThis',
   },
   optimizeDeps: {
     include: ['react-native-web'],
-    esbuildOptions: { resolveExtensions: WEB_EXTENSIONS },
+    esbuildOptions: { resolveExtensions: WEB_EXTENSIONS, define: { global: 'globalThis' } },
   },
   build: {
     outDir: 'dist',
