@@ -3,6 +3,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GgastosColors, GgastosRadius, GgastosType } from '@/shared/theme/ggastos-theme';
 import { Icon } from '@/shared/ui/core/icon';
+import { AddFabIcon } from '@/shared/ui/navigation/add-fab-icon';
 import {
   FLOATING_NAV_FAB_RAISE,
   FLOATING_NAV_FAB_SIZE,
@@ -85,7 +86,7 @@ export function BottomTabBar({ active, onChange, badge, isAddOpen, onPressAdd }:
             onPress={onPressAdd}
             style={styles.fab}
           >
-            <Icon name={isAddOpen ? 'x' : 'plus'} size={30} color="#FFFFFF" />
+            <AddFabIcon isOpen={isAddOpen} />
           </Pressable>
         </View>
         {TABS_AFTER_ADD.map(renderTab)}
