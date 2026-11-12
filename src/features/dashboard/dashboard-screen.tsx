@@ -5,27 +5,32 @@ import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggast
 import { MonthHeader } from '@/shared/ui/navigation/month-header';
 import { FLOATING_NAV_CONTENT_CLEARANCE } from '@/shared/ui/navigation/floating-nav-metrics';
 import { SyncStatusBanner } from '@/shared/ui/navigation/sync-status-banner';
+import { HeroHeader } from '@/shared/ui/cards/hero-header';
 import { WalletHeader } from '@/shared/ui/cards/wallet-header';
 import { EmptyStateCard } from '@/shared/ui/cards/empty-state-card';
 import { KpiComparisonCard } from '@/shared/ui/cards/kpi-comparison-card';
+import { GreetingHeader } from '@/features/dashboard/greeting-header';
+import { useGreeting } from '@/features/dashboard/use-greeting';
 import { DashboardCategoriesSection } from '@/features/dashboard/dashboard-categories-section';
 import { DashboardSheets } from '@/features/dashboard/dashboard-sheets';
 import { useDashboardViewModel } from '@/features/dashboard/use-dashboard-view-model';
 
 export function DashboardScreen() {
   const viewModel = useDashboardViewModel();
+  const greeting = useGreeting();
   const { data, wallet, loadStatus, closeMonthBanner, monthKey, isMonthClosed, isClosingMonth } = viewModel;
 
   return (
-    <SafeAreaView style={styles.screen} edges={['top']}>
-      <View style={styles.walletBar}>
+    <SafeAreaView style={styles.screen} edges={[]}>
+      <HeroHeader>
+        <GreetingHeader title={greeting.title} quote={greeting.quote} onPressSearch={viewModel.handleOpenSearch} />
         <WalletHeader
+          tone="onPrimary"
           value={wallet.value}
           isNegative={wallet.isNegative}
           onPressValue={viewModel.handleOpenWalletSheet}
-          onPressSearch={viewModel.handleOpenSearch}
         />
-      </View>
+      </HeroHeader>
 
       <ScrollView contentContainerStyle={styles.content}>
         <MonthHeader
@@ -96,13 +101,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: GgastosColors.bgBase,
   },
-  walletBar: {
-    paddingHorizontal: GgastosSpacing.space5,
-    paddingTop: GgastosSpacing.space3,
-  },
   content: {
     paddingHorizontal: GgastosSpacing.space5,
-    paddingTop: GgastosSpacing.space3,
+    paddingTop: GgastosSpacing.space4,
     paddingBottom: FLOATING_NAV_CONTENT_CLEARANCE,
     gap: GgastosSpacing.space4,
   },

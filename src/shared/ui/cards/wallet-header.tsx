@@ -1,27 +1,31 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { GgastosColors, GgastosRadius, GgastosType } from '@/shared/theme/ggastos-theme';
-import { Icon } from '@/shared/ui/core/icon';
+import { GgastosColors, GgastosType } from '@/shared/theme/ggastos-theme';
 
 type WalletHeaderProps = {
+  // "onPrimary" is for use over the primary color.
+  tone?: 'default' | 'onPrimary';
   label?: string;
   value: string;
   isNegative?: boolean;
   // Tapping the value lets the user correct it.
   onPressValue?: () => void;
-  onPressSearch?: () => void;
 };
 
-const SEARCH_BUTTON_SIZE = 44;
+const ON_PRIMARY = '#FFFFFF';
+const ON_PRIMARY_SOFT = 'rgba(255, 255, 255, 0.72)';
+const NEGATIVE_ON_PRIMARY = '#FFD2CB';
 
-// Current wallet value pinned at the top of the screen, with the search shortcut.
+// Current wallet value pinned at the top of the screen.
 export function WalletHeader({
+  tone = 'default',
   label = 'Carteira',
   value,
   isNegative = false,
   onPressValue,
-  onPressSearch,
 }: WalletHeaderProps) {
+  const isOnPrimary = tone === 'onPrimary';
+
   return (
     <View style={styles.container}>
       <Pressable
@@ -31,19 +35,11 @@ export function WalletHeader({
         onPress={onPressValue}
         style={styles.texts}
       >
-        <Text style={styles.label}>{label}</Text>
-        <Text style={[styles.value, isNegative ? styles.valueNegative : null]}>{value}</Text>
+        <Text style={[styles.label, isOnPrimary && styles.labelOnPrimary]}>{label}</Text>
+        <Text style={[styles.value, isOnPrimary && styles.valueOnPrimary, isNegative && (isOnPrimary ? styles.negativeOnPrimary : styles.valueNegative)]}>
+          {value}
+        </Text>
       </Pressable>
-      {onPressSearch ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Buscar lançamentos"
-          onPress={onPressSearch}
-          style={styles.searchButton}
-        >
-          <Icon name="search" size={20} />
-        </Pressable>
-      ) : null}
     </View>
   );
 }
@@ -65,15 +61,10 @@ const styles = StyleSheet.create({
     ...GgastosType.displayXl,
     color: GgastosColors.inkStrong,
   },
+  labelOnPrimary: { color: ON_PRIMARY_SOFT },
+  valueOnPrimary: { color: ON_PRIMARY },
+  negativeOnPrimary: { color: NEGATIVE_ON_PRIMARY },
   valueNegative: {
     color: GgastosColors.expense,
-  },
-  searchButton: {
-    width: SEARCH_BUTTON_SIZE,
-    height: SEARCH_BUTTON_SIZE,
-    borderRadius: GgastosRadius.pill,
-    backgroundColor: GgastosColors.bgSurfaceRaised,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
