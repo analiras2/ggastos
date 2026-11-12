@@ -15,3 +15,4 @@ export { useSelectionViewModel } from './use-selection-view-model';
 export type { SelectionViewModel } from './use-selection-view-model';
 export { useUncategorizedTransactions } from './use-uncategorized-transactions';
 export type { UncategorizedTransaction } from './use-uncategorized-transactions';
+export { useUpdateTransactionDetails } from './use-update-transaction-details';

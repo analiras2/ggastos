@@ -58,6 +58,8 @@ export const categoryDetailsSchema = z.object({
       installmentTotal: z.number().int().nullable(),
       manuallyConfirmedAt: z.string().nullable(),
       paymentMethod: z.string().nullable().default(null),
+      tags: z.array(z.string()).default([]),
+      note: z.string().nullable().default(null),
     })
   ),
   importedTransactions: z.array(
@@ -68,6 +70,12 @@ export const categoryDetailsSchema = z.object({
       postedAt: z.string(),
       merchantName: z.string().nullable(),
       paymentMethod: z.string().nullable().default(null),
+      tags: z.array(z.string()).default([]),
+      note: z.string().nullable().default(null),
+      descriptionRaw: z.string().nullable().default(null),
+      installmentIndex: z.number().int().nullable().default(null),
+      installmentTotal: z.number().int().nullable().default(null),
+      sourceBank: z.string().nullable().default(null),
     })
   ),
 });

@@ -1,9 +1,10 @@
 import type { EntryKind, StatusChipStatus } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import type { CategoryDetails } from '@/features/dashboard/contract';
-import { paymentMethodLabel } from '@/features/planned-entries';
+import { paymentMethodLabel } from '@/shared/lib/payment-method-label';
 import { formatIsoDateToBrazilian } from '@/shared/lib/form-utils';
 import type { ImpactType, PlanningStatus } from '@/shared/contracts/finance';
+import { plannedDetailLines, transactionDetailLines, type DetailLine, type EditTarget } from '@/features/dashboard/format-item-details';
 
 const IMPACT_TYPE_TO_KIND: Record<ImpactType, EntryKind> = {
   INCOME: 'receita',
@@ -30,6 +31,9 @@ export type PlannedEntryItem = {
   status: StatusChipStatus;
   isConfirmable: boolean;
   isUndoable: boolean;
+  tags: string[];
+  details: DetailLine[];
+  editTarget: EditTarget;
 };
 
 export type TransactionItem = {
@@ -39,6 +43,9 @@ export type TransactionItem = {
   amount: string;
   kind: EntryKind;
   date: string;
+  tags: string[];
+  details: DetailLine[];
+  editTarget: EditTarget;
 };
 
 export type CategoryDetailsView = {
@@ -79,6 +86,16 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
     status: PLANNING_STATUS_TO_CHIP[entry.status],
     isConfirmable: entry.status === 'PLANNED' || entry.status === 'PROJECTED' || entry.status === 'CARRIED_OVER',
     isUndoable: entry.status === 'RECONCILED' && entry.manuallyConfirmedAt !== null,
+    tags: entry.tags,
+    details: plannedDetailLines(entry, details.name),
+    editTarget: {
+      source: 'PLANNED' as const,
+      id: entry.id,
+      title: entry.title,
+      categoryId: details.categoryId,
+      impactType: details.impactType,
+      tags: entry.tags,
+    },
   }));
 
   const transactionItems = details.importedTransactions.map((transaction) => ({
@@ -88,6 +105,16 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
     amount: formatCurrencyCents(transaction.amountCents),
     kind,
     date: withPaymentMethod(new Date(transaction.postedAt).toLocaleDateString('pt-BR'), transaction.paymentMethod),
+    tags: transaction.tags,
+    details: transactionDetailLines(transaction, details.name),
+    editTarget: {
+      source: 'IMPORTED' as const,
+      id: transaction.id,
+      title: transaction.merchantName ?? transaction.description,
+      categoryId: details.categoryId,
+      impactType: details.impactType,
+      tags: transaction.tags,
+    },
   }));
 
   return {

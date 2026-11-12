@@ -25,7 +25,7 @@ async function fetchCategoryDetails(
     supabase
       .from('planned_entries')
       .select(
-        'id,title,amount_cents,status,due_date,installment_index,installment_total,manually_confirmed_at,payment_method'
+        'id,title,amount_cents,status,due_date,installment_index,installment_total,manually_confirmed_at,payment_method,tags,note'
       )
       .eq('month', month)
       .eq('category_id', categoryId)
@@ -34,7 +34,9 @@ async function fetchCategoryDetails(
       .order('created_at', { ascending: true }),
     supabase
       .from('imported_transactions')
-      .select('id,description,amount_cents,posted_at,merchant_name,payment_method')
+      .select(
+        'id,description,amount_cents,posted_at,merchant_name,payment_method,tags,note,description_raw,statement_installment_index,statement_installment_total,statement_source_bank'
+      )
       .eq('competency_month', month)
       .eq('internal_category_id', categoryId)
       .eq('impact_type', impactType)
@@ -68,6 +70,8 @@ async function fetchCategoryDetails(
       installmentTotal: row.installment_total,
       manuallyConfirmedAt: row.manually_confirmed_at,
       paymentMethod: row.payment_method,
+      tags: row.tags ?? [],
+      note: row.note,
     })),
     importedTransactions: (transactionsResult.data ?? []).map((row) => ({
       id: row.id,
@@ -76,6 +80,12 @@ async function fetchCategoryDetails(
       postedAt: row.posted_at,
       merchantName: row.merchant_name,
       paymentMethod: row.payment_method,
+      tags: row.tags ?? [],
+      note: row.note,
+      descriptionRaw: row.description_raw,
+      installmentIndex: row.statement_installment_index,
+      installmentTotal: row.statement_installment_total,
+      sourceBank: row.statement_source_bank,
     })),
   });
 }

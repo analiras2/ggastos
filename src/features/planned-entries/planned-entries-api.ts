@@ -104,6 +104,17 @@ async function updatePlannedEntry(id: string, values: Record<string, unknown>): 
   }
 }
 
+export type PlannedEntryDetailsInput = {
+  id: string;
+  categoryId: string;
+  // Replaces the stored tags, so an empty list clears them.
+  tags: string[];
+};
+
+export function updatePlannedEntryDetails({ id, categoryId, tags }: PlannedEntryDetailsInput): Promise<void> {
+  return updatePlannedEntry(id, { category_id: categoryId, tags });
+}
+
 export function cancelPlannedEntry(id: string): Promise<void> {
   return updatePlannedEntry(id, { status: 'CANCELLED', cancelled_at: new Date().toISOString() });
 }

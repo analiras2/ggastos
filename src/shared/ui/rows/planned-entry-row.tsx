@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import {
@@ -8,6 +9,7 @@ import {
   StatusChipStatus,
 } from '@/shared/theme/ggastos-theme';
 import { Icon } from '@/shared/ui/core/icon';
+import { TagChips } from '@/shared/ui/core/tag-chips';
 
 type PlannedEntryRowProps = {
   title: string;
@@ -20,6 +22,10 @@ type PlannedEntryRowProps = {
   isUndoable?: boolean;
   isTogglingStatus?: boolean;
   onToggleStatus?: () => void;
+  tags?: string[];
+  onPress?: () => void;
+  // Extra content under the row, e.g. its expanded details.
+  children?: ReactNode;
 };
 
 export function PlannedEntryRow({
@@ -33,52 +39,69 @@ export function PlannedEntryRow({
   isUndoable = false,
   isTogglingStatus = false,
   onToggleStatus,
+  tags = [],
+  onPress,
+  children,
 }: PlannedEntryRowProps) {
   const showToggle = isConfirmable || isUndoable;
 
   return (
-    <View style={styles.row}>
-      <View style={[styles.dot, { backgroundColor: KindColors[kind] }]} />
-      <View style={styles.content}>
-        <Text style={styles.title} numberOfLines={1}>
-          {title}
-        </Text>
-        <Text style={styles.meta}>
-          {category} · {competence}
-        </Text>
-      </View>
-      <View style={styles.trailing}>
-        <Text style={[styles.amount, { color: KindColors[kind] }]}>{amount}</Text>
-        <Text style={styles.status}>{status}</Text>
-      </View>
-      {showToggle ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={isUndoable ? 'Desfazer pagamento' : 'Marcar como pago'}
-          disabled={isTogglingStatus}
-          onPress={onToggleStatus}
-          style={styles.toggle}
-        >
-          {isTogglingStatus ? (
-            <ActivityIndicator size="small" color={GgastosColors.brandPrimary} />
-          ) : (
-            <Icon name={isUndoable ? 'check-circle-2' : 'circle'} size={22} />
-          )}
+    <View style={styles.wrapper}>
+      <View style={styles.row}>
+        <Pressable accessibilityRole={onPress ? 'button' : undefined} onPress={onPress} style={styles.main}>
+          <View style={[styles.dot, { backgroundColor: KindColors[kind] }]} />
+          <View style={styles.content}>
+            <Text style={styles.title} numberOfLines={1}>
+              {title}
+            </Text>
+            <Text style={styles.meta}>
+              {category} · {competence}
+            </Text>
+            <TagChips tags={tags} />
+          </View>
+          <View style={styles.trailing}>
+            <Text style={[styles.amount, { color: KindColors[kind] }]}>{amount}</Text>
+            <Text style={styles.status}>{status}</Text>
+          </View>
         </Pressable>
-      ) : null}
+        {showToggle ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={isUndoable ? 'Desfazer pagamento' : 'Marcar como pago'}
+            disabled={isTogglingStatus}
+            onPress={onToggleStatus}
+            style={styles.toggle}
+          >
+            {isTogglingStatus ? (
+              <ActivityIndicator size="small" color={GgastosColors.brandPrimary} />
+            ) : (
+              <Icon name={isUndoable ? 'check-circle-2' : 'circle'} size={22} />
+            )}
+          </Pressable>
+        ) : null}
+      </View>
+      {children}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    borderBottomWidth: 1,
+    borderBottomColor: GgastosColors.lineSofter,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    paddingVertical: 13,
     paddingHorizontal: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: GgastosColors.lineSofter,
+  },
+  main: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 13,
   },
   dot: {
     width: 6,

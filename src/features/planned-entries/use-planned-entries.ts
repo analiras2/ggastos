@@ -14,6 +14,8 @@ import {
   listPlannedEntries,
   plannedEntriesKey,
   undoManualConfirmation,
+  updatePlannedEntryDetails,
+  type PlannedEntryDetailsInput,
   type PlannedEntryLocation,
 } from '@/features/planned-entries/planned-entries-api';
 import type { CreatePlannedEntryInput, PlannedEntry } from '@/features/planned-entries/contract';
@@ -56,4 +58,8 @@ export function useConfirmPlannedEntryManually(): UseMutationResult<unknown, Err
 
 export function useUndoManualConfirmation(): UseMutationResult<unknown, Error, PlannedEntryLocation> {
   return useMonthDataMutation(undoManualConfirmation);
+}
+
+export function useUpdatePlannedEntryDetails(): UseMutationResult<unknown, Error, PlannedEntryDetailsInput> {
+  return useMonthDataMutation(updatePlannedEntryDetails);
 }
