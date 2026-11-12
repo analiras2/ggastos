@@ -1,3 +1,4 @@
+import { FLOATING_NAV_CONTENT_CLEARANCE } from '@/shared/ui/navigation/floating-nav-metrics';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: GgastosSpacing.space5,
-    paddingBottom: 100,
+    paddingBottom: FLOATING_NAV_CONTENT_CLEARANCE,
     gap: GgastosSpacing.space4,
   },
   header: {

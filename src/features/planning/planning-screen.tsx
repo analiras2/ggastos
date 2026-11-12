@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { EmptyStateCard } from '@/shared/ui/cards/empty-state-card';
 import { Icon } from '@/shared/ui/core/icon';
+import { FLOATING_NAV_CONTENT_CLEARANCE } from '@/shared/ui/navigation/floating-nav-metrics';
 import { MonthHeader } from '@/shared/ui/navigation/month-header';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { AddPlanSheet } from '@/features/planned-entries';
@@ -14,7 +15,7 @@ export function PlanningScreen() {
   const viewModel = usePlanningViewModel();
 
   return (
-    <SafeAreaView style={styles.screen} edges={['top']}>
+    <SafeAreaView style={styles.screen} edges={[]}>
       <ScrollView contentContainerStyle={styles.content}>
         <MonthHeader month={viewModel.monthLabel} monthKey={viewModel.month} onSelectMonth={viewModel.handleSelectMonth} isCurrentMonth={viewModel.isCurrentMonth} onPrev={viewModel.handlePreviousMonth} onNext={viewModel.handleNextMonth} onPressMonth={viewModel.handleCurrentMonth} />
         <View style={styles.header}>
@@ -63,7 +64,7 @@ export function PlanningScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: GgastosColors.bgBase },
-  content: { padding: GgastosSpacing.space5, paddingBottom: 100, gap: GgastosSpacing.space6 },
+  content: { padding: GgastosSpacing.space5, paddingBottom: FLOATING_NAV_CONTENT_CLEARANCE, gap: GgastosSpacing.space6 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: GgastosSpacing.space4 },
   title: { ...GgastosType.displayLg, color: GgastosColors.inkStrong },
   subtitle: { ...GgastosType.bodyMd, color: GgastosColors.inkSoft, maxWidth: 280 },

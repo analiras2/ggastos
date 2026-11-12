@@ -1,3 +1,4 @@
+import { FLOATING_NAV_CONTENT_CLEARANCE } from '@/shared/ui/navigation/floating-nav-metrics';
 import { useCallback, useMemo } from 'react';
 import { FlatList, StyleSheet, View, type ListRenderItemInfo } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -17,7 +18,7 @@ import { SelectionActionBar } from '@/features/statements';
 import { UncategorizedTransactionReviewSheet } from '@/features/statements';
 import type { UncategorizedTransaction } from '@/features/statements';
 
-const LIST_BOTTOM_PADDING = 100;
+const LIST_BOTTOM_PADDING = FLOATING_NAV_CONTENT_CLEARANCE;
 
 const keyExtractor = (transaction: UncategorizedTransaction) => transaction.id;
 
@@ -74,7 +75,7 @@ export function PendingScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.screen} edges={['top']}>
+    <SafeAreaView style={styles.screen} edges={[]}>
       {hasTransactions ? (
         <CategoriesToolbar
           totalCount={transactions.length}

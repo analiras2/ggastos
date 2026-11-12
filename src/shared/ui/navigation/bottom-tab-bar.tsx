@@ -1,86 +1,151 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GgastosColors, GgastosRadius, GgastosType } from '@/shared/theme/ggastos-theme';
 import { Icon } from '@/shared/ui/core/icon';
+import {
+  FLOATING_NAV_FAB_RAISE,
+  FLOATING_NAV_FAB_SIZE,
+  FLOATING_NAV_HEIGHT,
+  FLOATING_NAV_MARGIN,
+  FLOATING_NAV_MAX_WIDTH,
+} from '@/shared/ui/navigation/floating-nav-metrics';
 
-export type BottomTabKey = 'mes' | 'planejamento' | 'revisar' | 'anual' | 'ajustes';
+export type BottomTabKey = 'mes' | 'plano' | 'anual' | 'ajustes';
 
-const TABS: { key: BottomTabKey; label: string; icon: string }[] = [
-  { key: 'mes', label: 'Mês', icon: 'calendar' },
-  { key: 'planejamento', label: 'Planejamento', icon: 'list-checks' },
-  { key: 'revisar', label: 'Pendências', icon: 'list-todo' },
+type TabItem = { key: BottomTabKey; label: string; icon: string; edge?: 'start' | 'end' };
+
+const TABS_BEFORE_ADD: TabItem[] = [
+  { key: 'mes', label: 'Mês', icon: 'calendar', edge: 'start' },
+  { key: 'plano', label: 'Plano', icon: 'list-checks' },
+];
+const TABS_AFTER_ADD: TabItem[] = [
   { key: 'anual', label: 'Anual', icon: 'calendar-range' },
-  { key: 'ajustes', label: 'Perfil', icon: 'user' },
+  { key: 'ajustes', label: 'Perfil', icon: 'user', edge: 'end' },
 ];
 
+// Shadow that falls only below the pill, so nothing shows above it as an outline.
+const DOWNWARD_SHADOW = {
+  shadowColor: '#1F1A17',
+  shadowOpacity: 0.1,
+  shadowRadius: 6,
+  shadowOffset: { width: 0, height: 3 },
+  elevation: 3,
+} as const;
+
+const ADD_SLOT_WIDTH = 84;
+const NAV_RADIUS = FLOATING_NAV_HEIGHT / 2;
+
 type BottomTabBarProps = {
-  active?: BottomTabKey;
-  onChange?: (key: BottomTabKey) => void;
+  active: BottomTabKey;
+  onChange: (key: BottomTabKey) => void;
   badge?: number;
+  isAddOpen: boolean;
+  onPressAdd: () => void;
 };
 
-export function BottomTabBar({ active = 'mes', onChange, badge }: BottomTabBarProps) {
+// Floating, centered, rounded navigation with the "add" button raised in the middle.
+export function BottomTabBar({ active, onChange, badge, isAddOpen, onPressAdd }: BottomTabBarProps) {
+  const insets = useSafeAreaInsets();
+
+  const renderTab = (tab: TabItem) => {
+    const isActive = tab.key === active;
+    return (
+      <Pressable
+        key={tab.key}
+        accessibilityRole="button"
+        accessibilityLabel={tab.label}
+        onPress={() => onChange(tab.key)}
+        style={[
+          styles.tab,
+          isActive && styles.activeTab,
+          isActive && tab.edge === 'start' && styles.startEdgeTab,
+          isActive && tab.edge === 'end' && styles.endEdgeTab,
+        ]}
+      >
+        <Icon name={tab.icon} size={22} color={isActive ? GgastosColors.brandPrimary : GgastosColors.inkFaint} />
+        {tab.key === 'plano' && !!badge && badge > 0 ? (
+          <View style={styles.badge}>
+            <Text style={styles.badgeLabel}>{badge}</Text>
+          </View>
+        ) : null}
+        {isActive ? <Text style={styles.label}>{tab.label}</Text> : null}
+      </Pressable>
+    );
+  };
+
   return (
-    <View style={styles.nav}>
-      {TABS.map((tab) => {
-        const isActive = tab.key === active;
-        return (
+    <View pointerEvents="box-none" style={[styles.anchor, { paddingBottom: FLOATING_NAV_MARGIN + insets.bottom }]}>
+      <View style={styles.nav}>
+        {TABS_BEFORE_ADD.map(renderTab)}
+        <View style={styles.addSlot}>
           <Pressable
-            key={tab.key}
             accessibilityRole="button"
-            onPress={() => onChange?.(tab.key)}
-            style={[styles.tab, isActive && styles.activeTab]}
+            accessibilityLabel={isAddOpen ? 'Fechar menu' : 'Adicionar'}
+            onPress={onPressAdd}
+            style={styles.fab}
           >
-            <View style={styles.iconWrap}>
-              <Icon name={tab.icon} size={22} color={isActive ? GgastosColors.brandPrimary : GgastosColors.inkFaint} />
-            </View>
-            {tab.key === 'revisar' && !!badge && badge > 0 ? (
-              <View style={styles.badge}>
-                <Text style={styles.badgeLabel}>{badge}</Text>
-              </View>
-            ) : null}
-            {isActive ? <Text style={styles.label}>{tab.label}</Text> : null}
+            <Icon name={isAddOpen ? 'x' : 'plus'} size={30} color="#FFFFFF" />
           </Pressable>
-        );
-      })}
+        </View>
+        {TABS_AFTER_ADD.map(renderTab)}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  nav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  anchor: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
     alignItems: 'center',
+    paddingHorizontal: FLOATING_NAV_MARGIN,
+  },
+  nav: {
+    width: '100%',
+    maxWidth: FLOATING_NAV_MAX_WIDTH,
+    height: FLOATING_NAV_HEIGHT,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
     backgroundColor: GgastosColors.bgSurfaceRaised,
-    borderTopWidth: 1,
-    borderTopColor: GgastosColors.lineSofter,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    minHeight: 76,
+    borderRadius: NAV_RADIUS,
+    ...DOWNWARD_SHADOW,
   },
   tab: {
-    minWidth: 48,
-    height: 54,
+    flex: 1,
+    height: FLOATING_NAV_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 3,
-    paddingHorizontal: 8,
-    borderRadius: GgastosRadius.pill,
+    gap: 2,
   },
   activeTab: {
-    minWidth: 84,
-    paddingHorizontal: 16,
     backgroundColor: GgastosColors.brandPrimarySoft,
   },
-  iconWrap: {
+  // Middle tabs are square; edge tabs only round the outer side, following the pill.
+  startEdgeTab: { borderTopLeftRadius: NAV_RADIUS, borderBottomLeftRadius: NAV_RADIUS },
+  endEdgeTab: { borderTopRightRadius: NAV_RADIUS, borderBottomRightRadius: NAV_RADIUS },
+  addSlot: {
+    width: ADD_SLOT_WIDTH,
+    height: FLOATING_NAV_HEIGHT,
+    alignItems: 'center',
+  },
+  fab: {
+    position: 'absolute',
+    top: -FLOATING_NAV_FAB_RAISE,
+    width: FLOATING_NAV_FAB_SIZE,
+    height: FLOATING_NAV_FAB_SIZE,
+    borderRadius: FLOATING_NAV_FAB_SIZE / 2,
+    backgroundColor: GgastosColors.brandPrimary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   badge: {
     position: 'absolute',
-    top: -2,
-    right: 4,
+    top: 10,
+    right: 18,
     minWidth: 16,
     height: 16,
     borderRadius: GgastosRadius.pill,

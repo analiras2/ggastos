@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { MonthHeader } from '@/shared/ui/navigation/month-header';
-import { AddFab } from '@/shared/ui/navigation/add-fab';
+import { FLOATING_NAV_CONTENT_CLEARANCE } from '@/shared/ui/navigation/floating-nav-metrics';
 import { SyncStatusBanner } from '@/shared/ui/navigation/sync-status-banner';
 import { WalletHeader } from '@/shared/ui/cards/wallet-header';
 import { EmptyStateCard } from '@/shared/ui/cards/empty-state-card';
@@ -86,13 +86,6 @@ export function DashboardScreen() {
         ) : null}
       </ScrollView>
 
-      <AddFab
-        actions={[
-          { label: 'Novo lançamento', icon: 'plus', onPress: viewModel.handleAddPlan },
-          { label: 'Importar fatura', icon: 'upload', onPress: viewModel.handleOpenStatementImport },
-        ]}
-      />
-
       <DashboardSheets viewModel={viewModel} />
     </SafeAreaView>
   );
@@ -110,7 +103,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: GgastosSpacing.space5,
     paddingTop: GgastosSpacing.space3,
-    paddingBottom: 120,
+    paddingBottom: FLOATING_NAV_CONTENT_CLEARANCE,
     gap: GgastosSpacing.space4,
   },
   kpiRow: {
