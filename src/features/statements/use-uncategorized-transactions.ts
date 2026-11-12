@@ -19,6 +19,8 @@ export type CategorizeTransactionInput = {
   description: string;
   categoryId: string;
   saveAsRule: boolean;
+  // Tags to store on the transaction; an empty list leaves the existing ones untouched.
+  tags: string[];
 };
 
 export const UNCATEGORIZED_TRANSACTIONS_ROOT_KEY = ['uncategorized-transactions'] as const;
@@ -67,7 +69,9 @@ async function categorizeTransaction(input: CategorizeTransactionInput): Promise
 
   const { error } = await supabase
     .from('imported_transactions')
-    .update({ internal_category_id: input.categoryId })
+    .update(input.tags.length > 0
+      ? { internal_category_id: input.categoryId, tags: input.tags }
+      : { internal_category_id: input.categoryId })
     .eq('id', input.transactionId);
 
   if (error) {

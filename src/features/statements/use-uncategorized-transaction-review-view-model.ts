@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { useCategories, type CategoryOption } from '@/features/categories';
+import { parseTagsInput } from '@/shared/lib/parse-tags';
 import { merchantKey } from '@/features/statements/merchant-key';
 import {
   useCategorizeTransaction,
@@ -13,12 +14,14 @@ interface UncategorizedTransactionReviewViewModel {
   remainingCount: number;
   categories: CategoryOption[];
   selectedCategoryId: string | null;
+  tagsInput: string;
   saveAsRule: boolean;
   canSaveAsRule: boolean;
   isLoading: boolean;
   isSaving: boolean;
   errorMessage: string | null;
   setSelectedCategoryId: (categoryId: string) => void;
+  setTagsInput: (value: string) => void;
   setSaveAsRule: (value: boolean) => void;
   handleSave: () => Promise<void>;
 }
@@ -32,6 +35,7 @@ export function useUncategorizedTransactionReviewViewModel(
   const categoriesQuery = useCategories();
   const categorizeMutation = useCategorizeTransaction();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [tagsInput, setTagsInput] = useState('');
   const [saveAsRule, setSaveAsRule] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const transaction = selectedTransactionId
@@ -54,13 +58,15 @@ export function useUncategorizedTransactionReviewViewModel(
         description: transaction.description,
         categoryId: selectedCategoryId,
         saveAsRule: saveAsRule && canSaveAsRule,
+        tags: parseTagsInput(tagsInput),
       });
       setSelectedCategoryId(null);
+      setTagsInput('');
       onSaved?.();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Não foi possível salvar a categoria.');
     }
-  }, [canSaveAsRule, categorizeMutation, onSaved, saveAsRule, selectedCategoryId, transaction]);
+  }, [canSaveAsRule, categorizeMutation, onSaved, saveAsRule, selectedCategoryId, tagsInput, transaction]);
 
   const categories = useMemo(
     () => (categoriesQuery.data ?? []).filter((category) => category.impactType === 'EXPENSE'),
@@ -72,12 +78,14 @@ export function useUncategorizedTransactionReviewViewModel(
     remainingCount: transactionsQuery.data?.length ?? 0,
     categories,
     selectedCategoryId,
+    tagsInput,
     saveAsRule,
     canSaveAsRule,
     isLoading: transactionsQuery.isLoading || categoriesQuery.isLoading,
     isSaving: categorizeMutation.isPending,
     errorMessage: errorMessage ?? (transactionsQuery.isError ? 'Não foi possível carregar os lançamentos.' : null),
     setSelectedCategoryId,
+    setTagsInput,
     setSaveAsRule,
     handleSave,
   };

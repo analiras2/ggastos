@@ -6,6 +6,7 @@ import { Icon } from '@/shared/ui/core/icon';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import { CategoryField } from '@/features/categories';
+import { TagsField } from '@/shared/ui/forms/tags-field';
 import {
   useUncategorizedTransactionReviewViewModel,
 } from '@/features/statements/use-uncategorized-transaction-review-view-model';
@@ -78,6 +79,8 @@ export function UncategorizedTransactionReviewSheet({
                     impactTypes={['EXPENSE']}
                   />
                 </View>
+
+                <TagsField value={viewModel.tagsInput} onChange={viewModel.setTagsInput} />
 
                 <View style={styles.ruleRow}>
                   <View style={styles.ruleTextGroup}>

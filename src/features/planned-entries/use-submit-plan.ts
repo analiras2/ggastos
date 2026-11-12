@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { buildTemplateInput, useCreatePlanningTemplate } from '@/features/templates';
 import type { ImpactType, RecurrenceFrequency } from '@/shared/contracts/finance';
 import { formatDateToIso, monthKeyFromIsoDate } from '@/shared/lib/form-utils';
+import { parseTagsInput } from '@/shared/lib/parse-tags';
 import { resolveEntryTitle, type EntrySettlement, type SelectablePaymentMethod } from '@/features/planned-entries/paid-entry-rules';
 import type { PlanKind } from '@/features/planned-entries/use-plan-recurrence-state';
 import { useCreatePlannedEntry } from '@/features/planned-entries/use-planned-entries';
@@ -21,8 +22,6 @@ export type PlanFormValues = {
   settlement: EntrySettlement;
   paymentMethod: SelectablePaymentMethod | null;
 };
-
-const TAG_PATTERN = /^#[\p{L}\p{N}_-]+$/u;
 
 // Saves the form either as a single entry or as a template (recurring / installments).
 // Resolves to a user-facing error message, or null when it was saved.
@@ -65,7 +64,7 @@ export function useSubmitPlan() {
         const dueDate = formatDateToIso(values.date);
         await createPlannedEntry.mutateAsync({
           title: resolveEntryTitle(values.title, values.categoryName, values.settlement),
-          tags: values.tagsInput.split(/\s+/).filter((tag) => TAG_PATTERN.test(tag)),
+          tags: parseTagsInput(values.tagsInput),
           impactType: values.impactType,
           categoryId: values.categoryId,
           amountCents: values.amountCents,
