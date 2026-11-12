@@ -1,6 +1,7 @@
 import type { EntryKind, StatusChipStatus } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import type { CategoryDetails } from '@/features/dashboard/contract';
+import { buildEditablePlannedEntry } from '@/features/planned-entries';
 import { paymentMethodLabel } from '@/shared/lib/payment-method-label';
 import { formatIsoDateToBrazilian } from '@/shared/lib/form-utils';
 import type { ImpactType, PlanningStatus } from '@/shared/contracts/finance';
@@ -75,7 +76,7 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
 
   const plannedItems = details.plannedEntries.map((entry) => ({
     id: entry.id,
-    title: entry.title,
+    title: entry.title ?? details.name,
     category: details.name,
     amount: formatCurrencyCents(entry.amountCents),
     kind,
@@ -91,10 +92,25 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
     editTarget: {
       source: 'PLANNED' as const,
       id: entry.id,
-      title: entry.title,
+      title: entry.title ?? details.name,
       categoryId: details.categoryId,
       impactType: details.impactType,
       tags: entry.tags,
+      plannedEntry:
+        entry.sourceBatchId === null
+          ? buildEditablePlannedEntry({
+              id: entry.id,
+              title: entry.title,
+              tags: entry.tags,
+              impactType: details.impactType,
+              categoryId: details.categoryId,
+              amountCents: entry.amountCents,
+              dueDate: entry.dueDate,
+              status: entry.status,
+              manuallyConfirmedAt: entry.manuallyConfirmedAt,
+              paymentMethod: entry.paymentMethod,
+            })
+          : null,
     },
   }));
 
@@ -114,6 +130,7 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
       categoryId: details.categoryId,
       impactType: details.impactType,
       tags: transaction.tags,
+      plannedEntry: null,
     },
   }));
 

@@ -7,6 +7,7 @@ import {
   type SelectablePaymentMethod,
 } from '@/features/planned-entries/paid-entry-rules';
 import { formatDateToIso } from '@/shared/lib/form-utils';
+import type { EditablePlannedEntry } from '@/features/planned-entries/plan-edit-rules';
 
 export interface PaidEntryState {
   settlement: EntrySettlement;
@@ -18,9 +19,13 @@ export interface PaidEntryState {
   reset: () => void;
 }
 
-export function usePaidEntryState(impactType: string | undefined, selectedDate: Date | null): PaidEntryState {
-  const [settlement, setSettlement] = useState<EntrySettlement>('PLANNED');
-  const [paymentMethod, setPaymentMethod] = useState<SelectablePaymentMethod | null>(null);
+export function usePaidEntryState(
+  impactType: string | undefined,
+  selectedDate: Date | null,
+  entry?: EditablePlannedEntry
+): PaidEntryState {
+  const [settlement, setSettlement] = useState<EntrySettlement>(entry?.isPaid ? 'PAID' : 'PLANNED');
+  const [paymentMethod, setPaymentMethod] = useState<SelectablePaymentMethod | null>(entry?.paymentMethod ?? null);
 
   const reset = useCallback(() => {
     setSettlement('PLANNED');

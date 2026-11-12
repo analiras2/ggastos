@@ -52,6 +52,7 @@ describe('item details', () => {
         paymentMethod: 'PIX',
         tags: [],
         note: 'pago adiantado',
+        sourceBatchId: null,
       },
       'Casa'
     );

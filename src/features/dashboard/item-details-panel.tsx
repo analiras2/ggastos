@@ -16,7 +16,7 @@ export function ItemDetailsPanel({ lines, onEdit }: ItemDetailsPanelProps) {
         </View>
       ))}
       <Pressable accessibilityRole="button" onPress={onEdit} style={styles.edit}>
-        <Text style={styles.editLabel}>Editar categoria e tags</Text>
+        <Text style={styles.editLabel}>Editar</Text>
       </Pressable>
     </View>
   );

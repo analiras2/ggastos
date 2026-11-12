@@ -50,7 +50,8 @@ export const categoryDetailsSchema = z.object({
   plannedEntries: z.array(
     z.object({
       id: z.string().uuid(),
-      title: z.string(),
+      // A planned entry typed in without a title stays untitled until a statement import names it.
+      title: z.string().nullable(),
       amountCents: centsSchema,
       status: z.enum(PLANNED_ENTRY_STATUSES),
       dueDate: z.string().nullable(),
@@ -60,6 +61,8 @@ export const categoryDetailsSchema = z.object({
       paymentMethod: z.string().nullable().default(null),
       tags: z.array(z.string()).default([]),
       note: z.string().nullable().default(null),
+      // Set when the entry was planned by a statement import (its installments), not typed in.
+      sourceBatchId: z.string().nullable().default(null),
     })
   ),
   importedTransactions: z.array(

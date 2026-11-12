@@ -25,7 +25,7 @@ async function fetchCategoryDetails(
     supabase
       .from('planned_entries')
       .select(
-        'id,title,amount_cents,status,due_date,installment_index,installment_total,manually_confirmed_at,payment_method,tags,note'
+        'id,title,amount_cents,status,due_date,installment_index,installment_total,manually_confirmed_at,payment_method,tags,note,source_batch_id'
       )
       .eq('month', month)
       .eq('category_id', categoryId)
@@ -72,6 +72,7 @@ async function fetchCategoryDetails(
       paymentMethod: row.payment_method,
       tags: row.tags ?? [],
       note: row.note,
+      sourceBatchId: row.source_batch_id,
     })),
     importedTransactions: (transactionsResult.data ?? []).map((row) => ({
       id: row.id,

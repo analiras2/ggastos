@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { PlannedEntryRow } from '@/shared/ui/rows/planned-entry-row';
 import { TransactionRow } from '@/shared/ui/rows/transaction-row';
 import { GgastosColors, GgastosType } from '@/shared/theme/ggastos-theme';
+import { AddPlanSheet } from '@/features/planned-entries';
 import { EditItemSheet } from '@/features/dashboard/edit-item-sheet';
 import type { EditTarget } from '@/features/dashboard/format-item-details';
 import { ItemDetailsPanel } from '@/features/dashboard/item-details-panel';
@@ -68,7 +69,13 @@ export function CategoryDetailsList({ details, togglingEntryId, onToggleEntrySta
         </View>
       ) : null}
 
-      <EditItemSheet target={editTarget} onClose={() => setEditTarget(null)} />
+      {/* Entries typed in by hand open the full form; the rest (from a statement) change only category and tags. */}
+      <AddPlanSheet
+        visible={editTarget?.plannedEntry != null}
+        entry={editTarget?.plannedEntry ?? undefined}
+        onClose={() => setEditTarget(null)}
+      />
+      <EditItemSheet target={editTarget?.plannedEntry ? null : editTarget} onClose={() => setEditTarget(null)} />
     </>
   );
 }

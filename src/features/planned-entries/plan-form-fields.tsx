@@ -37,7 +37,7 @@ export function PlanFormFields({ form }: PlanFormFieldsProps) {
 
   return (
     <>
-      <PlanKindField recurrence={recurrence} />
+      {form.isEditing ? null : <PlanKindField recurrence={recurrence} />}
 
       <View style={styles.field}>
         <Text style={styles.label}>Tipo</Text>

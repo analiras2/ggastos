@@ -18,6 +18,7 @@ import {
   type PlannedEntryDetailsInput,
   type PlannedEntryLocation,
 } from '@/features/planned-entries/planned-entries-api';
+import { updatePlannedEntryColumns, type UpdatePlannedEntryInput } from '@/features/planned-entries/update-planned-entry';
 import type { CreatePlannedEntryInput, PlannedEntry } from '@/features/planned-entries/contract';
 
 export function usePlannedEntries(month: string): UseQueryResult<PlannedEntry[], Error> {
@@ -62,4 +63,9 @@ export function useUndoManualConfirmation(): UseMutationResult<unknown, Error, P
 
 export function useUpdatePlannedEntryDetails(): UseMutationResult<unknown, Error, PlannedEntryDetailsInput> {
   return useMonthDataMutation(updatePlannedEntryDetails);
+}
+
+// Saves every editable field of one planned entry.
+export function useUpdatePlannedEntry(): UseMutationResult<unknown, Error, UpdatePlannedEntryInput> {
+  return useMonthDataMutation(updatePlannedEntryColumns);
 }
