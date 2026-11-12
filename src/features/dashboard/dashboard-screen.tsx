@@ -1,38 +1,34 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { MonthHeader } from '@/shared/ui/navigation/month-header';
 import { FLOATING_NAV_CONTENT_CLEARANCE } from '@/shared/ui/navigation/floating-nav-metrics';
 import { SyncStatusBanner } from '@/shared/ui/navigation/sync-status-banner';
-import { HeroHeader } from '@/shared/ui/cards/hero-header';
-import { WalletHeader } from '@/shared/ui/cards/wallet-header';
 import { EmptyStateCard } from '@/shared/ui/cards/empty-state-card';
 import { KpiComparisonCard } from '@/shared/ui/cards/kpi-comparison-card';
-import { GreetingHeader } from '@/features/dashboard/greeting-header';
+import { DashboardHero, HERO_GAP } from '@/features/dashboard/dashboard-hero';
+import { useCollapsingHeader } from '@/features/dashboard/use-collapsing-header';
 import { useGreeting } from '@/features/dashboard/use-greeting';
 import { DashboardCategoriesSection } from '@/features/dashboard/dashboard-categories-section';
 import { DashboardSheets } from '@/features/dashboard/dashboard-sheets';
 import { useDashboardViewModel } from '@/features/dashboard/use-dashboard-view-model';
 
+const SCROLL_EVENT_THROTTLE_MS = 16;
+
 export function DashboardScreen() {
   const viewModel = useDashboardViewModel();
   const greeting = useGreeting();
+  const collapse = useCollapsingHeader(HERO_GAP);
   const { data, wallet, loadStatus, closeMonthBanner, monthKey, isMonthClosed, isClosingMonth } = viewModel;
 
   return (
     <SafeAreaView style={styles.screen} edges={[]}>
-      <HeroHeader>
-        <GreetingHeader title={greeting.title} quote={greeting.quote} onPressSearch={viewModel.handleOpenSearch} />
-        <WalletHeader
-          tone="onPrimary"
-          value={wallet.value}
-          isNegative={wallet.isNegative}
-          onPressValue={viewModel.handleOpenWalletSheet}
-        />
-      </HeroHeader>
-
-      <ScrollView contentContainerStyle={styles.content}>
+      <Animated.ScrollView
+        contentContainerStyle={[styles.content, { paddingTop: collapse.heroHeight + GgastosSpacing.space4 }]}
+        onScroll={collapse.onScroll}
+        scrollEventThrottle={SCROLL_EVENT_THROTTLE_MS}
+      >
         <MonthHeader
           month={data.month}
           monthKey={monthKey}
@@ -89,7 +85,15 @@ export function DashboardScreen() {
             onAction={viewModel.handleCloseMonth}
           />
         ) : null}
-      </ScrollView>
+      </Animated.ScrollView>
+
+      <DashboardHero
+        collapse={collapse}
+        greeting={greeting}
+        wallet={{ value: wallet.value, isNegative: wallet.isNegative }}
+        onPressWallet={viewModel.handleOpenWalletSheet}
+        onPressSearch={viewModel.handleOpenSearch}
+      />
 
       <DashboardSheets viewModel={viewModel} />
     </SafeAreaView>
@@ -103,7 +107,6 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: GgastosSpacing.space5,
-    paddingTop: GgastosSpacing.space4,
     paddingBottom: FLOATING_NAV_CONTENT_CLEARANCE,
     gap: GgastosSpacing.space4,
   },
