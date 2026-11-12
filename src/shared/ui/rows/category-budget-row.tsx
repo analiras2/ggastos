@@ -1,4 +1,3 @@
-import { CalendarClock } from 'lucide-react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GgastosColors, GgastosRadius, GgastosType } from '@/shared/theme/ggastos-theme';
@@ -7,24 +6,26 @@ import { CategoryIcon } from '@/shared/ui/core/category-icon';
 
 type DeltaTone = 'neutral' | 'over' | 'under';
 
+type RowStatus = { label: string; value: string | null; tone: DeltaTone };
+
 type CategoryBudgetRowProps = {
   name: string;
   icon?: string;
   color?: string;
-  // Shown only for planned categories; the calendar icon marks them as planned.
+  // Planned amount; null when nothing was planned for the category.
   planned?: string | null;
-  delta?: string | null;
-  deltaTone?: DeltaTone;
+  // Amount already paid or received.
+  actual?: string;
+  // What is left to do (or how far it went past the plan), shown on the right.
+  status?: RowStatus | null;
   progress?: number;
   onPress?: () => void;
 };
 
-const PLANNED_ICON_SIZE = 12;
-
-const DELTA_COLOR: Record<DeltaTone, string> = {
+const STATUS_COLOR: Record<DeltaTone, string> = {
   over: GgastosColors.expense,
   under: GgastosColors.income,
-  neutral: GgastosColors.inkFaint,
+  neutral: GgastosColors.inkStrong,
 };
 
 export function CategoryBudgetRow({
@@ -32,8 +33,8 @@ export function CategoryBudgetRow({
   icon = 'circle',
   color = GgastosColors.brandPrimary,
   planned,
-  delta,
-  deltaTone = 'neutral',
+  actual,
+  status,
   progress,
   onPress,
 }: CategoryBudgetRowProps) {
@@ -43,45 +44,51 @@ export function CategoryBudgetRow({
       onPress={onPress}
       style={styles.row}
     >
-      <View style={[styles.iconBadge, { backgroundColor: color }]}>
-        <CategoryIcon name={icon} size={17} color={categoryIconColor(color)} />
-      </View>
-      <View style={styles.content}>
-        <Text style={styles.name}>{name}</Text>
-        {planned ? (
-          <View accessible accessibilityLabel={`Previsto ${planned}`} style={styles.plannedRow}>
-            <CalendarClock size={PLANNED_ICON_SIZE} color={GgastosColors.inkFaint} strokeWidth={2} />
-            <Text style={styles.meta}>{planned}</Text>
-          </View>
-        ) : null}
-        {typeof progress === 'number' ? (
-          <View style={styles.progressTrack}>
-            <View
-              style={[
-                styles.progressFill,
-                {
-                  width: `${Math.min(100, Math.max(0, progress))}%`,
-                  backgroundColor: deltaTone === 'over' ? GgastosColors.expense : color,
-                },
-              ]}
-            />
+      <View style={styles.topRow}>
+        <View style={[styles.iconBadge, { backgroundColor: color }]}>
+          <CategoryIcon name={icon} size={17} color={categoryIconColor(color)} />
+        </View>
+        <View style={styles.content}>
+          <Text style={styles.name}>{name}</Text>
+          {actual ? (
+            <Text accessibilityLabel={planned ? `Realizado ${actual} de ${planned}` : `Realizado ${actual}`} style={styles.meta}>
+              {planned ? `${actual} de ${planned}` : actual}
+            </Text>
+          ) : null}
+        </View>
+        {status ? (
+          <View style={styles.status}>
+            <Text style={styles.statusLabel}>{status.label}</Text>
+            {status.value ? <Text style={[styles.statusValue, { color: STATUS_COLOR[status.tone] }]}>{status.value}</Text> : null}
           </View>
         ) : null}
       </View>
-      {delta ? <Text style={[styles.delta, { color: DELTA_COLOR[deltaTone] }]}>{delta}</Text> : null}
+      {typeof progress === 'number' ? (
+        <View style={styles.progressTrack}>
+          <View
+            style={[
+              styles.progressFill,
+              {
+                width: `${Math.min(100, Math.max(0, progress))}%`,
+                backgroundColor: status?.tone === 'over' ? GgastosColors.expense : color,
+              },
+            ]}
+          />
+        </View>
+      ) : null}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   row: {
+    gap: 10,
+    paddingVertical: 12,
+  },
+  topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    paddingVertical: 14,
-    paddingHorizontal: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: GgastosColors.lineSofter,
   },
   iconBadge: {
     width: 38,
@@ -99,27 +106,28 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: GgastosColors.inkStrong,
   },
-  plannedRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
   meta: {
-    ...GgastosType.micro,
+    ...GgastosType.bodySm,
     color: GgastosColors.inkFaint,
   },
   progressTrack: {
-    height: 4,
+    height: 6,
     borderRadius: GgastosRadius.pill,
     backgroundColor: GgastosColors.lineSofter,
     overflow: 'hidden',
-    marginTop: 2,
   },
   progressFill: {
     height: '100%',
   },
-  delta: {
-    ...GgastosType.bodySm,
+  status: {
+    alignItems: 'flex-end',
+  },
+  statusLabel: {
+    ...GgastosType.micro,
+    color: GgastosColors.inkFaint,
+  },
+  statusValue: {
+    ...GgastosType.bodyMd,
     fontWeight: '700',
   },
 });

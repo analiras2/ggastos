@@ -1,4 +1,5 @@
 import type { ImpactType } from '@/shared/contracts/finance';
+import type { CategoryStatus } from '@/features/dashboard/category-status';
 import { EntryKind } from '@/shared/theme/ggastos-theme';
 
 export type CategoryBudget = {
@@ -10,9 +11,10 @@ export type CategoryBudget = {
   color: string;
   // Null when the category has nothing planned for the month.
   planned: string | null;
-  // Null when there is no difference to show.
-  delta: string | null;
-  deltaTone: 'neutral' | 'over' | 'under';
+  // What was actually paid or received so far.
+  actual: string;
+  // What is left (or how much went past the plan); null when nothing was planned.
+  status: CategoryStatus | null;
   progress: number;
 };
 

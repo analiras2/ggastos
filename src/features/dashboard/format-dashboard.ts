@@ -1,16 +1,10 @@
 import { resolveCategoryColor, resolveCategoryIcon, type CategoryAppearanceMap } from '@/features/categories';
 import type { CategoryBudget, DashboardData } from '@/features/dashboard/dashboard-data';
+import { categoryStatus } from '@/features/dashboard/category-status';
 import { categoryDisplayName, splitCategoryIds } from '@/features/dashboard/category-display-name';
 import type { MonthDashboard } from '@/features/dashboard/contract';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import { monthLabel } from '@/shared/lib/month';
-
-function formatSignedCurrencyCents(cents: number): string {
-  const formatted = formatCurrencyCents(Math.abs(cents));
-  if (cents < 0) return `-${formatted}`;
-  if (cents > 0) return `+${formatted}`;
-  return formatted;
-}
 
 const CATEGORY_ICONS: Record<string, string> = {
   food: 'shopping-cart',
@@ -44,12 +38,6 @@ function toCategoryBudget(
         ? 100
         : 0;
 
-  const deltaTone: CategoryBudget['deltaTone'] =
-    category.deltaCents > 0 ? 'over' : category.deltaCents < 0 ? 'under' : 'neutral';
-
-  const hasDelta = category.actualCents > 0 && category.deltaCents !== 0;
-  const delta = hasDelta ? formatSignedCurrencyCents(category.deltaCents) : null;
-
   return {
     categoryId: category.categoryId,
     impactType: category.impactType,
@@ -57,8 +45,8 @@ function toCategoryBudget(
     icon: resolveCategoryIcon(category.categoryId, iconForCategory(category.categoryCode), appearance),
     color: resolveCategoryColor(category.categoryId, appearance),
     planned: category.plannedCents > 0 ? formatCurrencyCents(category.plannedCents) : null,
-    delta,
-    deltaTone,
+    actual: formatCurrencyCents(Math.max(category.actualCents, 0)),
+    status: categoryStatus(category.impactType, category.plannedCents, category.actualCents),
     progress,
   };
 }
