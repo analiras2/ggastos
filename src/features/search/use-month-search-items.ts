@@ -16,6 +16,7 @@ export type MonthSearchItem = {
   date: string | null;
   status: string | null;
   paymentMethod: string | null;
+  tags: string[];
 };
 
 export const monthSearchKey = (month: string) => ['month-search', month];
@@ -28,12 +29,12 @@ async function fetchMonthSearchItems(month: string): Promise<MonthSearchItem[]> 
   const [plannedResult, transactionsResult] = await Promise.all([
     supabase
       .from('planned_entries')
-      .select('id,title,amount_cents,status,due_date,category_id,impact_type,payment_method')
+      .select('id,title,amount_cents,status,due_date,category_id,impact_type,payment_method,tags')
       .eq('month', month)
       .neq('status', 'CANCELLED'),
     supabase
       .from('imported_transactions')
-      .select('id,description,merchant_name,amount_cents,posted_at,internal_category_id,impact_type,payment_method')
+      .select('id,description,merchant_name,amount_cents,posted_at,internal_category_id,impact_type,payment_method,tags')
       .eq('competency_month', month)
       .is('deleted_at', null),
   ]);
@@ -55,6 +56,7 @@ async function fetchMonthSearchItems(month: string): Promise<MonthSearchItem[]> 
     date: row.due_date,
     status: row.status,
     paymentMethod: row.payment_method,
+    tags: row.tags ?? [],
   }));
 
   const realized = (transactionsResult.data ?? []).map((row): MonthSearchItem => ({
@@ -67,6 +69,7 @@ async function fetchMonthSearchItems(month: string): Promise<MonthSearchItem[]> 
     date: row.posted_at,
     status: null,
     paymentMethod: row.payment_method,
+    tags: row.tags ?? [],
   }));
 
   return [...planned, ...realized];

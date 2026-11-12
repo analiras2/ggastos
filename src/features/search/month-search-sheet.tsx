@@ -3,6 +3,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { EmptyStateCard } from '@/shared/ui/cards/empty-state-card';
 import { Icon } from '@/shared/ui/core/icon';
+import { TagChips } from '@/shared/ui/core/tag-chips';
 import { TransactionRow } from '@/shared/ui/rows/transaction-row';
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { useMonthSearchViewModel } from '@/features/search/use-month-search-view-model';
@@ -17,7 +18,8 @@ type MonthSearchSheetProps = {
 const CLOSE_BUTTON_SIZE = 36;
 
 export function MonthSearchSheet({ visible, monthKey, onSelectCategory, onClose }: MonthSearchSheetProps) {
-  const { query, setQuery, results, hasQuery, isLoading, isError } = useMonthSearchViewModel(monthKey, visible);
+  const { query, setQuery, results, availableTags, selectedTag, toggleTag, hasQuery, isLoading, isError } =
+    useMonthSearchViewModel(monthKey, visible);
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
@@ -30,9 +32,9 @@ export function MonthSearchSheet({ visible, monthKey, onSelectCategory, onClose 
                 autoFocus
                 value={query}
                 onChangeText={setQuery}
-                placeholder="Buscar pelo título neste mês"
+                placeholder="Buscar por título ou #tag"
                 placeholderTextColor={GgastosColors.inkFaint}
-                accessibilityLabel="Buscar pelo título"
+                accessibilityLabel="Buscar por título ou tag"
                 style={styles.input}
               />
             </View>
@@ -41,14 +43,20 @@ export function MonthSearchSheet({ visible, monthKey, onSelectCategory, onClose 
             </Pressable>
           </View>
 
+          {availableTags.length > 0 ? (
+            <View style={styles.tagFilter}>
+              <TagChips tags={availableTags} selectedTag={selectedTag} onPressTag={toggleTag} />
+            </View>
+          ) : null}
+
           <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
             {isLoading ? <Text style={styles.status}>Carregando lançamentos...</Text> : null}
             {isError ? <Text style={styles.status}>Não foi possível carregar os lançamentos.</Text> : null}
             {!isLoading && !isError && !hasQuery ? (
-              <Text style={styles.status}>Digite para buscar entre os lançamentos do mês.</Text>
+              <Text style={styles.status}>Digite ou escolha uma tag para buscar entre os lançamentos do mês.</Text>
             ) : null}
             {!isLoading && !isError && hasQuery && results.length === 0 ? (
-              <EmptyStateCard icon="inbox" title="Nada encontrado" description="Nenhum lançamento do mês tem esse título." />
+              <EmptyStateCard icon="inbox" title="Nada encontrado" description="Nenhum lançamento do mês tem esse título ou tag." />
             ) : null}
             {results.map((item) => (
               <TransactionRow
@@ -58,6 +66,7 @@ export function MonthSearchSheet({ visible, monthKey, onSelectCategory, onClose 
                 amount={item.amount}
                 kind={item.kind}
                 date={item.date}
+                tags={item.tags}
                 onPress={item.categoryId ? () => onSelectCategory(item.categoryId as string) : undefined}
               />
             ))}
@@ -100,6 +109,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  tagFilter: { paddingHorizontal: GgastosSpacing.space5, paddingBottom: GgastosSpacing.space2 },
   content: { padding: GgastosSpacing.space5, gap: GgastosSpacing.space2 },
   status: { ...GgastosType.bodyMd, color: GgastosColors.inkFaint, textAlign: 'center', paddingVertical: 24 },
 });

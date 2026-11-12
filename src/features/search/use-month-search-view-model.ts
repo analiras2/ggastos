@@ -6,7 +6,8 @@ import { paymentMethodLabel } from '@/features/planned-entries';
 import { formatIsoDateToBrazilian } from '@/shared/lib/form-utils';
 import type { ImpactType } from '@/shared/contracts/finance';
 import { useCategories } from '@/features/categories';
-import { matchesSearch, normalizeSearchText } from '@/shared/lib/search-text';
+import { normalizeSearchText } from '@/shared/lib/search-text';
+import { collectTags, matchesSearchItem } from '@/features/search/filter-search-items';
 import { useMonthSearchItems, type MonthSearchItem } from '@/features/search/use-month-search-items';
 
 const KIND_BY_IMPACT: Record<ImpactType, EntryKind> = {
@@ -28,12 +29,16 @@ export type MonthSearchResult = {
   amount: string;
   kind: EntryKind;
   date: string;
+  tags: string[];
 };
 
 interface MonthSearchViewModel {
   query: string;
   setQuery: (value: string) => void;
   results: MonthSearchResult[];
+  availableTags: string[];
+  selectedTag: string | null;
+  toggleTag: (tag: string) => void;
   hasQuery: boolean;
   isLoading: boolean;
   isError: boolean;
@@ -54,11 +59,14 @@ function withDetails(item: MonthSearchItem): string {
 
 export function useMonthSearchViewModel(month: string, visible: boolean): MonthSearchViewModel {
   const [query, setQueryState] = useState('');
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const itemsQuery = useMonthSearchItems(month, visible);
   const categoriesQuery = useCategories();
   const normalizedQuery = normalizeSearchText(query);
 
   const setQuery = useCallback((value: string) => setQueryState(value), []);
+  const toggleTag = useCallback((tag: string) => setSelectedTag((current) => (current === tag ? null : tag)), []);
+  const availableTags = useMemo(() => collectTags(itemsQuery.data ?? []), [itemsQuery.data]);
 
   const results = useMemo(() => {
     const categories = new Map((categoriesQuery.data ?? []).map((category) => [category.id, category]));
@@ -69,7 +77,7 @@ export function useMonthSearchViewModel(month: string, visible: boolean): MonthS
       item.title?.trim() || (item.categoryId ? categories.get(item.categoryId)?.name : undefined) || NO_CATEGORY_LABEL;
 
     return (itemsQuery.data ?? [])
-      .filter((item) => matchesSearch(displayTitle(item), normalizedQuery))
+      .filter((item) => matchesSearchItem(item, displayTitle(item), normalizedQuery, selectedTag))
       .map((item): MonthSearchResult => {
         const category = item.categoryId ? categories.get(item.categoryId) : undefined;
         return {
@@ -80,15 +88,19 @@ export function useMonthSearchViewModel(month: string, visible: boolean): MonthS
           amount: formatCurrencyCents(item.amountCents),
           kind: KIND_BY_IMPACT[item.impactType ?? category?.impactType ?? 'EXPENSE'],
           date: withDetails(item),
+          tags: item.tags,
         };
       });
-  }, [itemsQuery.data, categoriesQuery.data, normalizedQuery]);
+  }, [itemsQuery.data, categoriesQuery.data, normalizedQuery, selectedTag]);
 
   return {
     query,
     setQuery,
     results,
-    hasQuery: normalizedQuery.length > 0,
+    availableTags,
+    selectedTag,
+    toggleTag,
+    hasQuery: normalizedQuery.length > 0 || selectedTag !== null,
     isLoading: itemsQuery.isLoading,
     isError: itemsQuery.isError,
   };
