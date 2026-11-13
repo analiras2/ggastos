@@ -16,6 +16,7 @@ const transaction: CategoryDetails['importedTransactions'][number] = {
   installmentIndex: 1,
   installmentTotal: 5,
   sourceBank: 'BRADESCO',
+  impactType: 'EXPENSE',
 };
 
 describe('item details', () => {

@@ -79,6 +79,7 @@ export const categoryDetailsSchema = z.object({
       installmentIndex: z.number().int().nullable().default(null),
       installmentTotal: z.number().int().nullable().default(null),
       sourceBank: z.string().nullable().default(null),
+      impactType: impactTypeSchema.default('EXPENSE'),
     })
   ),
 });

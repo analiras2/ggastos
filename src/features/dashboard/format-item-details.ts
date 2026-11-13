@@ -11,7 +11,8 @@ export type EditTarget = {
   source: 'PLANNED' | 'IMPORTED';
   id: string;
   title: string;
-  categoryId: string;
+  // Null for a purchase that has no category yet.
+  categoryId: string | null;
   impactType: ImpactType;
   tags: string[];
   // Set when the entry was typed in, so the whole "Novo lançamento" form can edit it.

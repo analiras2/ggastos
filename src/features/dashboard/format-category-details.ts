@@ -1,6 +1,7 @@
 import type { EntryKind, StatusChipStatus } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import type { CategoryDetails } from '@/features/dashboard/contract';
+import { UNCATEGORIZED_CATEGORY_ID } from '@/features/dashboard/uncategorized';
 import { buildEditablePlannedEntry } from '@/features/planned-entries';
 import { paymentMethodLabel } from '@/shared/lib/payment-method-label';
 import { formatIsoDateToBrazilian } from '@/shared/lib/form-utils';
@@ -127,8 +128,8 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
       source: 'IMPORTED' as const,
       id: transaction.id,
       title: transaction.merchantName ?? transaction.description,
-      categoryId: details.categoryId,
-      impactType: details.impactType,
+      categoryId: details.categoryId === UNCATEGORIZED_CATEGORY_ID ? null : details.categoryId,
+      impactType: transaction.impactType,
       tags: transaction.tags,
       plannedEntry: null,
     },

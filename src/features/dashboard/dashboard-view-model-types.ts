@@ -1,5 +1,6 @@
 import type { WalletSheetMode } from '@/features/wallet';
 import type { CategoryBudget, DashboardData } from '@/features/dashboard/dashboard-data';
+import type { UncategorizedSummary } from '@/features/dashboard/uncategorized';
 import type { CategoryDetailsView } from '@/features/dashboard/format-category-details';
 
 export type BannerState = 'ok' | 'pending' | 'error';
@@ -47,6 +48,8 @@ export interface DashboardViewModel {
   handleGoToCurrentMonth: () => void;
   handleSelectMonth: (monthKey: string) => void;
   handleOpenCategory: (category: CategoryBudget) => void;
+  uncategorized: UncategorizedSummary | null;
+  handleOpenUncategorized: () => void;
   handleCloseCategoryDetails: () => void;
   handleAddPlan: () => void;
   handleCloseAddPlan: () => void;

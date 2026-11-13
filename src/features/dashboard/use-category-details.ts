@@ -3,6 +3,8 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import type { ImpactType } from '@/shared/contracts/finance';
 import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 import { categoryDetailsSchema, type CategoryDetails } from '@/features/dashboard/contract';
+import { fetchUncategorizedDetails } from '@/features/dashboard/fetch-uncategorized-details';
+import { UNCATEGORIZED_CATEGORY_ID } from '@/features/dashboard/uncategorized';
 
 export const categoryDetailsKey = (month: string, categoryId: string, impactType: ImpactType) => [
   'category-details',
@@ -16,6 +18,9 @@ async function fetchCategoryDetails(
   categoryId: string,
   impactType: ImpactType
 ): Promise<CategoryDetails> {
+  if (categoryId === UNCATEGORIZED_CATEGORY_ID) {
+    return fetchUncategorizedDetails(month);
+  }
   if (!supabase) {
     throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
   }
@@ -35,7 +40,7 @@ async function fetchCategoryDetails(
     supabase
       .from('imported_transactions')
       .select(
-        'id,description,amount_cents,posted_at,merchant_name,payment_method,tags,note,description_raw,statement_installment_index,statement_installment_total,statement_source_bank'
+        'id,description,amount_cents,posted_at,merchant_name,payment_method,tags,note,description_raw,statement_installment_index,statement_installment_total,statement_source_bank,impact_type'
       )
       .eq('competency_month', month)
       .eq('internal_category_id', categoryId)
@@ -87,6 +92,7 @@ async function fetchCategoryDetails(
       installmentIndex: row.statement_installment_index,
       installmentTotal: row.statement_installment_total,
       sourceBank: row.statement_source_bank,
+      impactType: row.impact_type,
     })),
   });
 }

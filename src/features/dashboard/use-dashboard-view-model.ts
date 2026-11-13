@@ -10,6 +10,8 @@ import { useCategoryDetailsPanel } from '@/features/dashboard/use-category-detai
 import { useCloseMonthBanner } from '@/features/dashboard/use-close-month-banner';
 import { useDashboardSheets } from '@/features/dashboard/use-dashboard-sheets';
 import { useMonthDashboard } from '@/features/dashboard/use-month-dashboard';
+import { useUncategorizedMonth } from '@/features/dashboard/use-uncategorized-month';
+import { UNCATEGORIZED_CATEGORY_ID } from '@/features/dashboard/uncategorized';
 import { useWalletPanel } from '@/features/dashboard/use-wallet-panel';
 
 export function useDashboardViewModel(): DashboardViewModel {
@@ -17,6 +19,7 @@ export function useDashboardViewModel(): DashboardViewModel {
   const monthDashboardQuery = useMonthDashboard(monthKey);
   const categoryAppearanceQuery = useCategoryAppearance();
   const monthSnapshotQuery = useMonthSnapshot(monthKey);
+  const uncategorizedQuery = useUncategorizedMonth(monthKey);
   const sheets = useDashboardSheets();
   const { categoryDetails, handleOpenCategory, handleCloseCategoryDetails } =
     useCategoryDetailsPanel(monthKey);
@@ -43,6 +46,21 @@ export function useDashboardViewModel(): DashboardViewModel {
   const handleNextMonth = useCallback(() => setMonthKey((current) => shiftMonthKey(current, 1)), []);
   const handleGoToCurrentMonth = useCallback(() => setMonthKey(currentMonthKey()), []);
   const handleSelectMonth = useCallback((selectedMonthKey: string) => setMonthKey(selectedMonthKey), []);
+  const handleOpenUncategorized = useCallback(
+    () =>
+      handleOpenCategory({
+        categoryId: UNCATEGORIZED_CATEGORY_ID,
+        impactType: 'EXPENSE',
+        name: 'Sem categoria',
+        icon: 'circle',
+        color: '#9A8F84',
+        planned: null,
+        actual: '',
+        status: null,
+        progress: 0,
+      }),
+    [handleOpenCategory]
+  );
 
   const { handleCloseSearch } = sheets;
   const handleSelectSearchCategory = useCallback(
@@ -72,6 +90,8 @@ export function useDashboardViewModel(): DashboardViewModel {
     handleGoToCurrentMonth,
     handleSelectMonth,
     handleOpenCategory,
+    uncategorized: uncategorizedQuery.data ?? null,
+    handleOpenUncategorized,
     handleCloseCategoryDetails,
     handleSelectSearchCategory,
     ...walletPanel,

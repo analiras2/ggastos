@@ -63,7 +63,7 @@ export function DashboardScreen() {
           />
         ) : null}
 
-        {loadStatus === 'ready' && data.categories.length === 0 ? (
+        {loadStatus === 'ready' && data.categories.length === 0 && !viewModel.uncategorized ? (
           <EmptyStateCard
             title="Nada neste mês ainda"
             description="Adicione um lançamento ou importe a fatura do cartão."
@@ -71,7 +71,12 @@ export function DashboardScreen() {
             onAction={viewModel.handleOpenStatementImport}
           />
         ) : (
-          <DashboardCategoriesSection categories={data.categories} onOpenCategory={viewModel.handleOpenCategory} />
+          <DashboardCategoriesSection
+            categories={data.categories}
+            onOpenCategory={viewModel.handleOpenCategory}
+            uncategorized={viewModel.uncategorized}
+            onOpenUncategorized={viewModel.handleOpenUncategorized}
+          />
         )}
 
         {closeMonthBanner ? (
