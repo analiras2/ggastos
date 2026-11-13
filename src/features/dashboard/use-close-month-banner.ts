@@ -9,8 +9,14 @@ const CLOSED_MESSAGE = 'Mês fechado. O snapshot pode ser recalculado a qualquer
 // Closing the month, plus the banner that reports its progress and open invoices.
 export function useCloseMonthBanner(monthKey: string, openExpenseCents: number) {
   const closeMonthMutation = useCloseMonth();
+  // The mutation remembers the month it ran for; its result must not follow the person to other months.
+  const isForThisMonth = closeMonthMutation.variables === monthKey;
 
   const closeMonthBanner = useMemo<{ state: BannerState; message: string } | null>(() => {
+    if (!isForThisMonth) {
+      return null;
+    }
+
     if (closeMonthMutation.isPending) {
       return { state: 'pending', message: 'Fechando o mês...' };
     }
@@ -35,6 +41,7 @@ export function useCloseMonthBanner(monthKey: string, openExpenseCents: number) 
     closeMonthMutation.isError,
     closeMonthMutation.error,
     closeMonthMutation.isSuccess,
+    isForThisMonth,
     openExpenseCents,
   ]);
 
@@ -42,5 +49,5 @@ export function useCloseMonthBanner(monthKey: string, openExpenseCents: number) 
     closeMonthMutation.mutate(monthKey);
   }, [closeMonthMutation, monthKey]);
 
-  return { closeMonthBanner, isClosingMonth: closeMonthMutation.isPending, handleCloseMonth };
+  return { closeMonthBanner, isClosingMonth: closeMonthMutation.isPending && isForThisMonth, handleCloseMonth };
 }
