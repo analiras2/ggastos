@@ -18,7 +18,12 @@ import {
   type PlannedEntryDetailsInput,
   type PlannedEntryLocation,
 } from '@/features/planned-entries/planned-entries-api';
-import { updatePlannedEntryColumns, type UpdatePlannedEntryInput } from '@/features/planned-entries/update-planned-entry';
+import {
+  removePlannedEntry,
+  updatePlannedEntryColumns,
+  type RemovePlannedEntryInput,
+  type UpdatePlannedEntryInput,
+} from '@/features/planned-entries/update-planned-entry';
 import type { CreatePlannedEntryInput, PlannedEntry } from '@/features/planned-entries/contract';
 
 export function usePlannedEntries(month: string): UseQueryResult<PlannedEntry[], Error> {
@@ -68,4 +73,9 @@ export function useUpdatePlannedEntryDetails(): UseMutationResult<unknown, Error
 // Saves every editable field of one planned entry.
 export function useUpdatePlannedEntry(): UseMutationResult<unknown, Error, UpdatePlannedEntryInput> {
   return useMonthDataMutation(updatePlannedEntryColumns);
+}
+
+// Removes a planned entry from the month (see removePlannedEntry for delete versus cancel).
+export function useRemovePlannedEntry(): UseMutationResult<unknown, Error, RemovePlannedEntryInput> {
+  return useMonthDataMutation(removePlannedEntry);
 }

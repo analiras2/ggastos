@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { PlannedEntryRow } from '@/shared/ui/rows/planned-entry-row';
 import { TransactionRow } from '@/shared/ui/rows/transaction-row';
 import { GgastosColors, GgastosType } from '@/shared/theme/ggastos-theme';
-import { AddPlanSheet } from '@/features/planned-entries';
+import { AddPlanSheet, useRemovePlannedEntry } from '@/features/planned-entries';
 import { EditItemSheet } from '@/features/dashboard/edit-item-sheet';
 import type { EditTarget } from '@/features/dashboard/format-item-details';
 import { ItemDetailsPanel } from '@/features/dashboard/item-details-panel';
@@ -20,6 +20,12 @@ type CategoryDetailsListProps = {
 export function CategoryDetailsList({ details, togglingEntryId, onToggleEntryStatus }: CategoryDetailsListProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editTarget, setEditTarget] = useState<EditTarget | null>(null);
+  const removeEntry = useRemovePlannedEntry();
+  const removalProps = (target: EditTarget) => ({
+    removal: target.removal,
+    isRemoving: removeEntry.isPending,
+    onRemove: () => target.removal && removeEntry.mutate({ id: target.id, mode: target.removal }),
+  });
   const toggleExpanded = (id: string) => setExpandedId((current) => (current === id ? null : id));
 
   return (
@@ -43,7 +49,7 @@ export function CategoryDetailsList({ details, togglingEntryId, onToggleEntrySta
               tags={item.tags}
               onPress={() => toggleExpanded(item.id)}
             >
-              {expandedId === item.id ? <ItemDetailsPanel lines={item.details} onEdit={() => setEditTarget(item.editTarget)} /> : null}
+              {expandedId === item.id ? <ItemDetailsPanel lines={item.details} onEdit={() => setEditTarget(item.editTarget)} {...removalProps(item.editTarget)} /> : null}
             </PlannedEntryRow>
           ))}
         </View>
@@ -63,7 +69,7 @@ export function CategoryDetailsList({ details, togglingEntryId, onToggleEntrySta
               tags={item.tags}
               onPress={() => toggleExpanded(item.id)}
             >
-              {expandedId === item.id ? <ItemDetailsPanel lines={item.details} onEdit={() => setEditTarget(item.editTarget)} /> : null}
+              {expandedId === item.id ? <ItemDetailsPanel lines={item.details} onEdit={() => setEditTarget(item.editTarget)} {...removalProps(item.editTarget)} /> : null}
             </TransactionRow>
           ))}
         </View>

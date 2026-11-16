@@ -3,6 +3,7 @@ export { AddPlanSheet } from './add-plan-sheet';
 export type { PlannedEntry } from './contract';
 export { paymentMethodLabel } from './paid-entry-rules';
 export { PlanningEntryListRow } from './planning-entry-list-row';
-export { useCancelPlannedEntry, useConfirmPlannedEntryManually, usePlannedEntries, useUndoManualConfirmation, useUpdatePlannedEntryDetails } from './use-planned-entries';
+export { useCancelPlannedEntry, useConfirmPlannedEntryManually, usePlannedEntries, useUndoManualConfirmation, useRemovePlannedEntry, useUpdatePlannedEntryDetails } from './use-planned-entries';
 export { buildEditablePlannedEntry } from './plan-edit-rules';
 export type { EditablePlannedEntry } from './plan-edit-rules';
+export type { RemovalMode } from './update-planned-entry';

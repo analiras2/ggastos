@@ -2,7 +2,7 @@ import type { EntryKind, StatusChipStatus } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import type { CategoryDetails } from '@/features/dashboard/contract';
 import { UNCATEGORIZED_CATEGORY_ID } from '@/features/dashboard/uncategorized';
-import { buildEditablePlannedEntry } from '@/features/planned-entries';
+import { buildEditablePlannedEntry, type RemovalMode } from '@/features/planned-entries';
 import { paymentMethodLabel } from '@/shared/lib/payment-method-label';
 import { formatIsoDateToBrazilian } from '@/shared/lib/form-utils';
 import type { ImpactType, PlanningStatus } from '@/shared/contracts/finance';
@@ -56,6 +56,14 @@ export type CategoryDetailsView = {
   transactionItems: TransactionItem[];
   isEmpty: boolean;
 };
+
+// Entries from a statement cannot be removed; one from a recurrence is cancelled; the rest are deleted.
+function removalOf(entry: CategoryDetails['plannedEntries'][number]): RemovalMode | null {
+  if (entry.sourceBatchId !== null) {
+    return null;
+  }
+  return entry.templateId !== null ? 'CANCEL' : 'DELETE';
+}
 
 function withPaymentMethod(text: string, paymentMethod: string | null): string {
   const label = paymentMethodLabel(paymentMethod);
@@ -112,6 +120,7 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
               paymentMethod: entry.paymentMethod,
             })
           : null,
+      removal: removalOf(entry),
     },
   }));
 
@@ -132,6 +141,7 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
       impactType: transaction.impactType,
       tags: transaction.tags,
       plannedEntry: null,
+      removal: null,
     },
   }));
 

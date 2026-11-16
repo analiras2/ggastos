@@ -63,6 +63,7 @@ export const categoryDetailsSchema = z.object({
       note: z.string().nullable().default(null),
       // Set when the entry was planned by a statement import (its installments), not typed in.
       sourceBatchId: z.string().nullable().default(null),
+      templateId: z.string().nullable().default(null),
     })
   ),
   importedTransactions: z.array(

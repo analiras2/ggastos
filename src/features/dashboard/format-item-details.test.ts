@@ -54,6 +54,7 @@ describe('item details', () => {
         tags: [],
         note: 'pago adiantado',
         sourceBatchId: null,
+        templateId: null,
       },
       'Casa'
     );
