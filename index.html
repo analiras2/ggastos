@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover, shrink-to-fit=no"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no"
     />
     <title>GGastos</title>
     <meta name="theme-color" content="#1F6B57" />
@@ -19,7 +19,17 @@
       html, body, #root { height: 100%; }
       body { margin: 0; background-color: #F7F2EA; }
       #root { display: flex; flex-direction: column; }
+      /* Behaves like an app on touch screens: no pinch or double-tap zoom, only panning. */
+      html, body { touch-action: pan-x pan-y; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+      /* iOS zooms into any field whose text is smaller than 16px when it gets focus. */
+      @media (pointer: coarse) { input, textarea, select { font-size: 16px !important; } }
     </style>
+    <script>
+      // iOS Safari ignores user-scalable=no, so the pinch gesture is cancelled here.
+      ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (name) {
+        document.addEventListener(name, function (event) { event.preventDefault(); }, { passive: false });
+      });
+    </script>
     <script src="/register-sw.js" defer></script>
   </head>
   <body>
