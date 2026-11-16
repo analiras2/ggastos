@@ -12,9 +12,9 @@ import type { StatisticsPeriod } from '@/features/reports/statistics-period-rule
 import { useStatisticsViewModel } from '@/features/reports/use-statistics-view-model';
 
 const PERIOD_OPTIONS: SegmentOption<StatisticsPeriod>[] = [
-  { key: 'year', label: 'Ano' },
-  { key: 'quarter', label: 'Trimestre' },
   { key: 'month', label: 'Mês' },
+  { key: 'quarter', label: 'Trimestre' },
+  { key: 'year', label: 'Ano' },
 ];
 
 export function StatisticsScreen() {
