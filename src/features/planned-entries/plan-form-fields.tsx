@@ -4,7 +4,7 @@ import { GgastosColors } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import { CategoryField } from '@/features/categories';
 import { DateField } from '@/shared/ui/forms/date-field';
-import { SegmentedToggle } from '@/shared/ui/forms/segmented-toggle';
+import { SelectField } from '@/shared/ui/forms/select-field';
 import type { ImpactType } from '@/shared/contracts/finance';
 import { PaidEntryFields } from '@/features/planned-entries/paid-entry-fields';
 import { PlanKindField, PlanRecurrenceDetails } from '@/features/planned-entries/plan-recurrence-fields';
@@ -41,7 +41,7 @@ export function PlanFormFields({ form }: PlanFormFieldsProps) {
 
       <View style={styles.field}>
         <Text style={styles.label}>Tipo</Text>
-        <SegmentedToggle options={IMPACT_OPTIONS} value={form.impactType} onChange={form.setImpactType} />
+        <SelectField accessibilityLabel="Tipo" options={IMPACT_OPTIONS} value={form.impactType} onChange={form.setImpactType} />
       </View>
 
       <View style={styles.field}>
