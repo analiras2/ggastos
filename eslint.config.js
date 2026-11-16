@@ -27,7 +27,8 @@ const featureBoundary = (allowedFeature) => ({
 });
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', 'supabase/**'] },
+  // Edge Functions are linted; migrations, seed and integration suites are not.
+  { ignores: ['dist/**', 'node_modules/**', 'supabase/migrations/**', 'supabase/tests/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   reactHooks.configs.flat['recommended-latest'],

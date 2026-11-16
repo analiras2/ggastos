@@ -38,7 +38,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:backend": "node --test \"supabase/functions/**/*.test.mjs\"",
-    "lint": "eslint src"
+    "lint": "eslint src supabase/functions",
+    "check": "npm run typecheck && npm run lint && npm test && npm run test:backend"
   },
   "private": true
 }

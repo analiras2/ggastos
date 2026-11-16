@@ -7,7 +7,8 @@ React Query, Supabase (Postgres, RLS, Edge Functions). Deploy do front na Vercel
 ```bash
 npm run web                 # dev server Vite (Node 22+)
 npm run typecheck           # tsc --noEmit
-npm run lint                # eslint (inclui as fronteiras entre features)
+npm run lint                # eslint em src e supabase/functions (inclui as fronteiras entre features)
+npm run check               # typecheck + lint + test + test:backend, tudo de uma vez
 npm test                    # vitest: regras puras e contratos
 npm run build:web           # build para dist/
 supabase start              # backend local (Docker)
