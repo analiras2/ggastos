@@ -1,8 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { GgastosType } from '@/shared/theme/ggastos-theme';
+import { GgastosColors, GgastosType } from '@/shared/theme/ggastos-theme';
 
-const ON_PRIMARY = '#FFFFFF';
 const ON_PRIMARY_SOFT = 'rgba(255, 255, 255, 0.78)';
 
 type GreetingHeaderProps = { title: string; quote: string };
@@ -19,6 +18,6 @@ export function GreetingHeader({ title, quote }: GreetingHeaderProps) {
 
 const styles = StyleSheet.create({
   container: { gap: 2, paddingTop: 2 },
-  title: { ...GgastosType.displaySm, color: ON_PRIMARY },
+  title: { ...GgastosType.displaySm, color: GgastosColors.onPrimary },
   quote: { ...GgastosType.micro, color: ON_PRIMARY_SOFT },
 });

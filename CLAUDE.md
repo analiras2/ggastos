@@ -7,7 +7,8 @@ React Query, Supabase (Postgres, RLS, Edge Functions). Deploy do front na Vercel
 ```bash
 npm run web                 # dev server Vite (Node 22+)
 npm run typecheck           # tsc --noEmit
-npm run lint                # eslint (inclui as fronteiras entre features)
+npm run lint                # eslint em src e supabase/functions (inclui as fronteiras entre features)
+npm run check               # typecheck + lint + test + test:backend, tudo de uma vez
 npm test                    # vitest: regras puras e contratos
 npm run build:web           # build para dist/
 supabase start              # backend local (Docker)
@@ -30,7 +31,8 @@ src/shared/lib/                 # supabase, query client, invalidate-month-data,
 src/shared/contracts/finance.ts # vocabulário comum: ImpactType, PlanningStatus, month, centavos
 public/                         # manifest, service worker, ícones (PWA)
 supabase/migrations/            # schema versionado
-supabase/functions/<fn>/index.ts      # só HTTP, auth e erros (poucas dezenas de linhas)
+supabase/functions/<fn>/index.ts      # só HTTP, auth e erros (poucas dezenas de linhas); usa
+                                      #   _shared/http.ts e _shared/request-context.ts (auth, env, CORS)
 supabase/functions/_shared/<domínio>/ # regra de negócio por domínio (statement-import, statements,
                                       #   reconciliation, closing) com *.test.mjs ao lado
 supabase/tests/                 # suítes de integração (RLS, reimport...) que usam o banco local

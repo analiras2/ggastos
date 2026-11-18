@@ -4,7 +4,7 @@ import type {
   StatementBank,
   StatementPaymentStatus,
 } from '@/features/statements/use-import-card-statement';
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 
 export type StatementInvoice = {
   id: string;
@@ -49,9 +49,7 @@ function toInvoice(row: InvoiceRow): StatementInvoice {
 // Importing a statement again creates a new batch and moves its rows to it, so older batches end
 // up without rows. Only batches that still own rows are invoices.
 async function listStatementInvoices(): Promise<StatementInvoice[]> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const { data, error } = await supabase
     .from('statement_import_batches')
@@ -73,9 +71,7 @@ export type SetInvoicePaymentStatusInput = {
 };
 
 async function setInvoicePaymentStatus(input: SetInvoicePaymentStatusInput): Promise<void> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const { error } = await supabase.rpc('set_statement_payment_status', {
     p_batch_id: input.batchId,

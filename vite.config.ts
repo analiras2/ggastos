@@ -23,9 +23,6 @@ export default defineConfig({
     include: ['react-native-web'],
     esbuildOptions: { resolveExtensions: WEB_EXTENSIONS, define: { global: 'globalThis' } },
   },
-  build: {
-    outDir: 'dist',
-  },
   // Unit tests cover pure rules only (no DOM), and live next to the code they test.
   test: {
     environment: 'node',

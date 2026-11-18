@@ -42,5 +42,5 @@ const styles = StyleSheet.create({
   chip: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: GgastosRadius.pill, backgroundColor: GgastosColors.brandPrimarySoft },
   chipSelected: { backgroundColor: GgastosColors.brandPrimary },
   label: { ...GgastosType.micro, color: GgastosColors.brandPrimary, fontWeight: '600' },
-  labelSelected: { color: '#FFFFFF' },
+  labelSelected: { color: GgastosColors.onPrimary },
 });

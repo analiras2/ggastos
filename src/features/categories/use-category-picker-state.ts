@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import type { ImpactType } from '@/shared/contracts/finance';
 import { useCreatePersonalCategory, type CategoryOption } from '@/features/categories/use-categories';
 import { normalizeSearchText } from '@/shared/lib/search-text';
+import { errorMessageOf } from '@/shared/lib/error-message';
 
 type CategoryPickerStateInput = {
   categories: CategoryOption[];
@@ -51,7 +52,7 @@ export function useCategoryPickerState({
       const category = await createCategory.mutateAsync({ name: search, impactType, icon, color });
       onSelect((category as { id: string }).id);
     } catch (error) {
-      setCreationError(error instanceof Error ? error.message : 'Não foi possível criar a categoria.');
+      setCreationError(errorMessageOf(error, 'Não foi possível criar a categoria.'));
     }
   }
 

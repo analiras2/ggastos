@@ -12,7 +12,6 @@ type WalletHeaderProps = {
   onPressValue?: () => void;
 };
 
-const ON_PRIMARY = '#FFFFFF';
 const ON_PRIMARY_SOFT = 'rgba(255, 255, 255, 0.72)';
 const NEGATIVE_ON_PRIMARY = '#FFD2CB';
 
@@ -62,7 +61,7 @@ const styles = StyleSheet.create({
     color: GgastosColors.inkStrong,
   },
   labelOnPrimary: { color: ON_PRIMARY_SOFT },
-  valueOnPrimary: { color: ON_PRIMARY },
+  valueOnPrimary: { color: GgastosColors.onPrimary },
   negativeOnPrimary: { color: NEGATIVE_ON_PRIMARY },
   valueNegative: {
     color: GgastosColors.expense,

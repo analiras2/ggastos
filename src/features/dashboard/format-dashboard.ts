@@ -4,6 +4,7 @@ import { categoryStatus } from '@/features/dashboard/category-status';
 import { categoryDisplayName, splitCategoryIds } from '@/features/dashboard/category-display-name';
 import type { MonthDashboard } from '@/features/dashboard/contract';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { PERCENT_FACTOR } from '@/shared/lib/percent';
 import { monthLabel } from '@/shared/lib/month';
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -33,7 +34,7 @@ function toCategoryBudget(
 ): CategoryBudget {
   const progress =
     category.plannedCents > 0
-      ? Math.round((category.actualCents / category.plannedCents) * 100)
+      ? Math.round((category.actualCents / category.plannedCents) * PERCENT_FACTOR)
       : category.actualCents > 0
         ? 100
         : 0;
@@ -60,7 +61,7 @@ export function formatDashboardData(
 
   return {
     month: monthLabel(monthDashboard.month),
-    previsto: formatCurrencyCents(summary.expectedBalanceCents),
+    expectedBalance: formatCurrencyCents(summary.expectedBalanceCents),
     commitment: { value: formatCurrencyCents(summary.committedRemainingCents) },
     openInvoices:
       summary.openExpenseCents > 0 ? { value: formatCurrencyCents(summary.openExpenseCents) } : null,
@@ -74,7 +75,7 @@ export function formatDashboardData(
 export function emptyDashboardData(monthKey: string): DashboardData {
   return {
     month: monthLabel(monthKey),
-    previsto: formatCurrencyCents(0),
+    expectedBalance: formatCurrencyCents(0),
     commitment: { value: formatCurrencyCents(0) },
     openInvoices: null,
     categories: [],

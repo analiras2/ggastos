@@ -9,7 +9,8 @@ type SegmentedToggleOption<TValue extends string> = {
 
 type SegmentedToggleProps<TValue extends string> = {
   options: SegmentedToggleOption<TValue>[];
-  value: TValue;
+  // Null when nothing is chosen yet.
+  value: TValue | null;
   onChange: (value: TValue) => void;
 };
 

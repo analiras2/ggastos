@@ -85,7 +85,7 @@ const variantStyles = StyleSheet.create({
 });
 
 const variantTextStyles = StyleSheet.create({
-  primary: { color: '#FFFFFF' },
+  primary: { color: GgastosColors.onPrimary },
   secondary: { color: GgastosColors.inkStrong },
   ghost: { color: GgastosColors.brandPrimary },
   danger: { color: GgastosColors.expense },

@@ -1,63 +1,28 @@
 // Imports a Nubank or Bradesco card statement (CSV). This file only handles HTTP, authentication
 // and errors; the import itself lives in _shared/statement-import/.
-import { getBearerToken, readAuthenticatedUser } from "../_shared/auth.ts";
-import { corsHeaders, jsonResponse } from "../_shared/http.ts";
+import { jsonResponse, methodNotAllowedResponse, preflightResponse } from "../_shared/http.ts";
 import { parseImportRequest } from "../_shared/statement-import/request.ts";
 import { runStatementImport } from "../_shared/statement-import/run-import.ts";
-import type { SupabaseRestConfig } from "../_shared/supabase-rest.ts";
-
-declare const Deno: {
-  env: {
-    get(name: string): string | undefined;
-  };
-  serve(handler: (request: Request) => Response | Promise<Response>): void;
-};
-
-function readRequiredEnv(name: string): string {
-  const value = Deno.env.get(name);
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-
-  return value;
-}
+import { authenticateRequest } from "../_shared/request-context.ts";
 
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: corsHeaders });
+    return preflightResponse("POST");
   }
 
   if (request.method !== "POST") {
-    return jsonResponse(405, {
-      error: "method_not_allowed",
-      message: "Use POST to import a card statement.",
-    });
+    return methodNotAllowedResponse("POST", "import-card-statement");
   }
 
   try {
-    const supabaseUrl = readRequiredEnv("SUPABASE_URL");
-    const anonKey = readRequiredEnv("SUPABASE_ANON_KEY");
-    const serviceRoleKey = readRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
-    const config: SupabaseRestConfig = { supabaseUrl, serviceRoleKey };
-
-    const accessToken = getBearerToken(request);
-    if (!accessToken) {
-      return jsonResponse(401, {
-        error: "missing_auth",
-        message: "Authorization bearer token is required.",
-      });
+    const auth = await authenticateRequest(request, Deno.env);
+    if (!auth.ok) {
+      return auth.response;
     }
-
-    const user = await readAuthenticatedUser(supabaseUrl, anonKey, accessToken);
-    if (!user) {
-      return jsonResponse(401, {
-        error: "invalid_auth",
-        message: "Authorization bearer token is invalid or expired.",
-      });
-    }
+    const { user, restConfig } = auth.value;
 
     const importRequest = await parseImportRequest(request);
-    const outcome = await runStatementImport(config, user, importRequest);
+    const outcome = await runStatementImport(restConfig, user, importRequest);
     return jsonResponse(outcome.status, outcome.body);
   } catch (error) {
     if (error instanceof Response) {

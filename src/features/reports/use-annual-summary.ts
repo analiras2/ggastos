@@ -1,15 +1,13 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 import { annualSummarySchema, type AnnualSummary } from '@/features/reports/contract';
 
 /** Must stay ['annual-summary', year] — invalidated by use-close-month.ts on close. */
 export const annualSummaryKey = (year: number) => ['annual-summary', year];
 
 async function fetchAnnualSummary(year: number): Promise<AnnualSummary> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const { data, error } = await supabase.rpc('get_annual_summary', { p_year: year });
 

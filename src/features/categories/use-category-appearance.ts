@@ -2,15 +2,13 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import type { CategoryAppearanceMap } from '@/features/categories/category-appearance';
 import { categoriesKey } from '@/features/categories/use-categories';
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 
 // Under the ['categories'] prefix so creating or editing a category refreshes it.
 export const categoryAppearanceKey = [...categoriesKey, 'appearance'];
 
 async function fetchCategoryAppearance(): Promise<CategoryAppearanceMap> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const { data, error } = await supabase.from('categories').select('id,icon,color');
 

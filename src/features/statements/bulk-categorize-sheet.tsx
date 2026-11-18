@@ -1,8 +1,8 @@
-import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { Button } from '@/shared/ui/core/button';
 import { Icon } from '@/shared/ui/core/icon';
+import { SheetModal } from '@/shared/ui/core/sheet-modal';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import { CategoryField } from '@/features/categories';
@@ -10,7 +10,6 @@ import { countLabel } from '@/shared/lib/counts';
 import type { BulkCategorizeViewModel } from '@/features/statements/use-bulk-categorize-view-model';
 
 const ICON_SIZE = 18;
-const CLOSE_ICON_SIZE = 20;
 
 type BulkCategorizeSheetProps = {
   visible: boolean;
@@ -45,76 +44,54 @@ export function BulkCategorizeSheet({
   onClose,
 }: BulkCategorizeSheetProps) {
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.screen} edges={['top']}>
-          <View style={styles.header}>
-            <View>
-              <Text style={styles.title}>Categorizar em lote</Text>
-              <Text style={styles.subtitle}>
-                {countLabel(selectedCount, 'lançamento', 'lançamentos')} · {formatCurrencyCents(selectedTotalCents)}
-              </Text>
-            </View>
-            <Pressable accessibilityRole="button" accessibilityLabel="Fechar" hitSlop={12} onPress={onClose}>
-              <Icon name="x" size={CLOSE_ICON_SIZE} />
-            </Pressable>
+    <SheetModal
+      visible={visible}
+      title="Categorizar em lote"
+      subtitle={`${countLabel(selectedCount, 'lançamento', 'lançamentos')} · ${formatCurrencyCents(selectedTotalCents)}`}
+      onClose={onClose}
+    >
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.field}>
+          <Text style={styles.label}>Categoria</Text>
+          <CategoryField
+            categories={viewModel.categories}
+            isLoading={viewModel.isLoading}
+            selectedCategoryId={viewModel.selectedCategoryId}
+            onSelect={viewModel.setSelectedCategoryId}
+            impactTypes={['EXPENSE']}
+          />
+        </View>
+
+        <View style={styles.ruleRow}>
+          <View style={styles.ruleTextGroup}>
+            <Text style={styles.ruleTitle}>Usar nas próximas faturas</Text>
+            <Text style={styles.ruleDescription}>{describeRules(viewModel)}</Text>
           </View>
+          <Switch
+            disabled={viewModel.ruleCount === 0}
+            value={viewModel.createRules}
+            onValueChange={viewModel.setCreateRules}
+          />
+        </View>
 
-          <ScrollView contentContainerStyle={styles.content}>
-            <View style={styles.field}>
-              <Text style={styles.label}>Categoria</Text>
-              <CategoryField
-                categories={viewModel.categories}
-                isLoading={viewModel.isLoading}
-                selectedCategoryId={viewModel.selectedCategoryId}
-                onSelect={viewModel.setSelectedCategoryId}
-                impactTypes={['EXPENSE']}
-              />
-            </View>
+        {viewModel.errorMessage ? <Text style={styles.error}>{viewModel.errorMessage}</Text> : null}
 
-            <View style={styles.ruleRow}>
-              <View style={styles.ruleTextGroup}>
-                <Text style={styles.ruleTitle}>Usar nas próximas faturas</Text>
-                <Text style={styles.ruleDescription}>{describeRules(viewModel)}</Text>
-              </View>
-              <Switch
-                disabled={viewModel.ruleCount === 0}
-                value={viewModel.createRules}
-                onValueChange={viewModel.setCreateRules}
-              />
-            </View>
-
-            {viewModel.errorMessage ? <Text style={styles.error}>{viewModel.errorMessage}</Text> : null}
-
-            <Button
-              fullWidth
-              disabled={viewModel.isSaving || viewModel.selectedCategoryId === null || selectedCount === 0}
-              icon={<Icon name="check" size={ICON_SIZE} color={GgastosColors.bgBase} />}
-              onPress={viewModel.handleConfirm}
-            >
-              {viewModel.isSaving
-                ? 'Salvando...'
-                : `Categorizar ${countLabel(selectedCount, 'lançamento', 'lançamentos')}`}
-            </Button>
-          </ScrollView>
-        </SafeAreaView>
-      </SafeAreaProvider>
-    </Modal>
+        <Button
+          fullWidth
+          disabled={viewModel.isSaving || viewModel.selectedCategoryId === null || selectedCount === 0}
+          icon={<Icon name="check" size={ICON_SIZE} color={GgastosColors.bgBase} />}
+          onPress={viewModel.handleConfirm}
+        >
+          {viewModel.isSaving
+            ? 'Salvando...'
+            : `Categorizar ${countLabel(selectedCount, 'lançamento', 'lançamentos')}`}
+        </Button>
+      </ScrollView>
+    </SheetModal>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: GgastosColors.bgBase },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: GgastosSpacing.space5,
-    borderBottomWidth: 1,
-    borderBottomColor: GgastosColors.lineSofter,
-  },
-  title: { ...GgastosType.displaySm, color: GgastosColors.inkStrong },
-  subtitle: { ...GgastosType.bodySm, color: GgastosColors.inkSoft },
   content: { padding: GgastosSpacing.space5, gap: GgastosSpacing.space5 },
   field: { gap: GgastosSpacing.space2 },
   label: { ...GgastosType.label, color: GgastosColors.inkSoft },

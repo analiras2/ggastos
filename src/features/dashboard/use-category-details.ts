@@ -1,7 +1,7 @@
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { skipToken, useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import type { ImpactType } from '@/shared/contracts/finance';
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 import { categoryDetailsSchema, type CategoryDetails } from '@/features/dashboard/contract';
 import { fetchUncategorizedDetails } from '@/features/dashboard/fetch-uncategorized-details';
 import { UNCATEGORIZED_CATEGORY_ID } from '@/features/dashboard/uncategorized';
@@ -21,9 +21,7 @@ async function fetchCategoryDetails(
   if (categoryId === UNCATEGORIZED_CATEGORY_ID) {
     return fetchUncategorizedDetails(month);
   }
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const [categoryResult, plannedResult, transactionsResult] = await Promise.all([
     supabase.from('categories').select('code,name').eq('id', categoryId).single(),
@@ -105,7 +103,9 @@ export function useCategoryDetails(
 ): UseQueryResult<CategoryDetails, Error> {
   return useQuery({
     queryKey: categoryDetailsKey(month, categoryId ?? '', impactType ?? 'EXPENSE'),
-    queryFn: () => fetchCategoryDetails(month, categoryId as string, impactType as ImpactType),
-    enabled: categoryId !== null && impactType !== null,
+    queryFn:
+      categoryId !== null && impactType !== null
+        ? () => fetchCategoryDetails(month, categoryId, impactType)
+        : skipToken,
   });
 }

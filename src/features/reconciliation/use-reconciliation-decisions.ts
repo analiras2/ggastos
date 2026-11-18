@@ -9,7 +9,7 @@ import {
   FunctionsRelayError,
 } from '@supabase/supabase-js';
 
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 
 export type ReconciliationAction = 'confirm' | 'reject' | 'undo';
 
@@ -25,15 +25,18 @@ type ReconciliationDecisionResult = {
   status: 'ok';
 };
 
+const HTTP_NOT_FOUND = 404;
+const HTTP_CONFLICT = 409;
+
 function formatReconciliationDecisionError(error: unknown): string {
   if (error instanceof FunctionsHttpError) {
     const status = error.context instanceof Response ? error.context.status : null;
 
-    if (status === 404) {
+    if (status === HTTP_NOT_FOUND) {
       return 'Esse par de conciliação não foi encontrado.';
     }
 
-    if (status === 409) {
+    if (status === HTTP_CONFLICT) {
       return 'Essa conciliação já foi decidida ou não há uma correspondência ativa para desfazer.';
     }
 
@@ -59,9 +62,7 @@ async function invokeReconciliationDecision(
   action: ReconciliationAction,
   input: ReconciliationDecisionInput
 ): Promise<ReconciliationDecisionResult> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const {
     data: { session },

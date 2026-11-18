@@ -1,14 +1,12 @@
 import { useQueries, useQuery, type UseQueryResult } from '@tanstack/react-query';
 
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 import { monthDashboardSchema, type MonthDashboard } from '@/features/dashboard/contract';
 
 export const monthDashboardKey = (month: string) => ['month-dashboard', month];
 
 async function fetchMonthDashboard(month: string): Promise<MonthDashboard> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const { error: generateError } = await supabase.rpc('generate_planned_entries', {
     p_month: month,

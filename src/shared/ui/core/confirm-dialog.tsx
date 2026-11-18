@@ -2,7 +2,6 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GgastosColors, GgastosRadius, GgastosShadow, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 
-const BACKDROP_COLOR = 'rgba(31, 26, 23, 0.4)';
 const MAX_CARD_WIDTH = 340;
 const BUTTON_HEIGHT = 48;
 
@@ -57,7 +56,7 @@ export function ConfirmDialog({
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: BACKDROP_COLOR, alignItems: 'center', justifyContent: 'center', padding: GgastosSpacing.space5 },
+  backdrop: { flex: 1, backgroundColor: GgastosColors.backdrop, alignItems: 'center', justifyContent: 'center', padding: GgastosSpacing.space5 },
   card: {
     width: '100%',
     maxWidth: MAX_CARD_WIDTH,
@@ -76,5 +75,5 @@ const styles = StyleSheet.create({
   destructive: { backgroundColor: GgastosColors.expense },
   busy: { opacity: 0.6 },
   cancelLabel: { ...GgastosType.bodyMd, fontWeight: '700', color: GgastosColors.inkStrong },
-  confirmLabel: { ...GgastosType.bodyMd, fontWeight: '700', color: '#FFFFFF' },
+  confirmLabel: { ...GgastosType.bodyMd, fontWeight: '700', color: GgastosColors.onPrimary },
 });

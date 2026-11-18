@@ -1,75 +1,35 @@
-import { getBearerToken, readAuthenticatedUser } from "../_shared/auth.ts";
+// Lists the reconciliation suggestions of a month. This file only handles HTTP, authentication
+// and errors; the rules live in _shared/reconciliation/.
+import { jsonResponse, methodNotAllowedResponse, preflightResponse } from "../_shared/http.ts";
 import { listReconciliationInbox } from "../_shared/reconciliation/inbox.ts";
-import type { SupabaseRestConfig } from "../_shared/supabase-rest.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Content-Type": "application/json",
-};
-
-const MONTH_PATTERN = /^[0-9]{4}-(0[1-9]|1[0-2])$/;
-
-function jsonResponse(status: number, body: Record<string, unknown>) {
-  return new Response(JSON.stringify(body), { status, headers: corsHeaders });
-}
-
-function readRequiredEnv(name: string): string {
-  const value = Deno.env.get(name);
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-  return value;
-}
+import { authenticateRequest } from "../_shared/request-context.ts";
+import { isMonthKey } from "../_shared/validation.ts";
 
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return preflightResponse("GET");
   }
 
   if (request.method !== "GET") {
-    return jsonResponse(405, {
-      error: "method_not_allowed",
-      message: "Use GET for reconciliation-inbox.",
-    });
+    return methodNotAllowedResponse("GET", "reconciliation-inbox");
   }
 
   try {
-    const supabaseUrl = readRequiredEnv("SUPABASE_URL");
-    const anonKey = readRequiredEnv("SUPABASE_ANON_KEY");
-    const serviceRoleKey = readRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
-    const restConfig: SupabaseRestConfig = { supabaseUrl, serviceRoleKey };
-
-    const accessToken = getBearerToken(request);
-    if (!accessToken) {
-      return jsonResponse(401, {
-        error: "missing_authorization",
-        message: "Authorization bearer token is required.",
-      });
+    const auth = await authenticateRequest(request, Deno.env);
+    if (!auth.ok) {
+      return auth.response;
     }
-
-    const user = await readAuthenticatedUser(supabaseUrl, anonKey, accessToken);
-    if (!user) {
-      return jsonResponse(401, {
-        error: "invalid_token",
-        message: "Authenticated Supabase user could not be resolved.",
-      });
-    }
+    const { user, restConfig } = auth.value;
 
     const month = new URL(request.url).searchParams.get("month");
-    if (!month || !MONTH_PATTERN.test(month)) {
+    if (!isMonthKey(month)) {
       return jsonResponse(400, {
         error: "invalid_month",
         message: "Query parameter 'month' is required in AAAA-MM format.",
       });
     }
 
-    const suggestions = await listReconciliationInbox(restConfig, {
-      userId: user.id,
-      month,
-    });
+    const suggestions = await listReconciliationInbox(restConfig, { userId: user.id, month });
 
     return jsonResponse(200, { month, suggestions });
   } catch (error) {

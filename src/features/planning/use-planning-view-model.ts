@@ -1,9 +1,7 @@
 import { Alert } from 'react-native';
 import { useCallback, useMemo, useState } from 'react';
 
-import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import { currentMonthKey, monthLabel, shiftMonthKey } from '@/shared/lib/month';
-import type { CategoryName } from '@/features/categories';
 import {
   useCancelPlannedEntry,
   useConfirmPlannedEntryManually,
@@ -12,54 +10,8 @@ import {
 } from '@/features/planned-entries';
 import { useArchivePlanningTemplate, usePlanningTemplates } from '@/features/templates';
 import { useCategoryNames } from '@/features/categories';
-import type { ImpactType } from '@/shared/contracts/finance';
-import type { PlannedEntry } from '@/features/planned-entries';
 import type { PlanningTemplate } from '@/features/templates';
-
-type EntryKind = 'despesa' | 'receita' | 'investimento' | 'transferencia';
-
-type PlanningEntryView = {
-  id: string;
-  title: string;
-  category: string;
-  amount: string;
-  kind: EntryKind;
-  dueDate: string;
-  status: string;
-  canConfirm: boolean;
-  canCancel: boolean;
-};
-
-const ENTRY_KIND: Record<ImpactType, EntryKind> = {
-  EXPENSE: 'despesa',
-  INCOME: 'receita',
-  INVESTMENT: 'investimento',
-  TRANSFER: 'transferencia',
-};
-
-function formatDueDate(dueDate: string | null): string {
-  if (!dueDate) return 'Sem vencimento';
-  const [year, month, day] = dueDate.split('-');
-  return `${day}/${month}/${year}`;
-}
-
-function mapEntry(entry: PlannedEntry, categories: CategoryName[]): PlanningEntryView {
-  const category = categories.find((item) => item.id === entry.categoryId)?.name ?? 'Sem categoria';
-  const isReconciled = entry.status === 'RECONCILED';
-  const isCancelled = entry.status === 'CANCELLED';
-
-  return {
-    id: entry.id,
-    title: entry.title || 'Aguardando importação',
-    category,
-    amount: formatCurrencyCents(entry.amountCents),
-    kind: ENTRY_KIND[entry.impactType],
-    dueDate: formatDueDate(entry.dueDate),
-    status: isReconciled ? 'REALIZADO' : isCancelled ? 'CANCELADO' : 'PLANEJADO',
-    canConfirm: entry.status === 'PLANNED',
-    canCancel: entry.status === 'PLANNED',
-  };
-}
+import { mapPlanningEntry, type PlanningEntryView } from '@/features/planning/map-planning-entry';
 
 export function usePlanningViewModel() {
   const [month, setMonth] = useState(currentMonthKey);
@@ -75,7 +27,7 @@ export function usePlanningViewModel() {
   const archiveTemplate = useArchivePlanningTemplate();
 
   const entries = useMemo(
-    () => (entriesQuery.data ?? []).map((entry) => mapEntry(entry, categoryNamesQuery.data ?? [])),
+    () => (entriesQuery.data ?? []).map((entry) => mapPlanningEntry(entry, categoryNamesQuery.data ?? [])),
     [categoryNamesQuery.data, entriesQuery.data]
   );
 

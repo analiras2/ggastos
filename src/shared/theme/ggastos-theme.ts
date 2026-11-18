@@ -3,6 +3,8 @@
  * (tokens/colors.css, typography.css, spacing.css).
  */
 
+import type { ImpactType } from '@/shared/contracts/finance';
+
 export const GgastosColors = {
   bgBase: '#F7F2EA',
   bgSurface: '#FFFDFC',
@@ -10,6 +12,8 @@ export const GgastosColors = {
   inkStrong: '#1F1A17',
   inkSoft: '#5E554D',
   inkFaint: '#9A8F84',
+  onPrimary: '#FFFFFF',
+  backdrop: 'rgba(31, 26, 23, 0.4)',
   lineSoft: '#DDD3C7',
   lineSofter: '#EAE2D6',
 
@@ -29,21 +33,18 @@ export const GgastosColors = {
   warning: '#C28A2C',
   warningSoft: '#F5E7CE',
 
-  statusPlanejadoBg: '#EDE8E1',
-  statusPlanejadoFg: '#5E554D',
-  statusRealizadoBg: '#DCEEE7',
-  statusRealizadoFg: '#1F6B57',
   statusPendenteBg: '#F5E7CE',
   statusPendenteFg: '#8A6416',
-  statusAutoBg: '#D9EEEA',
-  statusAutoFg: '#1E6E63',
-  statusManualBg: '#DEEAF4',
-  statusManualFg: '#2C5C87',
-  statusCanceladoBg: '#EAE4DC',
-  statusCanceladoFg: '#837A70',
 } as const;
 
 export type EntryKind = 'despesa' | 'receita' | 'investimento' | 'transferencia';
+
+export const ENTRY_KIND_BY_IMPACT: Record<ImpactType, EntryKind> = {
+  EXPENSE: 'despesa',
+  INCOME: 'receita',
+  INVESTMENT: 'investimento',
+  TRANSFER: 'transferencia',
+};
 
 export const KindColors: Record<EntryKind, string> = {
   despesa: GgastosColors.expense,
@@ -59,15 +60,6 @@ export type StatusChipStatus =
   | 'CONCILIADO AUTO'
   | 'CONCILIADO MANUAL'
   | 'CANCELADO';
-
-export const StatusChipColors: Record<StatusChipStatus, { bg: string; fg: string }> = {
-  PLANEJADO: { bg: GgastosColors.statusPlanejadoBg, fg: GgastosColors.statusPlanejadoFg },
-  REALIZADO: { bg: GgastosColors.statusRealizadoBg, fg: GgastosColors.statusRealizadoFg },
-  PENDENTE: { bg: GgastosColors.statusPendenteBg, fg: GgastosColors.statusPendenteFg },
-  'CONCILIADO AUTO': { bg: GgastosColors.statusAutoBg, fg: GgastosColors.statusAutoFg },
-  'CONCILIADO MANUAL': { bg: GgastosColors.statusManualBg, fg: GgastosColors.statusManualFg },
-  CANCELADO: { bg: GgastosColors.statusCanceladoBg, fg: GgastosColors.statusCanceladoFg },
-};
 
 export const GgastosFonts = {
   display: 'SpaceGrotesk_700Bold',
@@ -123,12 +115,5 @@ export const GgastosShadow = {
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 8 },
     elevation: 3,
-  },
-  raised: {
-    shadowColor: '#1F1A17',
-    shadowOpacity: 0.18,
-    shadowRadius: 24,
-    shadowOffset: { width: 0, height: 12 },
-    elevation: 6,
   },
 } as const;

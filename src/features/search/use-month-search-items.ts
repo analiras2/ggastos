@@ -1,7 +1,7 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import type { ImpactType } from '@/shared/contracts/finance';
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 
 export type MonthSearchItem = {
   id: string;
@@ -22,9 +22,7 @@ export type MonthSearchItem = {
 export const monthSearchKey = (month: string) => ['month-search', month];
 
 async function fetchMonthSearchItems(month: string): Promise<MonthSearchItem[]> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const [plannedResult, transactionsResult] = await Promise.all([
     supabase

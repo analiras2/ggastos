@@ -20,7 +20,7 @@ export type CategoryBudget = {
 
 export type DashboardData = {
   month: string;
-  previsto: string;
+  expectedBalance: string;
   commitment: {
     value: string;
   };

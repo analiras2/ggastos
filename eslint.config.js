@@ -27,13 +27,19 @@ const featureBoundary = (allowedFeature) => ({
 });
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', 'supabase/**'] },
+  // Edge Functions are linted; migrations, seed and integration suites are not.
+  { ignores: ['dist/**', 'node_modules/**', 'supabase/migrations/**', 'supabase/tests/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   reactHooks.configs.flat['recommended-latest'],
   {
     files: ['src/**/*.{ts,tsx}', 'vite.config.ts'],
     languageOptions: { globals: { ...globals.browser, ...globals.node, __DEV__: 'readonly' } },
+  },
+  // Edge Functions run on Deno and their tests on Node; both provide the web globals.
+  {
+    files: ['supabase/functions/**/*.{ts,mjs}'],
+    languageOptions: { globals: { ...globals.node, Deno: 'readonly' } },
   },
   { files: ['src/**/*.{ts,tsx}'], rules: featureBoundary(null) },
   // Inside a feature, its own files can import each other freely.

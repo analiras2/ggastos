@@ -4,6 +4,7 @@ import {
   centsFromMaskedInput,
   formatDateToIso,
   formatIsoDateToBrazilian,
+  formatTimestampToBrazilian,
   installmentAmountCents,
   installmentCountFromInput,
   monthKeyFromIsoDate,
@@ -42,5 +43,11 @@ describe('date helpers', () => {
 
   it('takes the month key from an ISO date', () => {
     expect(monthKeyFromIsoDate('2026-11-05')).toBe('2026-11');
+  });
+});
+
+describe('formatTimestampToBrazilian', () => {
+  it('formats a local timestamp as DD/MM/YYYY', () => {
+    expect(formatTimestampToBrazilian(new Date(2026, 0, 5, 12).toISOString())).toBe('05/01/2026');
   });
 });

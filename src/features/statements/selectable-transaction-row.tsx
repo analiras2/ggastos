@@ -5,6 +5,7 @@ import { Button } from '@/shared/ui/core/button';
 import { Icon } from '@/shared/ui/core/icon';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { formatTimestampToBrazilian } from '@/shared/lib/form-utils';
 import type { UncategorizedTransaction } from '@/features/statements/use-uncategorized-transactions';
 
 // Fixed geometry lets the pending list use getItemLayout.
@@ -55,7 +56,7 @@ function SelectableTransactionRowComponent({
       <View style={styles.content}>
         <Text numberOfLines={1} style={styles.title}>{transaction.description}</Text>
         <Text numberOfLines={1} style={styles.meta}>
-          {new Date(transaction.postedAt).toLocaleDateString('pt-BR')} ·{' '}
+          {formatTimestampToBrazilian(transaction.postedAt)} ·{' '}
           {transaction.direction === 'CREDIT' ? `Crédito ${amount}` : amount}
         </Text>
       </View>

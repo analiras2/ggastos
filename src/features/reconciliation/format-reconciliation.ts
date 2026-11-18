@@ -1,4 +1,6 @@
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { PERCENT_FACTOR } from '@/shared/lib/percent';
+import { formatTimestampToBrazilian } from '@/shared/lib/form-utils';
 import type { ReconciliationSuggestion } from '@/features/reconciliation/contract';
 
 export type ReconciliationSuggestionView = {
@@ -20,9 +22,9 @@ export function formatReconciliationSuggestion(
     plannedEntryId: suggestion.plannedEntryId,
     transactionDescription: suggestion.transactionDescription,
     transactionAmount: formatCurrencyCents(suggestion.transactionAmountCents),
-    transactionDate: new Date(suggestion.transactionPostedAt).toLocaleDateString('pt-BR'),
+    transactionDate: formatTimestampToBrazilian(suggestion.transactionPostedAt),
     plannedEntryTitle: suggestion.plannedEntryTitle,
     plannedEntryAmount: formatCurrencyCents(suggestion.plannedEntryAmountCents),
-    scoreLabel: `${Math.round(suggestion.score * 100)}% de confiança`,
+    scoreLabel: `${Math.round(suggestion.score * PERCENT_FACTOR)}% de confiança`,
   };
 }

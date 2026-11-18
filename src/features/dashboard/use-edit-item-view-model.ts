@@ -5,6 +5,7 @@ import { useUpdatePlannedEntryDetails } from '@/features/planned-entries';
 import { useUpdateTransactionDetails } from '@/features/statements';
 import { parseTagsInput } from '@/shared/lib/parse-tags';
 import type { EditTarget } from '@/features/dashboard/format-item-details';
+import { errorMessageOf } from '@/shared/lib/error-message';
 
 // Edits the category and tags of one planned entry or imported transaction.
 export function useEditItemViewModel(target: EditTarget, onSaved: () => void) {
@@ -31,7 +32,7 @@ export function useEditItemViewModel(target: EditTarget, onSaved: () => void) {
       }
       onSaved();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Não foi possível salvar as alterações.');
+      setErrorMessage(errorMessageOf(error, 'Não foi possível salvar as alterações.'));
     }
   }, [categoryId, onSaved, tagsInput, target, updatePlanned, updateTransaction]);
 

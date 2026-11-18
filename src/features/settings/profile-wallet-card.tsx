@@ -4,7 +4,6 @@ import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { Icon } from '@/shared/ui/core/icon';
 
-const ON_PRIMARY = '#FFFFFF';
 const ON_PRIMARY_SOFT = 'rgba(255, 255, 255, 0.78)';
 const ON_PRIMARY_FILL = 'rgba(255, 255, 255, 0.18)';
 const BADGE_SIZE = 44;
@@ -24,7 +23,7 @@ export function ProfileWalletCard({ isConfigured, balanceCents, onPress }: Profi
   return (
     <View style={styles.card}>
       <View style={styles.badge}>
-        <Icon name="wallet" size={22} color={ON_PRIMARY} />
+        <Icon name="wallet" size={22} color={GgastosColors.onPrimary} />
       </View>
       <View style={styles.texts}>
         <Text style={styles.label}>Carteira</Text>
@@ -36,7 +35,7 @@ export function ProfileWalletCard({ isConfigured, balanceCents, onPress }: Profi
         onPress={onPress}
         style={styles.editButton}
       >
-        <Icon name="pencil" size={EDIT_ICON_SIZE} color={ON_PRIMARY} />
+        <Icon name="pencil" size={EDIT_ICON_SIZE} color={GgastosColors.onPrimary} />
       </Pressable>
     </View>
   );
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
   },
   texts: { flex: 1 },
   label: { ...GgastosType.labelCaps, color: ON_PRIMARY_SOFT },
-  value: { ...GgastosType.displayLg, fontSize: VALUE_FONT_SIZE, lineHeight: VALUE_LINE_HEIGHT, color: ON_PRIMARY },
+  value: { ...GgastosType.displayLg, fontSize: VALUE_FONT_SIZE, lineHeight: VALUE_LINE_HEIGHT, color: GgastosColors.onPrimary },
   editButton: {
     width: EDIT_TOUCH_SIZE,
     height: EDIT_TOUCH_SIZE,

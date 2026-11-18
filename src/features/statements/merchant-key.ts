@@ -1,5 +1,5 @@
-// Shared by the import Edge Function and the app (mobile/src/features/statements/merchant-key.ts).
-// Both files must stay identical; supabase/tests/merchant-key.test.mjs enforces it.
+// Shared by the import Edge Function and the app (src/features/statements/merchant-key.ts).
+// Both files must stay identical; src/features/statements/merchant-key.test.ts enforces it.
 
 const MIN_MERCHANT_KEY_LENGTH = 3;
 const INSTALLMENT_SUFFIX_PATTERN = /(?:\s*-\s*)?(?:parcela\s+)?(?<![\d/])\d{1,2}\/\d{1,2}$/;

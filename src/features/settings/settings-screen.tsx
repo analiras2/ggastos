@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -6,7 +5,7 @@ import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/sha
 import { Icon } from '@/shared/ui/core/icon';
 import { FLOATING_NAV_CONTENT_CLEARANCE } from '@/shared/ui/navigation/floating-nav-metrics';
 import { ChartViewToggle } from '@/shared/ui/forms/chart-view-toggle';
-import { useWallet, WalletBalanceSheet } from '@/features/wallet';
+import { WalletBalanceSheet } from '@/features/wallet';
 import { EditNameSheet } from '@/features/settings/edit-name-sheet';
 import { CategoryManagementSheet } from '@/features/settings/category-management-sheet';
 import { ProfileWalletCard } from '@/features/settings/profile-wallet-card';
@@ -15,22 +14,20 @@ import { useSettingsViewModel } from '@/features/settings/use-settings-view-mode
 
 export function SettingsScreen() {
   const viewModel = useSettingsViewModel();
-  const [isCategoriesVisible, setIsCategoriesVisible] = useState(false);
-  const [isWalletVisible, setIsWalletVisible] = useState(false);
-  const [isEditNameVisible, setIsEditNameVisible] = useState(false);
-  const walletQuery = useWallet();
-  const isWalletConfigured = walletQuery.data?.isConfigured ?? false;
-  const balanceCents = walletQuery.data?.balanceCents ?? 0;
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Perfil</Text>
 
-        <ProfileWalletCard isConfigured={isWalletConfigured} balanceCents={balanceCents} onPress={() => setIsWalletVisible(true)} />
+        <ProfileWalletCard
+          isConfigured={viewModel.isWalletConfigured}
+          balanceCents={viewModel.balanceCents}
+          onPress={viewModel.openWallet}
+        />
 
         <SettingsGroup title="Conta">
-          <SettingsRow icon="user" title="Nome" subtitle={viewModel.name} onPress={() => setIsEditNameVisible(true)} />
+          <SettingsRow icon="user" title="Nome" subtitle={viewModel.name} onPress={viewModel.openEditName} />
           <View style={styles.divider} />
           <SettingsRow icon="mail" title="E-mail" subtitle={viewModel.email} />
         </SettingsGroup>
@@ -40,7 +37,7 @@ export function SettingsScreen() {
             icon="tags"
             title="Categorias"
             subtitle="Criar, editar e ocultar categorias pessoais"
-            onPress={() => setIsCategoriesVisible(true)}
+            onPress={viewModel.openCategories}
           />
           <View style={styles.divider} />
           <SettingsRow
@@ -64,14 +61,14 @@ export function SettingsScreen() {
       </ScrollView>
 
       <WalletBalanceSheet
-        visible={isWalletVisible}
-        mode={isWalletConfigured ? 'adjust' : 'setup'}
-        currentCents={balanceCents}
-        onClose={() => setIsWalletVisible(false)}
-        onDone={() => setIsWalletVisible(false)}
+        visible={viewModel.isWalletVisible}
+        mode={viewModel.isWalletConfigured ? 'adjust' : 'setup'}
+        currentCents={viewModel.balanceCents}
+        onClose={viewModel.closeWallet}
+        onDone={viewModel.closeWallet}
       />
-      <EditNameSheet visible={isEditNameVisible} currentName={viewModel.name} onClose={() => setIsEditNameVisible(false)} />
-      <CategoryManagementSheet visible={isCategoriesVisible} onClose={() => setIsCategoriesVisible(false)} />
+      <EditNameSheet visible={viewModel.isEditNameVisible} currentName={viewModel.name} onClose={viewModel.closeEditName} />
+      <CategoryManagementSheet visible={viewModel.isCategoriesVisible} onClose={viewModel.closeCategories} />
     </SafeAreaView>
   );
 }

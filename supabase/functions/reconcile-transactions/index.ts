@@ -1,112 +1,54 @@
-import { getBearerToken, readAuthenticatedUser } from "../_shared/auth.ts";
+// Records a reconciliation decision (confirm, reject or undo). This file only handles HTTP,
+// authentication and errors; the rules live in _shared/reconciliation/.
+import {
+  jsonResponse,
+  methodNotAllowedResponse,
+  preflightResponse,
+  readJsonBody,
+} from "../_shared/http.ts";
 import {
   confirmMatch,
   rejectMatch,
   undoMatch,
   ReconciliationDecisionError,
-  type ReconciliationAction,
 } from "../_shared/reconciliation/decisions.ts";
-import type { SupabaseRestConfig } from "../_shared/supabase-rest.ts";
+import { parseDecisionRequest } from "../_shared/reconciliation/request.ts";
+import { authenticateRequest } from "../_shared/request-context.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Content-Type": "application/json",
-};
-
-const VALID_ACTIONS: ReconciliationAction[] = ["confirm", "reject", "undo"];
-
-function jsonResponse(status: number, body: Record<string, unknown>) {
-  return new Response(JSON.stringify(body), { status, headers: corsHeaders });
-}
-
-function readRequiredEnv(name: string): string {
-  const value = Deno.env.get(name);
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-  return value;
-}
+const HTTP_NOT_FOUND = 404;
+const HTTP_CONFLICT = 409;
 
 function decisionErrorStatus(code: ReconciliationDecisionError["code"]): number {
-  if (code === "not_found") {
-    return 404;
-  }
-  return 409;
+  return code === "not_found" ? HTTP_NOT_FOUND : HTTP_CONFLICT;
 }
 
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return preflightResponse("POST");
   }
 
   if (request.method !== "POST") {
-    return jsonResponse(405, {
-      error: "method_not_allowed",
-      message: "Use POST for reconcile-transactions.",
-    });
+    return methodNotAllowedResponse("POST", "reconcile-transactions");
   }
 
   try {
-    const supabaseUrl = readRequiredEnv("SUPABASE_URL");
-    const anonKey = readRequiredEnv("SUPABASE_ANON_KEY");
-    const serviceRoleKey = readRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
-    const restConfig: SupabaseRestConfig = { supabaseUrl, serviceRoleKey };
+    const auth = await authenticateRequest(request, Deno.env);
+    if (!auth.ok) {
+      return auth.response;
+    }
+    const { user, restConfig } = auth.value;
 
-    const accessToken = getBearerToken(request);
-    if (!accessToken) {
-      return jsonResponse(401, {
-        error: "missing_authorization",
-        message: "Authorization bearer token is required.",
-      });
+    const body = await readJsonBody(request);
+    if (!body.ok) {
+      return body.response;
     }
 
-    const user = await readAuthenticatedUser(supabaseUrl, anonKey, accessToken);
-    if (!user) {
-      return jsonResponse(401, {
-        error: "invalid_token",
-        message: "Authenticated Supabase user could not be resolved.",
-      });
+    const decision = parseDecisionRequest(body.value);
+    if (!decision.ok) {
+      return jsonResponse(400, { error: decision.error, message: decision.message });
     }
 
-    let payload: Record<string, unknown>;
-    try {
-      payload = await request.json();
-    } catch {
-      return jsonResponse(400, {
-        error: "invalid_body",
-        message: "Request body must be valid JSON.",
-      });
-    }
-
-    const action = payload.action;
-    const plannedEntryId = payload.plannedEntryId;
-    const transactionId = payload.transactionId;
-
-    if (
-      typeof action !== "string" ||
-      !VALID_ACTIONS.includes(action as ReconciliationAction)
-    ) {
-      return jsonResponse(400, {
-        error: "invalid_action",
-        message: `Field 'action' must be one of: ${VALID_ACTIONS.join(", ")}.`,
-      });
-    }
-    if (typeof plannedEntryId !== "string" || plannedEntryId.length === 0) {
-      return jsonResponse(400, {
-        error: "invalid_planned_entry_id",
-        message: "Field 'plannedEntryId' is required.",
-      });
-    }
-    if (typeof transactionId !== "string" || transactionId.length === 0) {
-      return jsonResponse(400, {
-        error: "invalid_transaction_id",
-        message: "Field 'transactionId' is required.",
-      });
-    }
-
+    const { action, plannedEntryId, transactionId } = decision.value;
     const pair = { plannedEntryId, transactionId };
 
     if (action === "confirm") {

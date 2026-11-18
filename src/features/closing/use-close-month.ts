@@ -9,7 +9,7 @@ import {
   FunctionsRelayError,
 } from '@supabase/supabase-js';
 
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 import { invalidateMonthData } from '@/shared/lib/query/invalidate-month-data';
 
 export const monthSnapshotKey = (month: string) => ['month-snapshot', month];
@@ -44,9 +44,7 @@ function formatCloseMonthError(error: unknown): string {
 }
 
 async function invokeCloseMonth(month: string): Promise<MonthSnapshotResult> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const {
     data: { session },

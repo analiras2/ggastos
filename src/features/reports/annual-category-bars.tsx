@@ -1,56 +1,45 @@
 import { ArrowDownWideNarrow, ArrowUpNarrowWide } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import type { AnnualCategoryView } from '@/features/reports/format-annual-summary';
-import { sortAnnualCategories, type CategorySortOrder } from '@/features/reports/sort-annual-categories';
+import { useAnnualBars } from '@/features/reports/use-annual-bars';
 
 type AnnualCategoryBarsProps = { categories: AnnualCategoryView[]; totalLabel?: string };
 
 const SORT_ICON_SIZE = 20;
 const BAR_HEIGHT = 10;
-const PERCENT_FACTOR = 100;
-const MIN_BAR_PERCENT = 2;
 
 export function AnnualCategoryBars({ categories, totalLabel = 'Gastos' }: AnnualCategoryBarsProps) {
-  const [order, setOrder] = useState<CategorySortOrder>('desc');
-  const items = useMemo(() => sortAnnualCategories(categories, order), [categories, order]);
-  const total = items.reduce((sum, category) => sum + category.actualCents, 0);
-  const largest = items.reduce((max, category) => Math.max(max, category.actualCents), 0);
-  const SortIcon = order === 'desc' ? ArrowDownWideNarrow : ArrowUpNarrowWide;
-  const sortLabel = order === 'desc' ? 'Ordenar do menor para o maior' : 'Ordenar do maior para o menor';
+  const viewModel = useAnnualBars(categories);
+  const SortIcon = viewModel.isDescending ? ArrowDownWideNarrow : ArrowUpNarrowWide;
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.total}>{totalLabel} {formatCurrencyCents(total)}</Text>
+        <Text style={styles.total}>{totalLabel} {formatCurrencyCents(viewModel.totalCents)}</Text>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={sortLabel}
+          accessibilityLabel={viewModel.sortLabel}
           hitSlop={GgastosSpacing.space2}
-          onPress={() => setOrder(order === 'desc' ? 'asc' : 'desc')}
+          onPress={viewModel.toggleOrder}
           style={styles.sortButton}
         >
           <SortIcon size={SORT_ICON_SIZE} color={GgastosColors.inkSoft} />
         </Pressable>
       </View>
-      {items.map((category) => {
-        const barPercent = Math.max((category.actualCents / largest) * PERCENT_FACTOR, MIN_BAR_PERCENT);
-        const share = Math.round((category.actualCents / total) * PERCENT_FACTOR);
-        return (
-          <View key={category.categoryId} style={styles.row}>
-            <View style={styles.rowHeader}>
-              <Text style={styles.name} numberOfLines={1}>{category.name}</Text>
-              <Text style={styles.value}>{formatCurrencyCents(category.actualCents)} · {share}%</Text>
-            </View>
-            <View style={styles.track}>
-              <View style={[styles.bar, { width: `${barPercent}%`, backgroundColor: category.color }]} />
-            </View>
+      {viewModel.bars.map((bar) => (
+        <View key={bar.categoryId} style={styles.row}>
+          <View style={styles.rowHeader}>
+            <Text style={styles.name} numberOfLines={1}>{bar.name}</Text>
+            <Text style={styles.value}>{formatCurrencyCents(bar.actualCents)} · {bar.sharePercent}%</Text>
           </View>
-        );
-      })}
+          <View style={styles.track}>
+            <View style={[styles.bar, { width: `${bar.barPercent}%`, backgroundColor: bar.color }]} />
+          </View>
+        </View>
+      ))}
     </View>
   );
 }

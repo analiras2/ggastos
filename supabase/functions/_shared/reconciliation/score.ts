@@ -1,45 +1,8 @@
-export type ImpactType = "INCOME" | "EXPENSE" | "INVESTMENT" | "TRANSFER";
+import { installmentScore } from "./installment-score.ts";
+import type { MatchScore, PlannedEntryForScoring, TransactionForScoring } from "./score-types.ts";
+import { clamp01, daysBetween, descriptionSimilarity, jaccardSimilarity } from "./similarity.ts";
 
-export type PlannedEntryForScoring = {
-  id: string;
-  title: string;
-  impactType: ImpactType;
-  amountCents: number;
-  dueDate: string | null;
-  month: string;
-  expectedAccountId: string | null;
-  categoryName: string;
-  installmentIndex?: number | null;
-  installmentTotal?: number | null;
-};
-
-export type TransactionForScoring = {
-  id: string;
-  description: string;
-  merchantName: string | null;
-  impactType: ImpactType;
-  amountCents: number;
-  postedAt: string;
-  competencyMonth: string;
-  accountId: string;
-  pluggyCategoryName: string | null;
-  statementInstallmentIndex?: number | null;
-  statementInstallmentTotal?: number | null;
-};
-
-export type MatchScore = {
-  score: number;
-  amountDeltaCents: number;
-  dateDeltaDays: number;
-  rationale: {
-    amount: number;
-    date: number;
-    category: number;
-    account: number;
-    description: number;
-    installment: number;
-  };
-};
+export type { ImpactType, MatchScore, PlannedEntryForScoring, TransactionForScoring } from "./score-types.ts";
 
 // Conservative profile: strong matches auto-conciliate, everything else waits for review.
 export const AUTO_MATCH_THRESHOLD = 0.9;
@@ -56,55 +19,6 @@ const WEIGHTS = {
 
 const AMOUNT_TOLERANCE_RATIO = 0.2; // 20% off the planned amount zeroes the amount score.
 const DATE_TOLERANCE_DAYS = 10; // 10+ days off the due date zeroes the date score.
-
-function clamp01(value: number): number {
-  return Math.max(0, Math.min(1, value));
-}
-
-function tokenize(text: string): Set<string> {
-  return new Set(
-    text
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[̀-ͯ]/g, "")
-      .split(/[^a-z0-9]+/)
-      .filter((token) => token.length > 1),
-  );
-}
-
-function stripInstallmentMarkers(text: string): string {
-  return text.replace(/\b\d{1,2}\/\d{1,2}\b/g, " ");
-}
-
-function jaccardSimilarity(a: string, b: string): number {
-  const setA = tokenize(a);
-  const setB = tokenize(b);
-  if (setA.size === 0 || setB.size === 0) {
-    return 0;
-  }
-
-  let intersection = 0;
-  for (const token of setA) {
-    if (setB.has(token)) {
-      intersection++;
-    }
-  }
-
-  const union = setA.size + setB.size - intersection;
-  return union === 0 ? 0 : intersection / union;
-}
-
-function descriptionSimilarity(a: string, b: string): number {
-  return Math.max(
-    jaccardSimilarity(a, b),
-    jaccardSimilarity(stripInstallmentMarkers(a), stripInstallmentMarkers(b)),
-  );
-}
-
-function daysBetween(isoA: string, isoB: string): number {
-  const msPerDay = 1000 * 60 * 60 * 24;
-  return Math.abs(new Date(isoA).getTime() - new Date(isoB).getTime()) / msPerDay;
-}
 
 type ScoreComponent = { weight: number; value: number; available: boolean };
 
@@ -127,78 +41,6 @@ const zeroScore = (amountDeltaCents: number): MatchScore => ({
   dateDeltaDays: 0,
   rationale: { amount: 0, date: 0, category: 0, account: 0, description: 0, installment: 0 },
 });
-
-type InstallmentSignal = {
-  index: number;
-  total: number;
-};
-
-function installmentFromText(text: string): InstallmentSignal | null {
-  const match = text.match(/\b(\d{1,2})\/(\d{1,2})\b/);
-  if (!match) {
-    return null;
-  }
-
-  const index = Number(match[1]);
-  const total = Number(match[2]);
-  if (!Number.isInteger(index) || !Number.isInteger(total) || index <= 0 || total <= 0) {
-    return null;
-  }
-  if (index > total) {
-    return null;
-  }
-
-  return { index, total };
-}
-
-function installmentFromFields(
-  index: number | null | undefined,
-  total: number | null | undefined,
-): InstallmentSignal | null {
-  if (!index || !total) {
-    return null;
-  }
-  if (index <= 0 || total <= 0 || index > total) {
-    return null;
-  }
-
-  return { index, total };
-}
-
-function installmentScore(
-  transaction: TransactionForScoring,
-  plannedEntry: PlannedEntryForScoring,
-): { available: boolean; value: number } {
-  const transactionInstallment =
-    installmentFromFields(
-      transaction.statementInstallmentIndex,
-      transaction.statementInstallmentTotal,
-    ) ?? installmentFromText(transaction.description);
-  const plannedInstallment =
-    installmentFromFields(plannedEntry.installmentIndex, plannedEntry.installmentTotal) ??
-      installmentFromText(plannedEntry.title);
-
-  if (!transactionInstallment && !plannedInstallment) {
-    return { available: false, value: 0 };
-  }
-
-  if (!transactionInstallment || !plannedInstallment) {
-    return { available: true, value: 0 };
-  }
-
-  if (
-    transactionInstallment.index === plannedInstallment.index &&
-    transactionInstallment.total === plannedInstallment.total
-  ) {
-    return { available: true, value: 1 };
-  }
-
-  if (transactionInstallment.total === plannedInstallment.total) {
-    return { available: true, value: 0.35 };
-  }
-
-  return { available: true, value: 0 };
-}
 
 /**
  * Deterministic score in [0, 1]. Dimensions with no available signal (e.g. no

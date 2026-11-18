@@ -1,19 +1,13 @@
-import type { EntryKind, StatusChipStatus } from '@/shared/theme/ggastos-theme';
+import { ENTRY_KIND_BY_IMPACT, type StatusChipStatus } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import type { CategoryDetails } from '@/features/dashboard/contract';
 import { UNCATEGORIZED_CATEGORY_ID } from '@/features/dashboard/uncategorized';
 import { buildEditablePlannedEntry, type RemovalMode } from '@/features/planned-entries';
 import { paymentMethodLabel } from '@/shared/lib/payment-method-label';
-import { formatIsoDateToBrazilian } from '@/shared/lib/form-utils';
-import type { ImpactType, PlanningStatus } from '@/shared/contracts/finance';
-import { plannedDetailLines, transactionDetailLines, type DetailLine, type EditTarget } from '@/features/dashboard/format-item-details';
-
-const IMPACT_TYPE_TO_KIND: Record<ImpactType, EntryKind> = {
-  INCOME: 'receita',
-  EXPENSE: 'despesa',
-  INVESTMENT: 'investimento',
-  TRANSFER: 'transferencia',
-};
+import { formatIsoDateToBrazilian, formatTimestampToBrazilian } from '@/shared/lib/form-utils';
+import type { PlanningStatus } from '@/shared/contracts/finance';
+import { plannedDetailLines, transactionDetailLines } from '@/features/dashboard/format-item-details';
+import type { CategoryDetailsView } from '@/features/dashboard/category-details-view';
 
 const PLANNING_STATUS_TO_CHIP: Record<PlanningStatus, StatusChipStatus> = {
   PLANNED: 'PLANEJADO',
@@ -21,40 +15,6 @@ const PLANNING_STATUS_TO_CHIP: Record<PlanningStatus, StatusChipStatus> = {
   RECONCILED: 'REALIZADO',
   CARRIED_OVER: 'PENDENTE',
   CANCELLED: 'PENDENTE',
-};
-
-export type PlannedEntryItem = {
-  id: string;
-  title: string;
-  category: string;
-  amount: string;
-  kind: EntryKind;
-  competence: string;
-  status: StatusChipStatus;
-  isConfirmable: boolean;
-  isUndoable: boolean;
-  tags: string[];
-  details: DetailLine[];
-  editTarget: EditTarget;
-};
-
-export type TransactionItem = {
-  id: string;
-  title: string;
-  category: string;
-  amount: string;
-  kind: EntryKind;
-  date: string;
-  tags: string[];
-  details: DetailLine[];
-  editTarget: EditTarget;
-};
-
-export type CategoryDetailsView = {
-  name: string;
-  plannedItems: PlannedEntryItem[];
-  transactionItems: TransactionItem[];
-  isEmpty: boolean;
 };
 
 // Entries from a statement cannot be removed; one from a recurrence is cancelled; the rest are deleted.
@@ -81,7 +41,7 @@ function formatCompetence(installmentIndex: number | null, installmentTotal: num
 }
 
 export function formatCategoryDetails(details: CategoryDetails): CategoryDetailsView {
-  const kind = IMPACT_TYPE_TO_KIND[details.impactType];
+  const kind = ENTRY_KIND_BY_IMPACT[details.impactType];
 
   const plannedItems = details.plannedEntries.map((entry) => ({
     id: entry.id,
@@ -130,7 +90,7 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
     category: details.name,
     amount: formatCurrencyCents(transaction.amountCents),
     kind,
-    date: withPaymentMethod(new Date(transaction.postedAt).toLocaleDateString('pt-BR'), transaction.paymentMethod),
+    date: withPaymentMethod(formatTimestampToBrazilian(transaction.postedAt), transaction.paymentMethod),
     tags: transaction.tags,
     details: transactionDetailLines(transaction, details.name),
     editTarget: {

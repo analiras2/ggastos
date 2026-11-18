@@ -31,3 +31,18 @@ export const amountCentsSchema = z
   .number()
   .int('O valor deve ser em centavos, sem casas decimais.')
   .positive('O valor deve ser maior que zero.');
+
+// Labels shown to the user. The option order is the one the pickers use.
+export const IMPACT_TYPE_LABELS: Record<ImpactType, string> = {
+  EXPENSE: 'Despesa',
+  INCOME: 'Receita',
+  INVESTMENT: 'Investimento',
+  TRANSFER: 'Transferência',
+};
+
+export const IMPACT_TYPE_OPTIONS: { value: ImpactType; label: string }[] = (
+  ['EXPENSE', 'INCOME', 'INVESTMENT', 'TRANSFER'] as const
+).map((value) => ({ value, label: IMPACT_TYPE_LABELS[value] }));
+
+// Name shown for purchases and entries that have no category.
+export const UNCATEGORIZED_LABEL = 'Sem categoria';
