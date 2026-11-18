@@ -3,19 +3,14 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { ConfirmDialog } from '@/shared/ui/core/confirm-dialog';
-import type { RemovalMode } from '@/features/planned-entries';
 import type { DetailLine } from '@/features/dashboard/format-item-details';
-
-const CONFIRM_MESSAGES: Record<RemovalMode, string> = {
-  DELETE: 'Esta ação não pode ser desfeita.',
-  CANCEL: 'A recorrência deixa de gerar este lançamento neste mês.',
-};
+import { REMOVAL_COPY, type ItemRemoval } from '@/shared/lib/item-removal';
 
 type ItemDetailsPanelProps = {
   lines: DetailLine[];
   onEdit: () => void;
-  // Set only for items that can be removed (not the ones that came from a statement).
-  removal?: RemovalMode | null;
+  // Set only for items that can be removed.
+  removal?: ItemRemoval | null;
   isRemoving?: boolean;
   onRemove?: () => void;
 };
@@ -38,16 +33,16 @@ export function ItemDetailsPanel({ lines, onEdit, removal = null, isRemoving = f
         </Pressable>
         {removal ? (
           <Pressable accessibilityRole="button" onPress={() => setIsConfirming(true)} style={styles.action}>
-            <Text style={styles.removeLabel}>Excluir</Text>
+            <Text style={styles.removeLabel}>{removal === 'REMOVE_IMPORTED' ? 'Remover' : 'Excluir'}</Text>
           </Pressable>
         ) : null}
       </View>
       {removal ? (
         <ConfirmDialog
           visible={isConfirming}
-          title="Excluir lançamento?"
-          message={CONFIRM_MESSAGES[removal]}
-          confirmLabel="Excluir"
+          title={REMOVAL_COPY[removal].title}
+          message={REMOVAL_COPY[removal].message}
+          confirmLabel={REMOVAL_COPY[removal].confirmLabel}
           isDestructive
           isBusy={isRemoving}
           onConfirm={() => onRemove?.()}

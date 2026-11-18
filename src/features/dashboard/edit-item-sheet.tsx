@@ -5,7 +5,9 @@ import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggast
 import { Button } from '@/shared/ui/core/button';
 import { Icon } from '@/shared/ui/core/icon';
 import { SheetModal } from '@/shared/ui/core/sheet-modal';
+import { SwitchRow } from '@/shared/ui/forms/switch-row';
 import { TagsField } from '@/shared/ui/forms/tags-field';
+import { applyToSimilarDescription } from '@/features/dashboard/apply-to-similar-copy';
 import type { EditTarget } from '@/features/dashboard/format-item-details';
 import { useEditItemViewModel } from '@/features/dashboard/use-edit-item-view-model';
 
@@ -38,6 +40,14 @@ function EditItemForm({ target, onClose }: { target: EditTarget; onClose: () => 
         />
       </View>
       <TagsField value={viewModel.tagsInput} onChange={viewModel.setTagsInput} />
+      {viewModel.canApplyToSimilar ? (
+        <SwitchRow
+          title="Aplicar a todos os itens iguais"
+          description={applyToSimilarDescription(viewModel.similarCount)}
+          value={viewModel.applyToSimilar}
+          onChange={viewModel.setApplyToSimilar}
+        />
+      ) : null}
       {viewModel.errorMessage ? <Text style={styles.error}>{viewModel.errorMessage}</Text> : null}
       <Button
         fullWidth

@@ -5,6 +5,7 @@ import { PlannedEntryRow } from '@/shared/ui/rows/planned-entry-row';
 import { TransactionRow } from '@/shared/ui/rows/transaction-row';
 import { GgastosColors, GgastosType } from '@/shared/theme/ggastos-theme';
 import { AddPlanSheet, useRemovePlannedEntry } from '@/features/planned-entries';
+import { useRemoveImportedTransaction } from '@/features/statements';
 import { EditItemSheet } from '@/features/dashboard/edit-item-sheet';
 import type { EditTarget } from '@/features/dashboard/format-item-details';
 import { ItemDetailsPanel } from '@/features/dashboard/item-details-panel';
@@ -21,10 +22,18 @@ export function CategoryDetailsList({ details, togglingEntryId, onToggleEntrySta
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editTarget, setEditTarget] = useState<EditTarget | null>(null);
   const removeEntry = useRemovePlannedEntry();
+  const removeImported = useRemoveImportedTransaction();
+  const handleRemove = (target: EditTarget) => {
+    if (target.removal === 'REMOVE_IMPORTED') {
+      removeImported.mutate(target.id);
+    } else if (target.removal) {
+      removeEntry.mutate({ id: target.id, mode: target.removal });
+    }
+  };
   const removalProps = (target: EditTarget) => ({
     removal: target.removal,
-    isRemoving: removeEntry.isPending,
-    onRemove: () => target.removal && removeEntry.mutate({ id: target.id, mode: target.removal }),
+    isRemoving: removeEntry.isPending || removeImported.isPending,
+    onRemove: () => handleRemove(target),
   });
   const toggleExpanded = (id: string) => setExpandedId((current) => (current === id ? null : id));
 

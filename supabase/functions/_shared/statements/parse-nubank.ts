@@ -1,8 +1,9 @@
 import { decodeContents, detectLineEnding } from "./csv-utils.ts";
 import { dueDateFromFileName, headerMatches, parseCsvRows } from "./nubank-csv.ts";
-import { toTransaction } from "./nubank-transaction.ts";
+import { skippedRowFor, toTransaction } from "./nubank-transaction.ts";
 import type {
   ParsedStatement,
+  ParsedStatementSkippedRow,
   ParsedStatementTransaction,
   StatementParserError,
   StatementParserInput,
@@ -46,8 +47,15 @@ export function parseNubankStatement(input: StatementParserInput): ParsedStateme
   }
 
   const transactions: ParsedStatementTransaction[] = [];
+  const skippedRows: ParsedStatementSkippedRow[] = [];
 
   for (const row of rows.slice(1)) {
+    const skippedRow = skippedRowFor(row);
+    if (skippedRow) {
+      skippedRows.push(skippedRow);
+      continue;
+    }
+
     const parsed = toTransaction(row);
     if (parsed.transaction) {
       // Installments belong to the invoice that charges them; single purchases keep their own month.
@@ -78,7 +86,7 @@ export function parseNubankStatement(input: StatementParserInput): ParsedStateme
     },
     rowsRead: rows.length - 1,
     transactions,
-    skippedRows: [],
+    skippedRows,
     errors,
   };
 }

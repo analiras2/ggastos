@@ -41,7 +41,8 @@ sintéticas em [`.specs/features/card-statement-import/fixtures/`](../.specs/fea
 - Estornos/créditos de cartão ajustam despesas; não são classificados como
   receita comum.
 - Pagamentos, saldo anterior, totais e resumos da fatura Bradesco são ignorados
-  como compras.
+  como compras. No Nubank, a linha `Pagamento recebido` (o pagamento da fatura anterior) também é
+  ignorada na importação; estornos continuam entrando como crédito.
 - `Lançamentos programados` do Bradesco são processados separadamente das linhas
   da fatura atual.
 - Regras ativas `DESCRIPTION_CONTAINS` preenchem `internal_category_id` na
@@ -49,6 +50,36 @@ sintéticas em [`.specs/features/card-statement-import/fixtures/`](../.specs/fea
 - Quando uma linha não tiver categoria própria, mas tiver match ativo, o
   dashboard usa a categoria do planejamento conciliado. Linhas sem regra e sem
   match continuam importadas sem uma categoria inventada.
+
+## Remover um item da fatura
+
+Qualquer item importado pode ser removido (por exemplo, um item que não é seu ou uma linha que não
+deveria ter entrado): em **Mês, categoria, item, Remover**, ou em **Revisar categorias, Remover item da
+fatura**. Os dois pedem confirmação.
+
+- **Fica removido:** a função `remove_imported_transaction` só marca `deleted_at`. Importar o mesmo
+  arquivo de novo não traz o item de volta, porque a importação nunca escreve essa coluna.
+- **Some de tudo:** mês, categorias, estatísticas, pendências, total da fatura, busca, conciliação e
+  parcelas futuras ignoram itens removidos.
+- **Conciliação:** se o item estava conciliado com um planejamento, o par é desfeito, como em
+  "desfazer".
+- **Restaurar:** `restore_imported_transaction` desfaz a remoção (ainda sem tela no app). A conciliação
+  desfeita não volta sozinha.
+- **Parcelas futuras:** remover não cancela os previstos que já foram gerados a partir do item.
+
+## Mudar a categoria de todos os itens iguais
+
+Ao editar um item de fatura, a opção **Aplicar a todos os itens iguais** (desligada por padrão)
+mostra quantos outros itens têm o mesmo estabelecimento e, ao salvar:
+
+- troca a categoria de **todos** os itens do mesmo estabelecimento, em qualquer fatura, inclusive os
+  que já tinham outra categoria (`recategorize_similar_imported_transactions`);
+- salva a regra `DESCRIPTION_CONTAINS` com a chave do estabelecimento, que vale para as **próximas
+  faturas** e substitui uma regra antiga do mesmo estabelecimento.
+
+"Mesmo estabelecimento" é a chave de `merchantKey` (sem parcela e sem prefixo de intermediário), a
+mesma de "Usar nas próximas faturas". Descrições genéricas (como `pix`) não têm chave, então a opção
+não aparece. Só mudam itens do mesmo tipo (despesa) e que contam no orçamento.
 
 ## Situação de pagamento da fatura
 
@@ -112,3 +143,4 @@ lançar de novo contaria em dobro. Detalhes: [plano](archive/paid-entries-plan.m
 - [Edge Function (HTTP, auth e erros)](../supabase/functions/import-card-statement/index.ts)
 - [Fluxo da importação, por etapa](../supabase/functions/_shared/statement-import/run-import.ts)
 - [Parcelas futuras (migration)](../supabase/migrations/20261105120000_plan_future_card_installments.sql)
+- [Remover e recategorizar itens (migration)](../supabase/migrations/20261118120000_remove_and_recategorize_statement_items.sql)

@@ -54,6 +54,8 @@ async function listStatementInvoices(): Promise<StatementInvoice[]> {
   const { data, error } = await supabase
     .from('statement_import_batches')
     .select('id,bank,invoice_month,file_name,payment_status,paid_at,imported_transactions(amount_cents,direction)')
+    // A removed item no longer counts toward the invoice.
+    .is('imported_transactions.deleted_at', null)
     .order('invoice_month', { ascending: false, nullsFirst: false });
 
   if (error) {
