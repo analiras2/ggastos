@@ -36,6 +36,11 @@ export default tseslint.config(
     files: ['src/**/*.{ts,tsx}', 'vite.config.ts'],
     languageOptions: { globals: { ...globals.browser, ...globals.node, __DEV__: 'readonly' } },
   },
+  // Edge Functions run on Deno and their tests on Node; both provide the web globals.
+  {
+    files: ['supabase/functions/**/*.{ts,mjs}'],
+    languageOptions: { globals: { ...globals.node, Deno: 'readonly' } },
+  },
   { files: ['src/**/*.{ts,tsx}'], rules: featureBoundary(null) },
   // Inside a feature, its own files can import each other freely.
   ...features.map((name) => ({ files: [`src/features/${name}/**/*.{ts,tsx}`], rules: featureBoundary(name) })),
