@@ -6,3 +6,4 @@ export { CategoryField } from './category-field';
 export { categoriesKey, categoryNamesKey, useCategories, useCategoryNames } from './use-categories';
 export type { CategoryName, CategoryOption } from './use-categories';
 export { useCategoryAppearance } from './use-category-appearance';
+export { useManagedCategories, useUpdateCategory } from './use-managed-categories';

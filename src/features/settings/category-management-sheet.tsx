@@ -11,8 +11,7 @@ type CategoryManagementSheetProps = { visible: boolean; onClose: () => void };
 
 export function CategoryManagementSheet({ visible, onClose }: CategoryManagementSheetProps) {
   const viewModel = useCategoryManagementViewModel();
-  const activeCategories = viewModel.categories.filter((category) => category.isActive);
-  const hiddenCategories = viewModel.categories.filter((category) => !category.isActive);
+  const { activeCategories, hiddenCategories } = viewModel;
 
   return (
     <SheetModal visible={visible} title="Categorias" subtitle="Toque em uma categoria pessoal para editar." onClose={onClose}>

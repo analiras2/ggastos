@@ -39,7 +39,7 @@ export function PaidEntryFields({ state }: PaidEntryFieldsProps) {
           <Text style={styles.label}>Forma de pagamento</Text>
           <SegmentedToggle
             options={PAYMENT_METHOD_OPTIONS}
-            value={state.paymentMethod ?? ('' as SelectablePaymentMethod)}
+            value={state.paymentMethod}
             onChange={state.setPaymentMethod}
           />
           <Text style={styles.hint}>

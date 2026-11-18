@@ -1,21 +1,14 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import type { EntryKind } from '@/shared/theme/ggastos-theme';
+import { ENTRY_KIND_BY_IMPACT, type EntryKind } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import { paymentMethodLabel } from '@/features/planned-entries';
 import { formatIsoDateToBrazilian } from '@/shared/lib/form-utils';
-import { UNCATEGORIZED_LABEL, type ImpactType } from '@/shared/contracts/finance';
+import { UNCATEGORIZED_LABEL } from '@/shared/contracts/finance';
 import { useCategories } from '@/features/categories';
 import { normalizeSearchText } from '@/shared/lib/search-text';
 import { collectTags, matchesSearchItem } from '@/features/search/filter-search-items';
 import { useMonthSearchItems, type MonthSearchItem } from '@/features/search/use-month-search-items';
-
-const KIND_BY_IMPACT: Record<ImpactType, EntryKind> = {
-  INCOME: 'receita',
-  EXPENSE: 'despesa',
-  INVESTMENT: 'investimento',
-  TRANSFER: 'transferencia',
-};
 
 const PLANNED_LABEL = 'Previsto';
 const NO_DATE_LABEL = 'Sem data';
@@ -85,7 +78,7 @@ export function useMonthSearchViewModel(month: string, visible: boolean): MonthS
           title: displayTitle(item),
           category: category?.name ?? UNCATEGORIZED_LABEL,
           amount: formatCurrencyCents(item.amountCents),
-          kind: KIND_BY_IMPACT[item.impactType ?? category?.impactType ?? 'EXPENSE'],
+          kind: ENTRY_KIND_BY_IMPACT[item.impactType ?? category?.impactType ?? 'EXPENSE'],
           date: withDetails(item),
           tags: item.tags,
         };

@@ -3,6 +3,8 @@
  * (tokens/colors.css, typography.css, spacing.css).
  */
 
+import type { ImpactType } from '@/shared/contracts/finance';
+
 export const GgastosColors = {
   bgBase: '#F7F2EA',
   bgSurface: '#FFFDFC',
@@ -36,6 +38,13 @@ export const GgastosColors = {
 } as const;
 
 export type EntryKind = 'despesa' | 'receita' | 'investimento' | 'transferencia';
+
+export const ENTRY_KIND_BY_IMPACT: Record<ImpactType, EntryKind> = {
+  EXPENSE: 'despesa',
+  INCOME: 'receita',
+  INVESTMENT: 'investimento',
+  TRANSFER: 'transferencia',
+};
 
 export const KindColors: Record<EntryKind, string> = {
   despesa: GgastosColors.expense,

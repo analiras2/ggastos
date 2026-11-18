@@ -1,18 +1,10 @@
 import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 
 import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
-import { impactTypeSchema, type ImpactType } from '@/shared/contracts/finance';
+import type { ImpactType } from '@/shared/contracts/finance';
+import { CATEGORY_COLUMNS, categoryOptionFromRow, type CategoryOption } from '@/features/categories/category-row';
 
-export type CategoryOption = {
-  id: string;
-  code: string;
-  name: string;
-  impactType: ImpactType;
-  isPersonal: boolean;
-  isActive: boolean;
-  icon: string | null;
-  color: string | null;
-};
+export type { CategoryOption };
 
 export const categoriesKey = ['categories'];
 export const categoryNamesKey = ['category-names'];
@@ -24,7 +16,7 @@ async function listCategories(): Promise<CategoryOption[]> {
 
   const { data, error } = await supabase
     .from('categories')
-    .select('id,code,name,impact_type,user_id,is_active,parent_id,icon,color')
+    .select(CATEGORY_COLUMNS)
     .eq('is_active', true)
     .order('name', { ascending: true });
 
@@ -32,16 +24,7 @@ async function listCategories(): Promise<CategoryOption[]> {
     throw error;
   }
 
-  return (data ?? []).filter((row) => row.user_id !== null).map((row) => ({
-    id: row.id as string,
-    code: row.code as string,
-    name: row.name as string,
-    impactType: impactTypeSchema.parse(row.impact_type),
-    isPersonal: row.user_id !== null,
-    isActive: row.is_active as boolean,
-    icon: (row.icon as string | null) ?? null,
-    color: (row.color as string | null) ?? null,
-  }));
+  return (data ?? []).filter((row) => row.user_id !== null).map(categoryOptionFromRow);
 }
 
 export function useCategories(): UseQueryResult<CategoryOption[], Error> {

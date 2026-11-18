@@ -1,20 +1,13 @@
-import type { EntryKind, StatusChipStatus } from '@/shared/theme/ggastos-theme';
+import { ENTRY_KIND_BY_IMPACT, type StatusChipStatus } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import type { CategoryDetails } from '@/features/dashboard/contract';
 import { UNCATEGORIZED_CATEGORY_ID } from '@/features/dashboard/uncategorized';
 import { buildEditablePlannedEntry, type RemovalMode } from '@/features/planned-entries';
 import { paymentMethodLabel } from '@/shared/lib/payment-method-label';
 import { formatIsoDateToBrazilian, formatTimestampToBrazilian } from '@/shared/lib/form-utils';
-import type { ImpactType, PlanningStatus } from '@/shared/contracts/finance';
+import type { PlanningStatus } from '@/shared/contracts/finance';
 import { plannedDetailLines, transactionDetailLines } from '@/features/dashboard/format-item-details';
 import type { CategoryDetailsView } from '@/features/dashboard/category-details-view';
-
-const IMPACT_TYPE_TO_KIND: Record<ImpactType, EntryKind> = {
-  INCOME: 'receita',
-  EXPENSE: 'despesa',
-  INVESTMENT: 'investimento',
-  TRANSFER: 'transferencia',
-};
 
 const PLANNING_STATUS_TO_CHIP: Record<PlanningStatus, StatusChipStatus> = {
   PLANNED: 'PLANEJADO',
@@ -48,7 +41,7 @@ function formatCompetence(installmentIndex: number | null, installmentTotal: num
 }
 
 export function formatCategoryDetails(details: CategoryDetails): CategoryDetailsView {
-  const kind = IMPACT_TYPE_TO_KIND[details.impactType];
+  const kind = ENTRY_KIND_BY_IMPACT[details.impactType];
 
   const plannedItems = details.plannedEntries.map((entry) => ({
     id: entry.id,

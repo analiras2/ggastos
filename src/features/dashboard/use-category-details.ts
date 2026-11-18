@@ -1,4 +1,4 @@
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { skipToken, useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import type { ImpactType } from '@/shared/contracts/finance';
 import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
@@ -103,7 +103,9 @@ export function useCategoryDetails(
 ): UseQueryResult<CategoryDetails, Error> {
   return useQuery({
     queryKey: categoryDetailsKey(month, categoryId ?? '', impactType ?? 'EXPENSE'),
-    queryFn: () => fetchCategoryDetails(month, categoryId as string, impactType as ImpactType),
-    enabled: categoryId !== null && impactType !== null,
+    queryFn:
+      categoryId !== null && impactType !== null
+        ? () => fetchCategoryDetails(month, categoryId, impactType)
+        : skipToken,
   });
 }

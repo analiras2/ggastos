@@ -6,6 +6,9 @@ import {
   type PlanningTemplate,
 } from '@/features/templates/contract';
 
+// Without a month there is no upper bound: every template that has already started.
+const NO_UPPER_MONTH_BOUND = '9999-12';
+
 export const planningTemplatesKey = (month?: string) => ['planning-templates', month ?? 'all'];
 
 export type ArchiveTemplateInput = { id: string; archiveFromMonth: string };
@@ -43,7 +46,7 @@ export async function listPlanningTemplates(month?: string): Promise<PlanningTem
     .from('planning_templates')
     .select('*')
     .eq('is_active', true)
-    .lte('start_month', month ?? '9999-12')
+    .lte('start_month', month ?? NO_UPPER_MONTH_BOUND)
     .order('created_at', { ascending: true });
 
   if (error) {

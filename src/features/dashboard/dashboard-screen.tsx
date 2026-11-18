@@ -52,7 +52,7 @@ export function DashboardScreen() {
 
         <View style={styles.kpiRow}>
           <KpiComparisonCard label="Pendente" value={data.commitment.value} />
-          <KpiComparisonCard label="Saldo previsto" value={data.previsto} />
+          <KpiComparisonCard label="Saldo previsto" value={data.expectedBalance} />
         </View>
 
         {data.openInvoices ? (

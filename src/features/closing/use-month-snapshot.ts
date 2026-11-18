@@ -23,7 +23,7 @@ async function fetchMonthSnapshot(month: string): Promise<MonthSnapshotResult | 
   return {
     id: data.id,
     month: data.month,
-    status: data.status as MonthSnapshotResult['status'],
+    status: data.status === 'CLOSED' ? 'CLOSED' : 'OPEN',
     computedAt: data.computed_at,
   };
 }

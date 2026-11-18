@@ -61,7 +61,7 @@ export function formatDashboardData(
 
   return {
     month: monthLabel(monthDashboard.month),
-    previsto: formatCurrencyCents(summary.expectedBalanceCents),
+    expectedBalance: formatCurrencyCents(summary.expectedBalanceCents),
     commitment: { value: formatCurrencyCents(summary.committedRemainingCents) },
     openInvoices:
       summary.openExpenseCents > 0 ? { value: formatCurrencyCents(summary.openExpenseCents) } : null,
@@ -75,7 +75,7 @@ export function formatDashboardData(
 export function emptyDashboardData(monthKey: string): DashboardData {
   return {
     month: monthLabel(monthKey),
-    previsto: formatCurrencyCents(0),
+    expectedBalance: formatCurrencyCents(0),
     commitment: { value: formatCurrencyCents(0) },
     openInvoices: null,
     categories: [],

@@ -25,15 +25,18 @@ type ReconciliationDecisionResult = {
   status: 'ok';
 };
 
+const HTTP_NOT_FOUND = 404;
+const HTTP_CONFLICT = 409;
+
 function formatReconciliationDecisionError(error: unknown): string {
   if (error instanceof FunctionsHttpError) {
     const status = error.context instanceof Response ? error.context.status : null;
 
-    if (status === 404) {
+    if (status === HTTP_NOT_FOUND) {
       return 'Esse par de conciliação não foi encontrado.';
     }
 
-    if (status === 409) {
+    if (status === HTTP_CONFLICT) {
       return 'Essa conciliação já foi decidida ou não há uma correspondência ativa para desfazer.';
     }
 
