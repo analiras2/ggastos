@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   },
   badgeLabel: {
     ...GgastosType.micro,
-    color: '#FFFFFF',
+    color: GgastosColors.onPrimary,
   },
   label: {
     ...GgastosType.label,

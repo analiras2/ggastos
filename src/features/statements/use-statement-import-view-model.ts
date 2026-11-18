@@ -26,6 +26,7 @@ import {
   type StatementBank,
   useImportCardStatement,
 } from '@/features/statements/use-import-card-statement';
+import { errorMessageOf } from '@/shared/lib/error-message';
 
 export function useStatementImportViewModel(onSuccess?: () => void): StatementImportViewModel {
   const importMutation = useImportCardStatement();
@@ -86,8 +87,7 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
 
       setSelectedFile(file);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Não foi possível ler o arquivo.';
-      setErrorMessage(message);
+      setErrorMessage(errorMessageOf(error, 'Não foi possível ler o arquivo.'));
     } finally {
       setIsPickingFile(false);
     }

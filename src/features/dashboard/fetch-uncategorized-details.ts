@@ -1,14 +1,11 @@
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { UNCATEGORIZED_LABEL } from '@/shared/contracts/finance';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 import { categoryDetailsSchema, type CategoryDetails } from '@/features/dashboard/contract';
 import { UNCATEGORIZED_CATEGORY_ID } from '@/features/dashboard/uncategorized';
 
-const UNCATEGORIZED_NAME = 'Sem categoria';
-
 // The purchases of the month that still have no category, shaped like a category's details.
 export async function fetchUncategorizedDetails(month: string): Promise<CategoryDetails> {
-  if (!supabase) {
-    throw new Error(`Missing env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const { data, error } = await supabase
     .from('imported_transactions')
@@ -30,7 +27,7 @@ export async function fetchUncategorizedDetails(month: string): Promise<Category
     month,
     categoryId: UNCATEGORIZED_CATEGORY_ID,
     categoryCode: 'uncategorized',
-    name: UNCATEGORIZED_NAME,
+    name: UNCATEGORIZED_LABEL,
     impactType: 'EXPENSE',
     plannedEntries: [],
     importedTransactions: (data ?? []).map((row) => ({

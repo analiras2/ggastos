@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { FLOATING_NAV_CONTENT_CLEARANCE } from '@/shared/ui/navigation/floating-nav-metrics';
-import { SegmentedControl, type SegmentOption } from '@/shared/ui/navigation/segmented-control';
+import { SectionSwitch, type SectionOption } from '@/shared/ui/navigation/section-switch';
 import { AnnualMonthsSection } from '@/features/reports/annual-months-section';
 import { StatisticsChartSection } from '@/features/reports/statistics-chart-section';
 import { StatisticsFilters } from '@/features/reports/statistics-filters';
@@ -11,10 +11,10 @@ import { StatisticsPeriodNav } from '@/features/reports/statistics-period-nav';
 import type { StatisticsPeriod } from '@/features/reports/statistics-period-rules';
 import { useStatisticsViewModel } from '@/features/reports/use-statistics-view-model';
 
-const PERIOD_OPTIONS: SegmentOption<StatisticsPeriod>[] = [
-  { key: 'month', label: 'Mês' },
-  { key: 'quarter', label: 'Trimestre' },
-  { key: 'year', label: 'Ano' },
+const PERIOD_OPTIONS: SectionOption<StatisticsPeriod>[] = [
+  { value: 'month', label: 'Mês' },
+  { value: 'quarter', label: 'Trimestre' },
+  { value: 'year', label: 'Ano' },
 ];
 
 export function StatisticsScreen() {
@@ -25,7 +25,7 @@ export function StatisticsScreen() {
     <SafeAreaView style={styles.screen} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Estatísticas</Text>
-        <SegmentedControl options={PERIOD_OPTIONS} value={viewModel.period} onChange={viewModel.setPeriod} />
+        <SectionSwitch options={PERIOD_OPTIONS} value={viewModel.period} onChange={viewModel.setPeriod} />
         <StatisticsPeriodNav viewModel={viewModel} />
         <StatisticsFilters
           impactType={viewModel.impactType}

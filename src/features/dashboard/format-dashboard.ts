@@ -4,6 +4,7 @@ import { categoryStatus } from '@/features/dashboard/category-status';
 import { categoryDisplayName, splitCategoryIds } from '@/features/dashboard/category-display-name';
 import type { MonthDashboard } from '@/features/dashboard/contract';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { PERCENT_FACTOR } from '@/shared/lib/percent';
 import { monthLabel } from '@/shared/lib/month';
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -33,7 +34,7 @@ function toCategoryBudget(
 ): CategoryBudget {
   const progress =
     category.plannedCents > 0
-      ? Math.round((category.actualCents / category.plannedCents) * 100)
+      ? Math.round((category.actualCents / category.plannedCents) * PERCENT_FACTOR)
       : category.actualCents > 0
         ? 100
         : 0;

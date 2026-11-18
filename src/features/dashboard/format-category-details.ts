@@ -4,7 +4,7 @@ import type { CategoryDetails } from '@/features/dashboard/contract';
 import { UNCATEGORIZED_CATEGORY_ID } from '@/features/dashboard/uncategorized';
 import { buildEditablePlannedEntry, type RemovalMode } from '@/features/planned-entries';
 import { paymentMethodLabel } from '@/shared/lib/payment-method-label';
-import { formatIsoDateToBrazilian } from '@/shared/lib/form-utils';
+import { formatIsoDateToBrazilian, formatTimestampToBrazilian } from '@/shared/lib/form-utils';
 import type { ImpactType, PlanningStatus } from '@/shared/contracts/finance';
 import { plannedDetailLines, transactionDetailLines } from '@/features/dashboard/format-item-details';
 import type { CategoryDetailsView } from '@/features/dashboard/category-details-view';
@@ -97,7 +97,7 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
     category: details.name,
     amount: formatCurrencyCents(transaction.amountCents),
     kind,
-    date: withPaymentMethod(new Date(transaction.postedAt).toLocaleDateString('pt-BR'), transaction.paymentMethod),
+    date: withPaymentMethod(formatTimestampToBrazilian(transaction.postedAt), transaction.paymentMethod),
     tags: transaction.tags,
     details: transactionDetailLines(transaction, details.name),
     editTarget: {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Animated, Easing } from 'react-native';
 
+import { GgastosColors } from '@/shared/theme/ggastos-theme';
 import { Icon } from '@/shared/ui/core/icon';
 
 const ICON_SIZE = 30;
@@ -30,7 +31,7 @@ export function AddFabIcon({ isOpen }: AddFabIconProps) {
 
   return (
     <Animated.View style={{ transform: [{ rotate }] }}>
-      <Icon name="plus" size={ICON_SIZE} color="#FFFFFF" />
+      <Icon name="plus" size={ICON_SIZE} color={GgastosColors.onPrimary} />
     </Animated.View>
   );
 }

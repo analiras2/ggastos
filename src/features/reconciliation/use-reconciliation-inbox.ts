@@ -1,6 +1,6 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 import {
   reconciliationInboxResponseSchema,
   type ReconciliationSuggestion,
@@ -9,9 +9,7 @@ import {
 export const reconciliationInboxKey = (month: string) => ['reconciliation-inbox', month];
 
 async function fetchReconciliationInbox(month: string): Promise<ReconciliationSuggestion[]> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const {
     data: { session },

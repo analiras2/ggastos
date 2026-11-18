@@ -1,25 +1,16 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Icon } from '@/shared/ui/core/icon';
+import { IMPACT_TYPE_LABELS, type ImpactType } from '@/shared/contracts/finance';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 
-const IMPACT_LABELS: Record<string, string> = {
-  EXPENSE: 'Despesa',
-  INCOME: 'Receita',
-  INVESTMENT: 'Investimento',
-  TRANSFER: 'Transferência',
-};
 const CHEVRON_SIZE = 18;
 const DEFAULT_ROW_OPACITY = 0.72;
 
 type CategoryRowProps = {
-  category: { name: string; impactType: string; isPersonal: boolean };
+  category: { name: string; impactType: ImpactType; isPersonal: boolean };
   onPress: () => void;
 };
-
-function impactLabel(impactType: string) {
-  return IMPACT_LABELS[impactType] ?? impactType;
-}
 
 export function CategoryManagementRow({ category, onPress }: CategoryRowProps) {
   return (
@@ -32,7 +23,7 @@ export function CategoryManagementRow({ category, onPress }: CategoryRowProps) {
       <View>
         <Text style={styles.name}>{category.name}</Text>
         <Text style={styles.meta}>
-          {impactLabel(category.impactType)} · {category.isPersonal ? 'Pessoal' : 'Padrão'}
+          {IMPACT_TYPE_LABELS[category.impactType]} · {category.isPersonal ? 'Pessoal' : 'Padrão'}
         </Text>
       </View>
       {category.isPersonal ? <Icon name="chevron-right" size={CHEVRON_SIZE} /> : null}

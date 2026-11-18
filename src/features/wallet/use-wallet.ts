@@ -6,7 +6,7 @@ import {
   type UseQueryResult,
 } from '@tanstack/react-query';
 
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 import { invalidateMonthData } from '@/shared/lib/query/invalidate-month-data';
 import { currentMonthKey } from '@/shared/lib/month';
 import { walletSchema, type Wallet } from '@/features/wallet/contract';
@@ -14,9 +14,7 @@ import { walletSchema, type Wallet } from '@/features/wallet/contract';
 export const walletKey = (month: string) => ['wallet', month];
 
 async function callWalletRpc(functionName: string, args: Record<string, string | number>): Promise<Wallet> {
-  if (!supabase) {
-    throw new Error(`Missing env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const { data, error } = await supabase.rpc(functionName, args);
   if (error) {

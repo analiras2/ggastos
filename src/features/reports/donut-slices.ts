@@ -1,3 +1,4 @@
+import { GgastosColors } from '@/shared/theme/ggastos-theme';
 import type { StatisticsCategory } from '@/features/reports/statistics-categories';
 
 export type DonutSlice = {
@@ -13,7 +14,7 @@ export type DonutSlice = {
 export const MAX_DONUT_SLICES = 8;
 export const OTHERS_SLICE_ID = 'others';
 const OTHERS_LABEL = 'Outros';
-const OTHERS_COLOR = '#9A8F84';
+const OTHERS_COLOR = GgastosColors.inkFaint;
 const FULL_CIRCLE_DEGREES = 360;
 
 // Largest categories first; everything past the limit is folded into one "Outros" slice.

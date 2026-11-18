@@ -1,12 +1,10 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 import { monthSnapshotKey, type MonthSnapshotResult } from '@/features/closing/use-close-month';
 
 async function fetchMonthSnapshot(month: string): Promise<MonthSnapshotResult | null> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const { data, error } = await supabase
     .from('month_snapshots')

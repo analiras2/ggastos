@@ -1,5 +1,5 @@
 import { paymentMethodLabel } from '@/shared/lib/payment-method-label';
-import { formatIsoDateToBrazilian } from '@/shared/lib/form-utils';
+import { formatIsoDateToBrazilian, formatTimestampToBrazilian } from '@/shared/lib/form-utils';
 import type { ImpactType } from '@/shared/contracts/finance';
 import type { EditablePlannedEntry, RemovalMode } from '@/features/planned-entries';
 import type { CategoryDetails } from '@/features/dashboard/contract';
@@ -59,7 +59,7 @@ export function transactionDetailLines(transaction: ImportedTransaction, categor
   const hasDifferentOriginal = transaction.descriptionRaw && transaction.descriptionRaw !== transaction.description;
   return toLines([
     ['Categoria', categoryName],
-    ['Data', new Date(transaction.postedAt).toLocaleDateString('pt-BR')],
+    ['Data', formatTimestampToBrazilian(transaction.postedAt)],
     ['Estabelecimento', transaction.merchantName],
     ['Descrição original', hasDifferentOriginal ? transaction.descriptionRaw : null],
     ['Parcela', installmentText(transaction.installmentIndex, transaction.installmentTotal)],

@@ -5,8 +5,6 @@ import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/sha
 import { CategoryAppearancePicker } from '@/features/categories';
 import type { CategoryManagementViewModel } from '@/features/settings/use-category-management-view-model';
 
-const BACKDROP_COLOR = '#00000055';
-
 export function CategoryEditorModal({ viewModel }: { viewModel: CategoryManagementViewModel }) {
   const { editingCategory, editingName, isSaving } = viewModel;
   const isActive = editingCategory?.isActive;
@@ -47,12 +45,12 @@ export function CategoryEditorModal({ viewModel }: { viewModel: CategoryManageme
 }
 
 const styles = StyleSheet.create({
-  overlayScroll: { flex: 1, backgroundColor: BACKDROP_COLOR },
+  overlayScroll: { flex: 1, backgroundColor: GgastosColors.backdrop },
   overlay: {
     flexGrow: 1,
     justifyContent: 'center',
     padding: GgastosSpacing.space5,
-    backgroundColor: BACKDROP_COLOR,
+    backgroundColor: GgastosColors.backdrop,
   },
   editor: {
     gap: GgastosSpacing.space3,

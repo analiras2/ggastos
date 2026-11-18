@@ -5,20 +5,13 @@ import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import { CategoryField } from '@/features/categories';
 import { DateField } from '@/shared/ui/forms/date-field';
 import { SelectField } from '@/shared/ui/forms/select-field';
-import type { ImpactType } from '@/shared/contracts/finance';
+import { IMPACT_TYPE_OPTIONS } from '@/shared/contracts/finance';
 import { PaidEntryFields } from '@/features/planned-entries/paid-entry-fields';
 import { PlanKindField, PlanRecurrenceDetails } from '@/features/planned-entries/plan-recurrence-fields';
 import { planFormStyles as styles } from '@/features/planned-entries/plan-form-styles';
 import type { useAddPlanViewModel } from '@/features/planned-entries/use-add-plan-view-model';
 
 type PlanFormFieldsProps = { form: ReturnType<typeof useAddPlanViewModel> };
-
-const IMPACT_OPTIONS: { value: ImpactType; label: string }[] = [
-  { value: 'EXPENSE', label: 'Despesa' },
-  { value: 'INCOME', label: 'Receita' },
-  { value: 'INVESTMENT', label: 'Investimento' },
-  { value: 'TRANSFER', label: 'Transferência' },
-];
 
 const PAID_TITLE_PLACEHOLDER = 'Opcional — usa o nome da categoria';
 const PLANNED_TITLE_PLACEHOLDER = 'Opcional — será preenchido pela importação';
@@ -41,7 +34,7 @@ export function PlanFormFields({ form }: PlanFormFieldsProps) {
 
       <View style={styles.field}>
         <Text style={styles.label}>Tipo</Text>
-        <SelectField accessibilityLabel="Tipo" options={IMPACT_OPTIONS} value={form.impactType} onChange={form.setImpactType} />
+        <SelectField accessibilityLabel="Tipo" options={IMPACT_TYPE_OPTIONS} value={form.impactType} onChange={form.setImpactType} />
       </View>
 
       <View style={styles.field}>

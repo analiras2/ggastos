@@ -13,7 +13,6 @@ import { buildMonthKey, MONTH_LABELS, parseMonthKey } from '@/shared/lib/month';
 
 const MONTH_ABBREVIATION_LENGTH = 3;
 const MAX_CARD_WIDTH = 360;
-const BACKDROP_COLOR = 'rgba(31, 26, 23, 0.4)';
 
 type MonthYearPickerProps = {
   visible: boolean;
@@ -88,7 +87,7 @@ export function MonthYearPicker({ visible, monthKey, onSelect, onClose }: MonthY
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: BACKDROP_COLOR,
+    backgroundColor: GgastosColors.backdrop,
     alignItems: 'center',
     justifyContent: 'center',
     padding: GgastosSpacing.space5,

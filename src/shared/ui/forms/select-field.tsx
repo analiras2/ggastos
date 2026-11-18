@@ -4,7 +4,6 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { GgastosColors, GgastosRadius, GgastosShadow, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { Icon } from '@/shared/ui/core/icon';
 
-const BACKDROP_COLOR = 'rgba(31, 26, 23, 0.4)';
 const MAX_CARD_WIDTH = 340;
 const OPTION_HEIGHT = 48;
 
@@ -76,7 +75,7 @@ const styles = StyleSheet.create({
     backgroundColor: GgastosColors.bgSurface,
   },
   value: { ...GgastosType.bodyMd, color: GgastosColors.inkStrong },
-  backdrop: { flex: 1, backgroundColor: BACKDROP_COLOR, alignItems: 'center', justifyContent: 'center', padding: GgastosSpacing.space5 },
+  backdrop: { flex: 1, backgroundColor: GgastosColors.backdrop, alignItems: 'center', justifyContent: 'center', padding: GgastosSpacing.space5 },
   card: {
     width: '100%',
     maxWidth: MAX_CARD_WIDTH,

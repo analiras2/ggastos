@@ -4,7 +4,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { categoryColor } from '@/shared/theme/category-colors';
 import { impactTypeSchema, type ImpactType } from '@/shared/contracts/finance';
 import { categoriesKey, categoryNamesKey, type CategoryOption } from '@/features/categories';
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
+import { errorMessageOf } from '@/shared/lib/error-message';
 
 export type CategoryManagementViewModel = {
   categories: CategoryOption[];
@@ -30,9 +31,7 @@ const DEFAULT_CATEGORY_ICON = 'tag';
 const managementKey = [...categoriesKey, 'management'];
 
 async function listManagedCategories(): Promise<CategoryOption[]> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const { data, error } = await supabase
     .from('categories')
@@ -68,9 +67,7 @@ export function useCategoryManagementViewModel(): CategoryManagementViewModel {
 
   const updateCategory = useMutation({
     mutationFn: async ({ id, name, isActive, icon, color }: { id: string; name?: string; isActive?: boolean; icon?: string; color?: string }) => {
-      if (!supabase) {
-        throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-      }
+      const supabase = requireSupabase();
       const updates: { name?: string; is_active?: boolean; icon?: string; color?: string } = {};
       if (name !== undefined) updates.name = name.trim();
       if (isActive !== undefined) updates.is_active = isActive;
@@ -109,7 +106,7 @@ export function useCategoryManagementViewModel(): CategoryManagementViewModel {
       await updateCategory.mutateAsync({ id: editingCategory.id, name: editingName, icon: editingIcon, color: editingColor });
       closeEditor();
     } catch (error) {
-      setActionErrorMessage(error instanceof Error ? error.message : 'Não foi possível salvar a categoria.');
+      setActionErrorMessage(errorMessageOf(error, 'Não foi possível salvar a categoria.'));
     }
   }, [closeEditor, editingCategory, editingColor, editingIcon, editingName, updateCategory]);
 
@@ -119,7 +116,7 @@ export function useCategoryManagementViewModel(): CategoryManagementViewModel {
       await updateCategory.mutateAsync({ id: editingCategory.id, isActive: !editingCategory.isActive });
       closeEditor();
     } catch (error) {
-      setActionErrorMessage(error instanceof Error ? error.message : 'Não foi possível atualizar a categoria.');
+      setActionErrorMessage(errorMessageOf(error, 'Não foi possível atualizar a categoria.'));
     }
   }, [closeEditor, editingCategory, updateCategory]);
 

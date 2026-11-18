@@ -12,7 +12,7 @@ import {
   UNCATEGORIZED_TRANSACTIONS_ROOT_KEY,
   type UncategorizedTransaction,
 } from '@/features/statements/use-uncategorized-transactions';
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 
 export type BulkCategorizeInput = {
   transactions: readonly UncategorizedTransaction[];
@@ -27,9 +27,7 @@ const rpcRowSchema = z.object({
 });
 
 const callCategorizeRpc: BulkCategorizeCall = async ({ transactionIds, categoryId, ruleValues }) => {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const { data, error } = await supabase.rpc('categorize_imported_transactions', {
     p_transaction_ids: transactionIds,

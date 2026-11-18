@@ -12,7 +12,7 @@ import {
 } from '@/features/planned-entries';
 import { useArchivePlanningTemplate, usePlanningTemplates } from '@/features/templates';
 import { useCategoryNames } from '@/features/categories';
-import type { ImpactType } from '@/shared/contracts/finance';
+import { UNCATEGORIZED_LABEL, type ImpactType } from '@/shared/contracts/finance';
 import type { PlannedEntry } from '@/features/planned-entries';
 import type { PlanningTemplate } from '@/features/templates';
 
@@ -44,7 +44,7 @@ function formatDueDate(dueDate: string | null): string {
 }
 
 function mapEntry(entry: PlannedEntry, categories: CategoryName[]): PlanningEntryView {
-  const category = categories.find((item) => item.id === entry.categoryId)?.name ?? 'Sem categoria';
+  const category = categories.find((item) => item.id === entry.categoryId)?.name ?? UNCATEGORIZED_LABEL;
   const isReconciled = entry.status === 'RECONCILED';
   const isCancelled = entry.status === 'CANCELLED';
 

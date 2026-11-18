@@ -11,7 +11,6 @@ const OPTIONS: { key: StatisticsImpactType; label: string }[] = [
   { key: 'INVESTMENT', label: 'Investimentos' },
 ];
 
-const BACKDROP_COLOR = 'rgba(31, 26, 23, 0.4)';
 const MAX_CARD_WIDTH = 320;
 const TOUCH_HEIGHT = 44;
 
@@ -73,7 +72,7 @@ const styles = StyleSheet.create({
     backgroundColor: GgastosColors.lineSofter,
   },
   triggerLabel: { ...GgastosType.bodyMd, fontWeight: '600', color: GgastosColors.inkStrong },
-  backdrop: { flex: 1, backgroundColor: BACKDROP_COLOR, alignItems: 'center', justifyContent: 'center', padding: GgastosSpacing.space5 },
+  backdrop: { flex: 1, backgroundColor: GgastosColors.backdrop, alignItems: 'center', justifyContent: 'center', padding: GgastosSpacing.space5 },
   card: {
     width: '100%',
     maxWidth: MAX_CARD_WIDTH,

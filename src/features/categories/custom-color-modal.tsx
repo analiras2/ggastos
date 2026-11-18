@@ -17,7 +17,6 @@ const MAX_WHEEL_SIZE = 260;
 const CARD_HORIZONTAL_SPACE = GgastosSpacing.space5 * 4;
 const PREVIEW_SIZE = 36;
 const HEX_MAX_LENGTH = 7;
-const BACKDROP_COLOR = 'rgba(31, 26, 23, 0.4)';
 
 type CustomColorModalProps = {
   visible: boolean;
@@ -104,7 +103,7 @@ const styles = StyleSheet.create({
   root: { flex: 1 },
   backdrop: {
     flex: 1,
-    backgroundColor: BACKDROP_COLOR,
+    backgroundColor: GgastosColors.backdrop,
     alignItems: 'center',
     justifyContent: 'center',
     padding: GgastosSpacing.space5,

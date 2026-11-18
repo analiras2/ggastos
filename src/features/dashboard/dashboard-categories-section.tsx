@@ -1,4 +1,5 @@
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { UNCATEGORIZED_LABEL } from '@/shared/contracts/finance';
 import { TabbedSheet } from '@/shared/ui/cards/tabbed-sheet';
 import { CategoryBudgetRow } from '@/shared/ui/rows/category-budget-row';
 import { GgastosColors } from '@/shared/theme/ggastos-theme';
@@ -28,7 +29,7 @@ export function DashboardCategoriesSection({
     <TabbedSheet title="Categorias">
       {uncategorized ? (
         <CategoryBudgetRow
-          name="Sem categoria"
+          name={UNCATEGORIZED_LABEL}
           icon="circle"
           color={GgastosColors.inkFaint}
           actual={formatCurrencyCents(uncategorized.totalCents)}

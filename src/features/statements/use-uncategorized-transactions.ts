@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tan
 
 import type { TransactionDirection } from '@/features/statements/selection-state';
 import { saveCategoryRule } from '@/features/statements/save-category-rule';
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 
 export type UncategorizedTransaction = {
   id: string;
@@ -31,9 +31,7 @@ export const uncategorizedTransactionsKey = (batchId?: string | null) => [
 ];
 
 async function listUncategorizedTransactions(batchId?: string | null): Promise<UncategorizedTransaction[]> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   let query = supabase
     .from('imported_transactions')
@@ -63,9 +61,7 @@ async function listUncategorizedTransactions(batchId?: string | null): Promise<U
 }
 
 async function categorizeTransaction(input: CategorizeTransactionInput): Promise<void> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const { error } = await supabase
     .from('imported_transactions')

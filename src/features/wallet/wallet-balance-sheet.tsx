@@ -1,9 +1,8 @@
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { Button } from '@/shared/ui/core/button';
-import { Icon } from '@/shared/ui/core/icon';
+import { SheetModal } from '@/shared/ui/core/sheet-modal';
 import { useWalletBalanceForm } from '@/features/wallet/use-wallet-balance-form';
 
 export type WalletSheetMode = 'setup' | 'adjust' | 'close';
@@ -48,58 +47,36 @@ function WalletBalanceSheetContent({ mode, currentCents, monthName, onClose, onD
   const copy = COPY[mode];
 
   return (
-    <Modal visible animationType="slide" onRequestClose={onClose}>
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.screen} edges={['top']}>
-          <View style={styles.header}>
-            <Text style={styles.title}>{copy.title(monthName)}</Text>
-            <Pressable accessibilityRole="button" accessibilityLabel="Fechar" hitSlop={12} onPress={onClose}>
-              <Icon name="x" size={18} />
-            </Pressable>
-          </View>
-
-          <View style={styles.content}>
-            <Text style={styles.description}>{copy.description}</Text>
-            <View style={styles.field}>
-              <Text style={styles.label}>Saldo atual (use - para negativo)</Text>
-              <TextInput
-                autoFocus
-                keyboardType="numbers-and-punctuation"
-                onChangeText={form.setText}
-                placeholder="R$ 0,00"
-                placeholderTextColor={GgastosColors.inkFaint}
-                style={styles.input}
-                value={form.maskedValue}
-              />
-            </View>
-            {form.errorMessage ? <Text style={styles.error}>{form.errorMessage}</Text> : null}
-            <Button fullWidth disabled={form.isSaving} onPress={form.handleSave}>
-              {form.isSaving ? 'Salvando...' : copy.confirm}
-            </Button>
-            {mode === 'close' ? (
-              <Button fullWidth variant="ghost" disabled={form.isSaving} onPress={onDone}>
-                Fechar sem ajustar
-              </Button>
-            ) : null}
-          </View>
-        </SafeAreaView>
-      </SafeAreaProvider>
-    </Modal>
+    <SheetModal title={copy.title(monthName)} onClose={onClose}>
+      <View style={styles.content}>
+        <Text style={styles.description}>{copy.description}</Text>
+        <View style={styles.field}>
+          <Text style={styles.label}>Saldo atual (use - para negativo)</Text>
+          <TextInput
+            autoFocus
+            keyboardType="numbers-and-punctuation"
+            onChangeText={form.setText}
+            placeholder="R$ 0,00"
+            placeholderTextColor={GgastosColors.inkFaint}
+            style={styles.input}
+            value={form.maskedValue}
+          />
+        </View>
+        {form.errorMessage ? <Text style={styles.error}>{form.errorMessage}</Text> : null}
+        <Button fullWidth disabled={form.isSaving} onPress={form.handleSave}>
+          {form.isSaving ? 'Salvando...' : copy.confirm}
+        </Button>
+        {mode === 'close' ? (
+          <Button fullWidth variant="ghost" disabled={form.isSaving} onPress={onDone}>
+            Fechar sem ajustar
+          </Button>
+        ) : null}
+      </View>
+    </SheetModal>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: GgastosColors.bgBase },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: GgastosSpacing.space5,
-    paddingVertical: GgastosSpacing.space4,
-    borderBottomWidth: 1,
-    borderBottomColor: GgastosColors.lineSofter,
-  },
-  title: { ...GgastosType.displaySm, color: GgastosColors.inkStrong },
   content: { padding: GgastosSpacing.space5, gap: GgastosSpacing.space4 },
   description: { ...GgastosType.bodyMd, color: GgastosColors.inkSoft },
   field: { gap: GgastosSpacing.space2 },

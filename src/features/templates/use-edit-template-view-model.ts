@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { centsFromMaskedInput } from '@/shared/lib/form-utils';
 import type { PlanningTemplate } from '@/features/templates/contract';
 import { useUpdatePlanningTemplate } from '@/features/templates/use-planning-templates';
+import { errorMessageOf } from '@/shared/lib/error-message';
 
 type EditTemplateParams = {
   template: PlanningTemplate | null;
@@ -29,7 +30,7 @@ export function useEditTemplateViewModel({ template, effectiveMonth, onClose }: 
       });
       onClose();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Não foi possível editar o template.');
+      setErrorMessage(errorMessageOf(error, 'Não foi possível editar o template.'));
     }
   };
 

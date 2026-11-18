@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { PERCENT_FACTOR } from '@/shared/lib/percent';
 import type { AnnualCategoryView } from '@/features/reports/format-annual-summary';
 import { sortAnnualCategories, type CategorySortOrder } from '@/features/reports/sort-annual-categories';
 
@@ -11,7 +12,6 @@ type AnnualCategoryBarsProps = { categories: AnnualCategoryView[]; totalLabel?: 
 
 const SORT_ICON_SIZE = 20;
 const BAR_HEIGHT = 10;
-const PERCENT_FACTOR = 100;
 const MIN_BAR_PERCENT = 2;
 
 export function AnnualCategoryBars({ categories, totalLabel = 'Gastos' }: AnnualCategoryBarsProps) {

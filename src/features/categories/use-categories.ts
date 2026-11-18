@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 import { impactTypeSchema, type ImpactType } from '@/shared/contracts/finance';
 
 export type CategoryOption = {
@@ -20,9 +20,7 @@ export const categoryNamesKey = ['category-names'];
 export type CategoryName = { id: string; name: string };
 
 async function listCategories(): Promise<CategoryOption[]> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const { data, error } = await supabase
     .from('categories')
@@ -51,9 +49,7 @@ export function useCategories(): UseQueryResult<CategoryOption[], Error> {
 }
 
 async function listCategoryNames(): Promise<CategoryName[]> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const { data, error } = await supabase.from('categories').select('id,name');
   if (error) throw error;
@@ -71,9 +67,7 @@ export function useCreatePersonalCategory() {
 
   return useMutation({
     mutationFn: async ({ name, impactType, icon, color }: CreateCategoryInput) => {
-      if (!supabase) {
-        throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-      }
+      const supabase = requireSupabase();
 
       const { data, error } = await supabase.rpc('create_personal_category', {
         p_name: name.trim(),

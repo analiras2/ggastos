@@ -36,3 +36,8 @@ export function formatIsoDateToBrazilian(isoDate: string): string {
   const [year, month, day] = isoDate.slice(0, 10).split('-');
   return `${day}/${month}/${year}`;
 }
+
+// Formats an ISO timestamp (a moment in time) in the user's time zone as DD/MM/YYYY.
+export function formatTimestampToBrazilian(timestamp: string): string {
+  return formatDateToBrazilian(new Date(timestamp));
+}

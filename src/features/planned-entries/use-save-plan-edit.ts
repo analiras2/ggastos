@@ -7,6 +7,7 @@ import { parseTagsInput } from '@/shared/lib/parse-tags';
 import type { EntrySettlement, SelectablePaymentMethod } from '@/features/planned-entries/paid-entry-rules';
 import { buildPlanEditUpdate, type EditablePlannedEntry } from '@/features/planned-entries/plan-edit-rules';
 import { useUpdatePlannedEntry } from '@/features/planned-entries/use-planned-entries';
+import { errorMessageOf } from '@/shared/lib/error-message';
 
 export type PlanEditForm = {
   target: EditablePlannedEntry;
@@ -54,7 +55,7 @@ export function useSavePlanEdit() {
         });
         return null;
       } catch (error) {
-        return error instanceof Error ? error.message : 'Não foi possível salvar o lançamento.';
+        return errorMessageOf(error, 'Não foi possível salvar o lançamento.');
       }
     },
     [updatePlannedEntry]

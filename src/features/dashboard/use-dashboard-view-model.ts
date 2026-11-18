@@ -6,6 +6,8 @@ import type { DashboardData } from '@/features/dashboard/dashboard-data';
 import type { DashboardViewModel } from '@/features/dashboard/dashboard-view-model-types';
 import { emptyDashboardData, formatDashboardData } from '@/features/dashboard/format-dashboard';
 import { currentMonthKey, shiftMonthKey } from '@/shared/lib/month';
+import { UNCATEGORIZED_LABEL } from '@/shared/contracts/finance';
+import { GgastosColors } from '@/shared/theme/ggastos-theme';
 import { useCategoryDetailsPanel } from '@/features/dashboard/use-category-details-panel';
 import { useCloseMonthBanner } from '@/features/dashboard/use-close-month-banner';
 import { useDashboardSheets } from '@/features/dashboard/use-dashboard-sheets';
@@ -51,9 +53,9 @@ export function useDashboardViewModel(): DashboardViewModel {
       handleOpenCategory({
         categoryId: UNCATEGORIZED_CATEGORY_ID,
         impactType: 'EXPENSE',
-        name: 'Sem categoria',
+        name: UNCATEGORIZED_LABEL,
         icon: 'circle',
-        color: '#9A8F84',
+        color: GgastosColors.inkFaint,
         planned: null,
         actual: '',
         status: null,

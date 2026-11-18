@@ -1,15 +1,8 @@
-import type { ImpactType } from '@/shared/contracts/finance';
-
-const IMPACT_LABELS: Record<ImpactType, string> = {
-  EXPENSE: 'Despesa',
-  INCOME: 'Receita',
-  INVESTMENT: 'Investimento',
-  TRANSFER: 'Transferência',
-};
+import { IMPACT_TYPE_LABELS, type ImpactType } from '@/shared/contracts/finance';
 
 // A category that shows up under more than one entry type is told apart by a suffix.
 export function categoryDisplayName(name: string, impactType: ImpactType, isSplit: boolean): string {
-  return isSplit ? `${name} · ${IMPACT_LABELS[impactType]}` : name;
+  return isSplit ? `${name} · ${IMPACT_TYPE_LABELS[impactType]}` : name;
 }
 
 // True for the categories that appear once per entry type in the same month.

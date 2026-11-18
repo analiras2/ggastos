@@ -2,29 +2,29 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GgastosColors, GgastosRadius, GgastosType } from '@/shared/theme/ggastos-theme';
 
-export type SegmentOption<Key extends string> = { key: Key; label: string; badge?: number };
+export type SectionOption<TValue extends string> = { value: TValue; label: string; badge?: number };
 
-type SegmentedControlProps<Key extends string> = {
-  options: SegmentOption<Key>[];
-  value: Key;
-  onChange: (key: Key) => void;
+type SectionSwitchProps<TValue extends string> = {
+  options: SectionOption<TValue>[];
+  value: TValue;
+  onChange: (value: TValue) => void;
 };
 
 const SEGMENT_HEIGHT = 44;
 const SEGMENT_INSET = 4;
 
 // Two-or-three option switch used to split one screen into sections.
-export function SegmentedControl<Key extends string>({ options, value, onChange }: SegmentedControlProps<Key>) {
+export function SectionSwitch<TValue extends string>({ options, value, onChange }: SectionSwitchProps<TValue>) {
   return (
     <View style={styles.track}>
       {options.map((option) => {
-        const isActive = option.key === value;
+        const isActive = option.value === value;
         return (
           <Pressable
-            key={option.key}
+            key={option.value}
             accessibilityRole="button"
             accessibilityState={{ selected: isActive }}
-            onPress={() => onChange(option.key)}
+            onPress={() => onChange(option.value)}
             style={[styles.segment, isActive && styles.activeSegment]}
           >
             <Text style={[styles.label, isActive && styles.activeLabel]}>{option.label}</Text>
@@ -68,5 +68,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 5,
   },
-  badgeLabel: { ...GgastosType.micro, color: '#FFFFFF' },
+  badgeLabel: { ...GgastosType.micro, color: GgastosColors.onPrimary },
 });

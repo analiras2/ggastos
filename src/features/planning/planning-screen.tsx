@@ -12,7 +12,6 @@ import { PlanningTemplatesSection } from '@/features/planning/planning-templates
 import { usePlanningViewModel } from '@/features/planning/use-planning-view-model';
 
 const ADD_ICON_SIZE = 20;
-const ADD_ICON_COLOR = '#FFFFFF';
 const ADD_BUTTON_SIZE = 48;
 const SUBTITLE_MAX_WIDTH = 280;
 
@@ -41,7 +40,7 @@ export function PlanningScreen() {
             onPress={viewModel.handleOpenAddPlan}
             style={styles.addButton}
           >
-            <Icon name="plus" size={ADD_ICON_SIZE} color={ADD_ICON_COLOR} />
+            <Icon name="plus" size={ADD_ICON_SIZE} color={GgastosColors.onPrimary} />
           </Pressable>
         </View>
 

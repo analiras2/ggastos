@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import { useSetWalletBalance } from '@/features/wallet/use-wallet';
 import { walletCentsFromInput, walletInputFromCents } from '@/features/wallet/wallet-input';
+import { errorMessageOf } from '@/shared/lib/error-message';
 
 // State of the "wallet balance" sheet: the typed value and saving it.
 export function useWalletBalanceForm(currentCents: number, onSaved: () => void) {
@@ -20,7 +21,7 @@ export function useWalletBalanceForm(currentCents: number, onSaved: () => void) 
       }
       onSaved();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Não foi possível salvar o saldo.');
+      setErrorMessage(errorMessageOf(error, 'Não foi possível salvar o saldo.'));
     }
   }, [cents, currentCents, onSaved, setBalance]);
 

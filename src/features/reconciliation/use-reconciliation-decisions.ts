@@ -9,7 +9,7 @@ import {
   FunctionsRelayError,
 } from '@supabase/supabase-js';
 
-import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
+import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 
 export type ReconciliationAction = 'confirm' | 'reject' | 'undo';
 
@@ -59,9 +59,7 @@ async function invokeReconciliationDecision(
   action: ReconciliationAction,
   input: ReconciliationDecisionInput
 ): Promise<ReconciliationDecisionResult> {
-  if (!supabase) {
-    throw new Error(`Missing Expo env vars: ${missingSupabaseEnv.join(', ')}`);
-  }
+  const supabase = requireSupabase();
 
   const {
     data: { session },

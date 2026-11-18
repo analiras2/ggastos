@@ -2,18 +2,19 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GgastosColors, GgastosRadius, GgastosShadow, GgastosType } from '@/shared/theme/ggastos-theme';
 
-export type SegmentedOption = {
+export type SegmentedOption<TValue extends string = string> = {
   label: string;
-  value: string;
+  value: TValue;
 };
 
-type SegmentedControlProps = {
-  options: SegmentedOption[];
-  value: string;
-  onChange: (value: string) => void;
+type SegmentedControlProps<TValue extends string> = {
+  options: SegmentedOption<TValue>[];
+  value: TValue;
+  onChange: (value: TValue) => void;
 };
 
-export function SegmentedControl({ options, value, onChange }: SegmentedControlProps) {
+// Pill-shaped switch for short forms; the chosen option sits on a raised surface.
+export function SegmentedControl<TValue extends string>({ options, value, onChange }: SegmentedControlProps<TValue>) {
   return (
     <View style={styles.track}>
       {options.map((option) => {

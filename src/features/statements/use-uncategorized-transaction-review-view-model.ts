@@ -8,6 +8,7 @@ import {
   useUncategorizedTransactions,
   type UncategorizedTransaction,
 } from '@/features/statements/use-uncategorized-transactions';
+import { errorMessageOf } from '@/shared/lib/error-message';
 
 interface UncategorizedTransactionReviewViewModel {
   transaction: UncategorizedTransaction | null;
@@ -64,7 +65,7 @@ export function useUncategorizedTransactionReviewViewModel(
       setTagsInput('');
       onSaved?.();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Não foi possível salvar a categoria.');
+      setErrorMessage(errorMessageOf(error, 'Não foi possível salvar a categoria.'));
     }
   }, [canSaveAsRule, categorizeMutation, onSaved, saveAsRule, selectedCategoryId, tagsInput, transaction]);
 

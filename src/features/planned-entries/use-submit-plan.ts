@@ -7,6 +7,7 @@ import { parseTagsInput } from '@/shared/lib/parse-tags';
 import { resolveEntryTitle, type EntrySettlement, type SelectablePaymentMethod } from '@/features/planned-entries/paid-entry-rules';
 import type { PlanKind } from '@/features/planned-entries/use-plan-recurrence-state';
 import { useCreatePlannedEntry } from '@/features/planned-entries/use-planned-entries';
+import { errorMessageOf } from '@/shared/lib/error-message';
 
 export type PlanFormValues = {
   kind: PlanKind;
@@ -75,7 +76,7 @@ export function useSubmitPlan() {
         });
         return null;
       } catch (error) {
-        return error instanceof Error ? error.message : 'Não foi possível salvar o lançamento.';
+        return errorMessageOf(error, 'Não foi possível salvar o lançamento.');
       }
     },
     [createPlannedEntry, createTemplate]
