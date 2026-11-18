@@ -6,7 +6,7 @@ import { impactTypeSchema, type ImpactType } from '@/shared/contracts/finance';
 import { categoriesKey, categoryNamesKey, type CategoryOption } from '@/features/categories';
 import { missingSupabaseEnv, supabase } from '@/shared/lib/supabase/client';
 
-type CategoryManagementViewModel = {
+export type CategoryManagementViewModel = {
   categories: CategoryOption[];
   isLoading: boolean;
   errorMessage: string | null;

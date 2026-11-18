@@ -5,6 +5,7 @@ import { GgastosColors, GgastosRadius, GgastosType } from '@/shared/theme/ggasto
 import { GlassSurface } from '@/shared/ui/core/glass-surface';
 import { Icon } from '@/shared/ui/core/icon';
 import { AddFabIcon } from '@/shared/ui/navigation/add-fab-icon';
+import { TABS_AFTER_ADD, TABS_BEFORE_ADD, type BottomTabKey, type TabItem } from '@/shared/ui/navigation/bottom-tab-items';
 import {
   FLOATING_NAV_FAB_RAISE,
   FLOATING_NAV_FAB_SIZE,
@@ -12,19 +13,6 @@ import {
   FLOATING_NAV_MARGIN,
   FLOATING_NAV_MAX_WIDTH,
 } from '@/shared/ui/navigation/floating-nav-metrics';
-
-export type BottomTabKey = 'mes' | 'plano' | 'estatisticas' | 'ajustes';
-
-type TabItem = { key: BottomTabKey; label: string; icon: string; edge?: 'start' | 'end' };
-
-const TABS_BEFORE_ADD: TabItem[] = [
-  { key: 'mes', label: 'Mês', icon: 'calendar', edge: 'start' },
-  { key: 'plano', label: 'Plano', icon: 'list-checks' },
-];
-const TABS_AFTER_ADD: TabItem[] = [
-  { key: 'estatisticas', label: 'Estatísticas', icon: 'chart-pie' },
-  { key: 'ajustes', label: 'Perfil', icon: 'user', edge: 'end' },
-];
 
 const ADD_SLOT_WIDTH = 84;
 const ACTIVE_TAB_TINT = 'rgba(31, 107, 87, 0.14)';

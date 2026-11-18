@@ -4,7 +4,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GgastosColors } from '@/shared/theme/ggastos-theme';
 import { AddMenu } from '@/shared/ui/navigation/add-menu';
-import { BottomTabBar, BottomTabKey } from '@/shared/ui/navigation/bottom-tab-bar';
+import { BottomTabBar } from '@/shared/ui/navigation/bottom-tab-bar';
+import type { BottomTabKey } from '@/shared/ui/navigation/bottom-tab-items';
 import { DashboardScreen } from '@/features/dashboard';
 import { currentMonthKey } from '@/shared/lib/month';
 import { useReconciliationInbox } from '@/features/reconciliation';

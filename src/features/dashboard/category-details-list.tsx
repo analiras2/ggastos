@@ -8,7 +8,7 @@ import { AddPlanSheet, useRemovePlannedEntry } from '@/features/planned-entries'
 import { EditItemSheet } from '@/features/dashboard/edit-item-sheet';
 import type { EditTarget } from '@/features/dashboard/format-item-details';
 import { ItemDetailsPanel } from '@/features/dashboard/item-details-panel';
-import type { CategoryDetailsView } from '@/features/dashboard/format-category-details';
+import type { CategoryDetailsView } from '@/features/dashboard/category-details-view';
 
 type CategoryDetailsListProps = {
   details: CategoryDetailsView;

@@ -6,7 +6,8 @@ import { buildEditablePlannedEntry, type RemovalMode } from '@/features/planned-
 import { paymentMethodLabel } from '@/shared/lib/payment-method-label';
 import { formatIsoDateToBrazilian } from '@/shared/lib/form-utils';
 import type { ImpactType, PlanningStatus } from '@/shared/contracts/finance';
-import { plannedDetailLines, transactionDetailLines, type DetailLine, type EditTarget } from '@/features/dashboard/format-item-details';
+import { plannedDetailLines, transactionDetailLines } from '@/features/dashboard/format-item-details';
+import type { CategoryDetailsView } from '@/features/dashboard/category-details-view';
 
 const IMPACT_TYPE_TO_KIND: Record<ImpactType, EntryKind> = {
   INCOME: 'receita',
@@ -21,40 +22,6 @@ const PLANNING_STATUS_TO_CHIP: Record<PlanningStatus, StatusChipStatus> = {
   RECONCILED: 'REALIZADO',
   CARRIED_OVER: 'PENDENTE',
   CANCELLED: 'PENDENTE',
-};
-
-export type PlannedEntryItem = {
-  id: string;
-  title: string;
-  category: string;
-  amount: string;
-  kind: EntryKind;
-  competence: string;
-  status: StatusChipStatus;
-  isConfirmable: boolean;
-  isUndoable: boolean;
-  tags: string[];
-  details: DetailLine[];
-  editTarget: EditTarget;
-};
-
-export type TransactionItem = {
-  id: string;
-  title: string;
-  category: string;
-  amount: string;
-  kind: EntryKind;
-  date: string;
-  tags: string[];
-  details: DetailLine[];
-  editTarget: EditTarget;
-};
-
-export type CategoryDetailsView = {
-  name: string;
-  plannedItems: PlannedEntryItem[];
-  transactionItems: TransactionItem[];
-  isEmpty: boolean;
 };
 
 // Entries from a statement cannot be removed; one from a recurrence is cancelled; the rest are deleted.
