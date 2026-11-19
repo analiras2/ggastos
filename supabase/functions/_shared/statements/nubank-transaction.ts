@@ -1,8 +1,12 @@
 import type { CsvRow } from "./nubank-csv.ts";
 import { parseAmountCents, parseDirection, parseInstallment } from "./csv-utils.ts";
-import type { ParsedStatementTransaction, StatementParserError } from "./types.ts";
+import type { ParsedStatementSkippedRow, ParsedStatementTransaction, StatementParserError } from "./types.ts";
 
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const COMBINING_MARKS_PATTERN = /[\u0300-\u036f]/g;
+// The line Nubank adds when the previous invoice was paid. It is money going to the card, not a
+// purchase or a refund, so it must not reduce the month's spending.
+const PAYMENT_RECEIVED_TITLE = "pagamento recebido";
 
 // Nubank sometimes writes the sign apart from the digits ("- 12,50").
 function normalizeAmount(rawAmount: string): string {
@@ -64,5 +68,20 @@ export function toTransaction(row: CsvRow): {
       },
     },
     error: null,
+  };
+}
+
+// A row that is part of the invoice but must not be imported, with the reason; null for a purchase.
+export function skippedRowFor(row: CsvRow): ParsedStatementSkippedRow | null {
+  const title = (row.fields[1] ?? "").normalize("NFD").replace(COMBINING_MARKS_PATTERN, "").trim().toLowerCase();
+  if (!title.startsWith(PAYMENT_RECEIVED_TITLE)) {
+    return null;
+  }
+
+  return {
+    sourceRowNumber: row.sourceRowNumber,
+    section: "CURRENT_INVOICE",
+    reason: "payment_or_credit",
+    raw: { fields: row.fields },
   };
 }

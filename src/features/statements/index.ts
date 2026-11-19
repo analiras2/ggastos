@@ -15,4 +15,7 @@ export { useSelectionViewModel } from './use-selection-view-model';
 export type { SelectionViewModel } from './use-selection-view-model';
 export { useUncategorizedTransactions } from './use-uncategorized-transactions';
 export type { UncategorizedTransaction } from './use-uncategorized-transactions';
+export { merchantKey } from './merchant-key';
+export { useRemoveImportedTransaction } from './use-remove-imported-transaction';
+export { useRecategorizeSimilarTransactions, useSimilarTransactionsCount } from './use-similar-transactions';
 export { useUpdateTransactionDetails } from './use-update-transaction-details';

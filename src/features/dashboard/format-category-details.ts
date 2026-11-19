@@ -2,12 +2,13 @@ import { ENTRY_KIND_BY_IMPACT, type StatusChipStatus } from '@/shared/theme/ggas
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
 import type { CategoryDetails } from '@/features/dashboard/contract';
 import { UNCATEGORIZED_CATEGORY_ID } from '@/features/dashboard/uncategorized';
-import { buildEditablePlannedEntry, type RemovalMode } from '@/features/planned-entries';
+import { buildEditablePlannedEntry } from '@/features/planned-entries';
 import { paymentMethodLabel } from '@/shared/lib/payment-method-label';
 import { formatIsoDateToBrazilian, formatTimestampToBrazilian } from '@/shared/lib/form-utils';
 import type { PlanningStatus } from '@/shared/contracts/finance';
 import { plannedDetailLines, transactionDetailLines } from '@/features/dashboard/format-item-details';
 import type { CategoryDetailsView } from '@/features/dashboard/category-details-view';
+import type { ItemRemoval } from '@/shared/lib/item-removal';
 
 const PLANNING_STATUS_TO_CHIP: Record<PlanningStatus, StatusChipStatus> = {
   PLANNED: 'PLANEJADO',
@@ -18,7 +19,7 @@ const PLANNING_STATUS_TO_CHIP: Record<PlanningStatus, StatusChipStatus> = {
 };
 
 // Entries from a statement cannot be removed; one from a recurrence is cancelled; the rest are deleted.
-function removalOf(entry: CategoryDetails['plannedEntries'][number]): RemovalMode | null {
+function removalOf(entry: CategoryDetails['plannedEntries'][number]): ItemRemoval | null {
   if (entry.sourceBatchId !== null) {
     return null;
   }
@@ -81,6 +82,7 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
             })
           : null,
       removal: removalOf(entry),
+      description: null,
     },
   }));
 
@@ -101,7 +103,8 @@ export function formatCategoryDetails(details: CategoryDetails): CategoryDetails
       impactType: transaction.impactType,
       tags: transaction.tags,
       plannedEntry: null,
-      removal: null,
+      removal: 'REMOVE_IMPORTED' as const,
+      description: transaction.description,
     },
   }));
 

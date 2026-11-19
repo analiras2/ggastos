@@ -1,8 +1,9 @@
 import { paymentMethodLabel } from '@/shared/lib/payment-method-label';
 import { formatIsoDateToBrazilian, formatTimestampToBrazilian } from '@/shared/lib/form-utils';
 import type { ImpactType } from '@/shared/contracts/finance';
-import type { EditablePlannedEntry, RemovalMode } from '@/features/planned-entries';
+import type { EditablePlannedEntry } from '@/features/planned-entries';
 import type { CategoryDetails } from '@/features/dashboard/contract';
+import type { ItemRemoval } from '@/shared/lib/item-removal';
 
 export type DetailLine = { label: string; value: string };
 
@@ -17,8 +18,10 @@ export type EditTarget = {
   tags: string[];
   // Set when the entry was typed in, so the whole "Novo lançamento" form can edit it.
   plannedEntry: EditablePlannedEntry | null;
-  // How the item can be removed; null when it came from a statement, which cannot be removed here.
-  removal: RemovalMode | null;
+  // How the item can be removed; null when it cannot be.
+  removal: ItemRemoval | null;
+  // The statement description the category rules match on; null for a planned entry.
+  description: string | null;
 };
 
 type PlannedEntry = CategoryDetails['plannedEntries'][number];

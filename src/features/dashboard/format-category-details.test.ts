@@ -158,7 +158,12 @@ describe('formatCategoryDetails', () => {
 
     expect(item.title).toBe('Mercado Central');
     expect(item.date).toMatch(/^\d{2}\/\d{2}\/\d{4} · Cartão de crédito$/);
-    expect(item.editTarget).toMatchObject({ source: 'IMPORTED', removal: null, plannedEntry: null });
+    expect(item.editTarget).toMatchObject({
+      source: 'IMPORTED',
+      removal: 'REMOVE_IMPORTED',
+      description: 'PAG*MERCADO',
+      plannedEntry: null,
+    });
   });
 
   it('gives a purchase without a category no category id to edit', () => {

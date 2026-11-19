@@ -237,6 +237,38 @@ async function main() {
     assertEqual([invalid.status, invalid.body.error], [400, "invalid_payment_status"], "response");
   });
 
+  const withPayment = [
+    "date,title,amount",
+    '2026-09-10,Pagamento recebido,"-500,00"',
+    `2026-09-11,Loja Pagamento ${runId},"20,00"`,
+  ].join("\n");
+  const paymentImport = await importStatement(user.accessToken, { fileName: "Nubank_2026-10-20.csv", contents: withPayment });
+  await check("a Nubank 'Pagamento recebido' line is skipped instead of imported", async () => {
+    assertEqual([paymentImport.body.rowsImported, paymentImport.body.rowsSkipped], [1, 1], "[imported, skipped]");
+    const rows = await service("GET", `imported_transactions?select=id&user_id=eq.${user.userId}&description=eq.Pagamento%20recebido`);
+    assertEqual(rows.length, 0, "stored payment rows");
+  });
+
+  const removable = nubankContents(`Removivel${runId}`);
+  await importStatement(user.accessToken, { fileName: "Nubank_2026-10-25.csv", contents: removable });
+  await check("a removed item stays removed when the same file is imported again", async () => {
+    const [row] = await service("GET", `imported_transactions?select=id&user_id=eq.${user.userId}&description=eq.${encodeURIComponent(`Removivel${runId} A`)}`);
+    const removal = await httpJson(`${SUPABASE_URL}/rest/v1/rpc/remove_imported_transaction`, {
+      method: "POST",
+      headers: userHeaders(user.accessToken),
+      body: JSON.stringify({ p_transaction_id: row.id }),
+    });
+    assert(removal.ok, `removal failed (${removal.status}): ${JSON.stringify(removal.body)}`);
+
+    const again = await importStatement(user.accessToken, { fileName: "Nubank_2026-10-25.csv", contents: removable });
+    assertEqual(again.status, 202, "status");
+
+    const rows = await service("GET", `imported_transactions?select=id,deleted_at&user_id=eq.${user.userId}&description=like.${encodeURIComponent(`Removivel${runId}`)}*`);
+    assertEqual(rows.length, 2, "rows stored (no duplicate of the removed item)");
+    const removedRow = rows.find((candidate) => candidate.id === row.id);
+    assert(removedRow.deleted_at !== null, "the removed item must not come back on a re-import");
+  });
+
   const failed = results.filter((passed) => !passed).length;
   console.log(`\n${results.length - failed}/${results.length} passed, ${failed} failed`);
   process.exit(failed > 0 ? 1 : 0);

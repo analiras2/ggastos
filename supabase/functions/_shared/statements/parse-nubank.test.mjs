@@ -70,3 +70,34 @@ test("has no due date without a usable file name", () => {
 test("never claims to know the payment status of a Nubank file", () => {
   assert.equal(parse({ fileName: "Nubank_2027-01-15.csv" }).metadata.detectedPaymentStatus, null);
 });
+
+const WITH_PAYMENT = [
+  "date,title,amount",
+  '2026-12-20,Mercado,"50,00"',
+  '2026-12-18,Pagamento recebido,"-1234,56"',
+  '2026-12-15,Estorno de Loja X,"-20,00"',
+].join("\n");
+
+test("skips the payment received line instead of importing it as a refund", () => {
+  const statement = parse({ contents: WITH_PAYMENT });
+
+  assert.deepEqual(statement.transactions.map((transaction) => transaction.description), ["Mercado", "Estorno de Loja X"]);
+  assert.equal(statement.skippedRows.length, 1);
+  assert.equal(statement.skippedRows[0].reason, "payment_or_credit");
+  assert.equal(statement.skippedRows[0].sourceRowNumber, 3);
+  assert.equal(statement.rowsRead, 3);
+});
+
+test("recognizes the payment line whatever its case or accents", () => {
+  const statement = parse({ contents: ["date,title,amount", '2026-12-18,PAGAMENTO RECEBIDO,"-10,00"'].join("\n") });
+
+  assert.equal(statement.transactions.length, 0);
+  assert.equal(statement.skippedRows.length, 1);
+});
+
+test("keeps real refunds as credits", () => {
+  const statement = parse({ contents: WITH_PAYMENT });
+  const refund = statement.transactions.find((transaction) => transaction.description === "Estorno de Loja X");
+
+  assert.equal(refund.direction, "CREDIT");
+});

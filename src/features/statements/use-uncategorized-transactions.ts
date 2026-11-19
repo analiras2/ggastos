@@ -37,6 +37,7 @@ async function listUncategorizedTransactions(batchId?: string | null): Promise<U
     .from('imported_transactions')
     .select('id,statement_import_batch_id,description,amount_cents,direction,posted_at')
     .is('internal_category_id', null)
+    .is('deleted_at', null)
     .eq('is_hidden_from_budget', false)
     .order('posted_at', { ascending: false });
 

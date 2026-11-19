@@ -2,9 +2,11 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/shared/ui/core/button';
 import { SheetModal } from '@/shared/ui/core/sheet-modal';
+import { ConfirmDialog } from '@/shared/ui/core/confirm-dialog';
 import { Icon } from '@/shared/ui/core/icon';
 import { GgastosColors, GgastosRadius, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
 import { formatCurrencyCents } from '@/shared/lib/format-currency';
+import { REMOVAL_COPY } from '@/shared/lib/item-removal';
 import { formatTimestampToBrazilian } from '@/shared/lib/form-utils';
 import { CategoryField } from '@/features/categories';
 import { TagsField } from '@/shared/ui/forms/tags-field';
@@ -90,6 +92,19 @@ export function UncategorizedTransactionReviewSheet({
             >
               {viewModel.isSaving ? 'Salvando...' : 'Salvar e continuar'}
             </Button>
+            <Button fullWidth variant="danger" disabled={viewModel.isSaving} onPress={viewModel.askToRemove}>
+              Remover item da fatura
+            </Button>
+            <ConfirmDialog
+              visible={viewModel.isConfirmingRemoval}
+              title={REMOVAL_COPY.REMOVE_IMPORTED.title}
+              message={REMOVAL_COPY.REMOVE_IMPORTED.message}
+              confirmLabel={REMOVAL_COPY.REMOVE_IMPORTED.confirmLabel}
+              isDestructive
+              isBusy={viewModel.isSaving}
+              onConfirm={viewModel.handleRemove}
+              onCancel={viewModel.cancelRemoval}
+            />
           </>
         ) : null}
       </ScrollView>
