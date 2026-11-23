@@ -26,7 +26,7 @@ export function SegmentedControl<TValue extends string>({ options, value, onChan
             onPress={() => onChange(option.value)}
             style={[styles.segment, active && styles.segmentActive, active && GgastosShadow.card]}
           >
-            <Text style={[styles.label, { color: active ? GgastosColors.brandPrimary : GgastosColors.inkSoft, fontWeight: active ? '700' : '500' }]}>
+            <Text numberOfLines={1} style={[styles.label, { color: active ? GgastosColors.brandPrimary : GgastosColors.inkSoft, fontWeight: active ? '700' : '500' }]}>
               {option.label}
             </Text>
           </Pressable>
@@ -39,15 +39,18 @@ export function SegmentedControl<TValue extends string>({ options, value, onChan
 const styles = StyleSheet.create({
   track: {
     flexDirection: 'row',
-    alignSelf: 'flex-start',
+    alignSelf: 'stretch',
     backgroundColor: GgastosColors.brandPrimarySofter,
     borderRadius: GgastosRadius.pill,
     padding: 4,
     gap: 2,
   },
   segment: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     borderRadius: GgastosRadius.pill,
   },
   segmentActive: {
@@ -55,5 +58,6 @@ const styles = StyleSheet.create({
   },
   label: {
     ...GgastosType.bodySm,
+    textAlign: 'center',
   },
 });

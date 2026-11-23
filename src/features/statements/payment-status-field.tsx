@@ -16,7 +16,7 @@ const PAYMENT_OPTIONS = [
 ];
 
 const PAYMENT_HINTS: Record<PaymentChoice, string> = {
-  AUTO: 'Usa a situação do arquivo (Bradesco) ou o vencimento no nome do arquivo (Nubank).',
+  AUTO: 'Usa a situação que vem na fatura ou, sem ela, a data de vencimento.',
   PAID: 'As compras já saíram do saldo atual.',
   OPEN: 'As compras ficam em "Pendente" até a fatura ser paga.',
 };
