@@ -12,13 +12,14 @@ import {
   getHttpErrorMessage,
 } from '@/features/statements/import-card-statement-errors';
 
-export type StatementBank = 'NUBANK' | 'BRADESCO';
+export type StatementBank = 'NUBANK' | 'BRADESCO' | 'MERCADO_PAGO';
 export type StatementPaymentStatus = 'PAID' | 'OPEN';
 // Where the applied payment status came from: the user, the file, the due date or the default.
 export type StatementPaymentStatusSource = 'USER' | 'FILE' | 'DUE_DATE' | 'DEFAULT';
 
 export type ImportCardStatementInput = {
-  bank: StatementBank;
+  // Leave it out: the server recognizes the bank from the file.
+  bank?: StatementBank;
   fileName: string;
   contents: string;
   invoiceMonth?: string | null;

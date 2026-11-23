@@ -1,10 +1,9 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
 import { Button } from '@/shared/ui/core/button';
 import { Icon } from '@/shared/ui/core/icon';
 import { SheetModal } from '@/shared/ui/core/sheet-modal';
-import { SegmentedControl } from '@/shared/ui/forms/segmented-control';
-import { GgastosColors, GgastosSpacing, GgastosType } from '@/shared/theme/ggastos-theme';
+import { GgastosSpacing } from '@/shared/theme/ggastos-theme';
 import { PaymentStatusField } from '@/features/statements/payment-status-field';
 import { StatementFileField } from '@/features/statements/statement-file-field';
 import { StatementImportResult } from '@/features/statements/statement-import-result';
@@ -15,11 +14,6 @@ type StatementImportSheetProps = {
   onClose: () => void;
   onReviewUncategorized: (batchId: string) => void;
 };
-
-const BANK_OPTIONS = [
-  { label: 'Nubank', value: 'NUBANK' },
-  { label: 'Bradesco', value: 'BRADESCO' },
-];
 
 export function StatementImportSheet({ visible, onClose, onReviewUncategorized }: StatementImportSheetProps) {
   const viewModel = useStatementImportViewModel();
@@ -32,15 +26,6 @@ export function StatementImportSheet({ visible, onClose, onReviewUncategorized }
   return (
     <SheetModal visible={visible} title="Importar fatura" onClose={handleClose}>
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.field}>
-          <Text style={styles.label}>Banco</Text>
-          <SegmentedControl
-            options={BANK_OPTIONS}
-            value={viewModel.selectedBank}
-            onChange={viewModel.setSelectedBank}
-          />
-        </View>
-
         <PaymentStatusField value={viewModel.paymentChoice} onChange={viewModel.setPaymentChoice} />
 
         <StatementFileField
@@ -74,7 +59,7 @@ export function StatementImportSheet({ visible, onClose, onReviewUncategorized }
           icon={<Icon name="upload" size={18} />}
           onPress={viewModel.handleSubmit}
         >
-          {viewModel.isSubmitting ? 'Importando...' : 'Importar CSV'}
+          {viewModel.isSubmitting ? 'Importando...' : 'Importar fatura'}
         </Button>
       </ScrollView>
     </SheetModal>
@@ -85,12 +70,5 @@ const styles = StyleSheet.create({
   content: {
     padding: GgastosSpacing.space5,
     gap: GgastosSpacing.space5,
-  },
-  field: {
-    gap: GgastosSpacing.space2,
-  },
-  label: {
-    ...GgastosType.label,
-    color: GgastosColors.inkSoft,
   },
 });

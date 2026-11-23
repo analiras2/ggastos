@@ -1,17 +1,19 @@
-import type { StatementBank } from '@/features/statements/use-import-card-statement';
+import { extractPdfText } from '@/features/statements/extract-pdf-text';
 
 export type SelectedStatementFile = {
   name: string;
   bytes: ArrayBuffer;
-  fallbackContents: string | null;
 };
 
-export const CSV_MIME_TYPES = [
+export const STATEMENT_MIME_TYPES = [
   'text/csv',
   'text/comma-separated-values',
   'application/csv',
   'application/vnd.ms-excel',
   'text/plain',
+  'application/pdf',
+  '.csv',
+  '.pdf',
 ];
 
 const LATIN_1_CHUNK_SIZE = 8_192;
@@ -28,37 +30,39 @@ function decodeLatin1(bytes: ArrayBuffer): string {
   return contents;
 }
 
-// Bradesco exports Latin-1; Nubank exports UTF-8.
-export function decodeBytes(bytes: ArrayBuffer, bank: StatementBank): string | null {
-  if (bank === 'BRADESCO') {
+// Nubank writes UTF-8 and Bradesco writes Latin-1. Accents are invalid UTF-8 in a Latin-1 file, so a
+// file that is not valid UTF-8 is read as Latin-1, without the person saying which bank it is.
+export function decodeCsvBytes(bytes: ArrayBuffer): string {
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch {
     return decodeLatin1(bytes);
   }
+}
 
-  if (typeof TextDecoder === 'undefined') {
-    return null;
-  }
+export function isPdfFile(file: SelectedStatementFile): boolean {
+  return file.name.toLowerCase().endsWith('.pdf');
+}
 
-  return new TextDecoder('utf-8').decode(bytes);
+// The text that goes to the import: the lines of a PDF, or the decoded content of a CSV.
+export async function readStatementContents(file: SelectedStatementFile): Promise<string> {
+  return isPdfFile(file) ? extractPdfText(file.bytes) : decodeCsvBytes(file.bytes);
 }
 
 // Returns a message for the user when the file cannot be imported, or null when it is fine.
 export function validateStatementFile(file: SelectedStatementFile): string | null {
-  if (!file.name.toLowerCase().endsWith('.csv')) {
-    return 'Selecione um arquivo CSV.';
+  const name = file.name.toLowerCase();
+  if (!name.endsWith('.csv') && !name.endsWith('.pdf')) {
+    return 'Selecione um arquivo CSV ou PDF.';
   }
 
   if (file.bytes.byteLength === 0) {
-    return 'O arquivo CSV está vazio.';
+    return 'O arquivo está vazio.';
   }
 
   return null;
 }
 
 export async function readPickedFile(file: File): Promise<SelectedStatementFile> {
-  const bytes = await file.arrayBuffer();
-  return {
-    name: file.name,
-    bytes,
-    fallbackContents: decodeBytes(bytes, 'NUBANK') ?? await file.text(),
-  };
+  return { name: file.name, bytes: await file.arrayBuffer() };
 }

@@ -10,8 +10,6 @@ export type ImportSummaryRow = {
 };
 
 export interface StatementImportViewModel {
-  selectedBank: StatementBank;
-  setSelectedBank: (bank: string) => void;
   paymentChoice: PaymentChoice;
   setPaymentChoice: (choice: string) => void;
   paymentStatusMessage: string | null;
@@ -30,11 +28,17 @@ export interface StatementImportViewModel {
 }
 
 export function isStatementBank(value: string): value is StatementBank {
-  return value === 'NUBANK' || value === 'BRADESCO';
+  return value === 'NUBANK' || value === 'BRADESCO' || value === 'MERCADO_PAGO';
 }
 
+const BANK_NAMES: Record<StatementBank, string> = {
+  NUBANK: 'Nubank',
+  BRADESCO: 'Bradesco',
+  MERCADO_PAGO: 'Mercado Pago',
+};
+
 function formatBankName(bank: StatementBank): string {
-  return bank === 'NUBANK' ? 'Nubank' : 'Bradesco';
+  return BANK_NAMES[bank];
 }
 
 export function buildImportSummary(result: ImportCardStatementResult | null): ImportSummaryRow[] {

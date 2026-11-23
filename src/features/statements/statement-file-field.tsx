@@ -10,15 +10,15 @@ type StatementFileFieldProps = {
   onClear: () => void;
 };
 
-// The CSV picker row: shows the chosen file and lets the user swap or remove it.
+// The picker row: shows the chosen file and lets the user swap or remove it.
 export function StatementFileField({ fileName, isBusy, onPick, onClear }: StatementFileFieldProps) {
   return (
     <View style={styles.field}>
-      <Text style={styles.label}>CSV</Text>
+      <Text style={styles.label}>Fatura</Text>
       <View style={styles.fileButton}>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={fileName ? 'Trocar arquivo CSV' : 'Selecionar arquivo CSV'}
+          accessibilityLabel={fileName ? 'Trocar arquivo da fatura' : 'Selecionar arquivo da fatura'}
           disabled={isBusy}
           onPress={onPick}
           style={styles.filePickerTrigger}
@@ -27,7 +27,7 @@ export function StatementFileField({ fileName, isBusy, onPick, onClear }: Statem
           <View style={styles.fileTextGroup}>
             <Text style={styles.fileTitle}>{fileName ?? 'Selecionar arquivo'}</Text>
             <Text style={styles.fileCaption}>
-              {fileName ? 'Toque para trocar o arquivo' : 'Nubank ou Bradesco em .csv'}
+              {fileName ? 'Toque para trocar o arquivo' : 'CSV ou PDF do seu banco'}
             </Text>
           </View>
         </Pressable>

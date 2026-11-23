@@ -8,44 +8,31 @@ import {
   toRequestedStatus,
 } from '@/features/statements/payment-status-labels';
 import {
-  CSV_MIME_TYPES,
-  decodeBytes,
+  STATEMENT_MIME_TYPES,
   readPickedFile,
+  readStatementContents,
   validateStatementFile,
   type SelectedStatementFile,
 } from '@/features/statements/statement-file';
 import {
   buildImportSummary,
   buildSuccessMessage,
-  isStatementBank,
   type StatementImportViewModel,
 } from '@/features/statements/statement-import-summary';
 import {
   getFormattedImportCardStatementError,
   type ImportCardStatementResult,
-  type StatementBank,
   useImportCardStatement,
 } from '@/features/statements/use-import-card-statement';
 import { errorMessageOf } from '@/shared/lib/error-message';
 
 export function useStatementImportViewModel(onSuccess?: () => void): StatementImportViewModel {
   const importMutation = useImportCardStatement();
-  const [selectedBank, setSelectedBankState] = useState<StatementBank>('NUBANK');
   const [paymentChoice, setPaymentChoiceState] = useState<PaymentChoice>('AUTO');
   const [selectedFile, setSelectedFile] = useState<SelectedStatementFile | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lastResult, setLastResult] = useState<ImportCardStatementResult | null>(null);
   const [isPickingFile, setIsPickingFile] = useState(false);
-
-  const setSelectedBank = useCallback((bank: string) => {
-    if (!isStatementBank(bank)) {
-      return;
-    }
-
-    setSelectedBankState(bank);
-    setLastResult(null);
-    setErrorMessage(null);
-  }, []);
 
   const setPaymentChoice = useCallback((choice: string) => {
     if (isPaymentChoice(choice)) {
@@ -60,7 +47,6 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
   }, []);
 
   const reset = useCallback(() => {
-    setSelectedBankState('NUBANK');
     setPaymentChoiceState('AUTO');
     setSelectedFile(null);
     setErrorMessage(null);
@@ -73,7 +59,7 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
     setIsPickingFile(true);
 
     try {
-      const pickedFile = await pickFile(CSV_MIME_TYPES);
+      const pickedFile = await pickFile(STATEMENT_MIME_TYPES);
       if (!pickedFile) {
         return;
       }
@@ -98,19 +84,18 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
     setLastResult(null);
 
     if (!selectedFile) {
-      setErrorMessage('Selecione um CSV para importar.');
-      return;
-    }
-
-    const contents = decodeBytes(selectedFile.bytes, selectedBank) ?? selectedFile.fallbackContents;
-    if (!contents) {
-      setErrorMessage('Não foi possível ler o conteúdo do CSV.');
+      setErrorMessage('Selecione um arquivo para importar.');
       return;
     }
 
     try {
+      const contents = await readStatementContents(selectedFile);
+      if (!contents.trim()) {
+        setErrorMessage('Não encontrei texto nesse arquivo. Se for um PDF escaneado, baixe a fatura direto do app do banco.');
+        return;
+      }
+
       const result = await importMutation.mutateAsync({
-        bank: selectedBank,
         fileName: selectedFile.name,
         contents,
         paymentStatus: toRequestedStatus(paymentChoice),
@@ -120,7 +105,7 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
     } catch (error) {
       setErrorMessage(getFormattedImportCardStatementError(error));
     }
-  }, [importMutation, onSuccess, paymentChoice, selectedBank, selectedFile]);
+  }, [importMutation, onSuccess, paymentChoice, selectedFile]);
 
   const importSummary = useMemo(() => buildImportSummary(lastResult), [lastResult]);
   const successMessage = buildSuccessMessage(lastResult);
@@ -129,8 +114,6 @@ export function useStatementImportViewModel(onSuccess?: () => void): StatementIm
     : null;
 
   return {
-    selectedBank,
-    setSelectedBank,
     paymentChoice,
     setPaymentChoice,
     paymentStatusMessage,

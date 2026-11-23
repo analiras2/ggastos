@@ -4,6 +4,7 @@ import type {
   StatementBank,
   StatementPaymentStatus,
 } from '@/features/statements/use-import-card-statement';
+import { isStatementBank } from '@/features/statements/statement-import-summary';
 import { requireSupabase } from '@/shared/lib/supabase/require-supabase';
 
 export type StatementInvoice = {
@@ -37,7 +38,7 @@ function toInvoice(row: InvoiceRow): StatementInvoice {
 
   return {
     id: row.id,
-    bank: row.bank === 'BRADESCO' ? 'BRADESCO' : 'NUBANK',
+    bank: isStatementBank(row.bank) ? row.bank : 'NUBANK',
     invoiceMonth: row.invoice_month,
     fileName: row.file_name,
     paymentStatus: row.payment_status === 'OPEN' ? 'OPEN' : 'PAID',
