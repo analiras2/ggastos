@@ -77,6 +77,14 @@ test("auto-matches a transaction with a planned entry that fits it exactly", asy
   assert.equal(inserts[0].user_id, "user-1");
 });
 
+test("does not fail when a planned entry has no title", async (t) => {
+  const { inserts } = stubDatabase(t, { transactions: [transaction()], plannedEntries: [plannedEntry({ title: null })] });
+
+  await runAutoMatch(config, context);
+
+  assert.equal(inserts.length, 0);
+});
+
 test("leaves a weak match for the user to review", async (t) => {
   const { inserts } = stubDatabase(t, {
     transactions: [transaction({ description: "UBER TRIP", amount_cents: 5800 })],

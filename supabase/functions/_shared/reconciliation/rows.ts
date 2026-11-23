@@ -17,7 +17,8 @@ export type TransactionRow = {
 
 export type PlannedEntryRow = {
   id: string;
-  title: string;
+  // Empty for an entry the person typed in without a title.
+  title: string | null;
   impact_type: ImpactType;
   amount_cents: number;
   due_date: string | null;
@@ -61,7 +62,7 @@ export function toPlannedEntryForScoring(
 ): PlannedEntryForScoring {
   return {
     id: row.id,
-    title: row.title,
+    title: row.title ?? "",
     impactType: row.impact_type,
     amountCents: row.amount_cents,
     dueDate: row.due_date,
