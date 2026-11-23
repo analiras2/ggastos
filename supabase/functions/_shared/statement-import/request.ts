@@ -1,5 +1,6 @@
 import { jsonResponse } from "../http.ts";
 import { parsePaymentStatus, type PaymentStatus } from "../statements/payment-status.ts";
+import { detectBank } from "../statements/detect-bank.ts";
 import type { StatementBank } from "../statements/types.ts";
 import { asNonEmptyString } from "./text.ts";
 
@@ -12,7 +13,7 @@ export type ImportRequest = {
   paymentStatus: PaymentStatus | null;
 };
 
-const VALID_BANKS = new Set<StatementBank>(["NUBANK", "BRADESCO"]);
+const VALID_BANKS = new Set<StatementBank>(["NUBANK", "BRADESCO", "MERCADO_PAGO"]);
 const INVOICE_MONTH_PATTERN = /^[0-9]{4}-(0[1-9]|1[0-2])$/;
 
 function isStatementBank(value: unknown): value is StatementBank {
@@ -51,13 +52,6 @@ export async function parseImportRequest(request: Request): Promise<ImportReques
       ? null
       : asNonEmptyString(candidate.fileHash);
 
-  if (!isStatementBank(candidate.bank)) {
-    throw jsonResponse(400, {
-      error: "invalid_bank",
-      message: "bank must be either NUBANK or BRADESCO.",
-    });
-  }
-
   if (!fileName) {
     throw jsonResponse(400, {
       error: "invalid_file_name",
@@ -68,7 +62,22 @@ export async function parseImportRequest(request: Request): Promise<ImportReques
   if (!contents) {
     throw jsonResponse(400, {
       error: "invalid_contents",
-      message: "contents must be a non-empty CSV string.",
+      message: "contents must be a non-empty string with the text of the statement.",
+    });
+  }
+
+  // The bank is optional: when it is not sent, the file itself says which bank it is.
+  if (candidate.bank !== undefined && candidate.bank !== null && !isStatementBank(candidate.bank)) {
+    throw jsonResponse(400, {
+      error: "invalid_bank",
+      message: "bank must be NUBANK, BRADESCO or MERCADO_PAGO.",
+    });
+  }
+  const bank = isStatementBank(candidate.bank) ? candidate.bank : detectBank(contents);
+  if (!bank) {
+    throw jsonResponse(422, {
+      error: "unknown_bank",
+      message: "Não reconheci o banco dessa fatura. Por enquanto: Nubank, Bradesco e Mercado Pago.",
     });
   }
 
@@ -92,7 +101,7 @@ export async function parseImportRequest(request: Request): Promise<ImportReques
   }
 
   return {
-    bank: candidate.bank,
+    bank,
     fileName,
     contents,
     invoiceMonth,

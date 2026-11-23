@@ -1,4 +1,4 @@
-export type StatementBank = "NUBANK" | "BRADESCO";
+export type StatementBank = "NUBANK" | "BRADESCO" | "MERCADO_PAGO";
 
 export type StatementPaymentStatus = "PAID" | "OPEN";
 
@@ -55,6 +55,7 @@ export type StatementParserErrorCode =
   | "missing_header"
   | "invalid_date"
   | "invalid_amount"
+  | "total_mismatch"
   | "unsupported_format";
 
 export type StatementParserError = {
@@ -67,7 +68,8 @@ export type ParsedStatementMetadata = {
   bank: StatementBank;
   sourceEncoding: string;
   sourceLineEnding: "LF" | "CRLF" | "CR" | "UNKNOWN";
-  delimiter: "," | ";";
+  // Null for a PDF, which has no column delimiter.
+  delimiter: "," | ";" | null;
   fileName: string | null;
   fileHash: string | null;
   invoiceMonth: string | null;

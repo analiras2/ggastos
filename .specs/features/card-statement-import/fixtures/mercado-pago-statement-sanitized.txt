@@ -1,0 +1,24 @@
+Fulano de Tal
+Emitida em: 06/11/2026
+Essa é sua fatura de novembro
+Total a pagar Vence em Limite total
+R$ 650,56 10/11/2026 R$ 800,00
+Pague sua fatura pelo app Mercado Pago
+Detalhes de consumo
+Movimentações na fatura
+Data Movimentações Valor em R$
+06/10 Pagamento da fatura de outubro/2026 R$ 534,74
+Cartão Visa [************0000]
+Data Movimentações Valor em R$
+06/10 FARMACIA UM R$ 102,84
+07/10 FARMACIA DOIS 2322 R$ 95,98
+07/10 PESSOA UM R$ 100,00
+10/10 PESSOA DOIS R$ 12,00
+10/10 PESSOA DOIS R$ 15,00
+10/10 PESSOA DOIS R$ 15,00
+10/10 ASSINATURA LIVROS R$ 59,80
+11/10 PET LOJA*Petl R$ 28,31
+18/10 ACOUGUE CENTRAL R$ 96,43
+11/04 PETSUPERMARK*Club Parcela 7 de 12 R$ 2,90
+06/08 MERCADOLIVRE*MERCADOLI Parcela 3 de 4 R$ 122,30
+Total R$ 650,56

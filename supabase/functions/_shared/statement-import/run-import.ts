@@ -2,6 +2,7 @@ import type { AuthUser } from "../auth.ts";
 import type { JsonValue } from "../http.ts";
 import { runAutoMatch } from "../reconciliation/auto-match.ts";
 import { parseBradescoStatement } from "../statements/parse-bradesco.ts";
+import { parseMercadoPagoStatement } from "../statements/parse-mercado-pago.ts";
 import { parseNubankStatement } from "../statements/parse-nubank.ts";
 import { resolvePaymentStatus } from "../statements/payment-status.ts";
 import type { ParsedStatement } from "../statements/types.ts";
@@ -25,7 +26,14 @@ function parseStatement(request: ImportRequest): ParsedStatement {
     invoiceMonth: request.invoiceMonth,
   };
 
-  return request.bank === "NUBANK" ? parseNubankStatement(input) : parseBradescoStatement(input);
+  switch (request.bank) {
+    case "NUBANK":
+      return parseNubankStatement(input);
+    case "BRADESCO":
+      return parseBradescoStatement(input);
+    case "MERCADO_PAGO":
+      return parseMercadoPagoStatement(input);
+  }
 }
 
 // The whole import: parse, record the batch, store the rows, plan future installments and reconcile.

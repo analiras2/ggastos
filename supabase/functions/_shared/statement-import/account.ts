@@ -8,7 +8,12 @@ import {
 } from "../upsert.ts";
 
 function bankDisplayName(bank: StatementBank): string {
-  return bank === "NUBANK" ? "Nubank" : "Bradesco";
+  const names: Record<StatementBank, string> = {
+    NUBANK: "Nubank",
+    BRADESCO: "Bradesco",
+    MERCADO_PAGO: "Mercado Pago",
+  };
+  return names[bank];
 }
 
 // One connection and one credit-card account per bank, created on first import.
