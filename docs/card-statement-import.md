@@ -1,4 +1,4 @@
-# Importação de Faturas CSV
+# Importação de Faturas (CSV e PDF)
 
 ## Status
 
@@ -18,15 +18,20 @@ e usa a inbox de conciliação para casos ambíguos.
 | --- | --- | --- |
 | Nubank | CSV UTF-8 separado por vírgulas, com `date,title,amount` | Datas ISO e valores com vírgula decimal. |
 | Bradesco | CSV ISO-8859-1 separado por ponto e vírgula | Ignora metadados/resumos; reconhece fatura atual e lançamentos programados. |
+| Mercado Pago | PDF da fatura | O app lê o texto do PDF no navegador (pdf.js) e envia só o texto. Ano das datas vem do vencimento; só importa se a soma das compras bater com o total da fatura. |
+
+O banco **não é escolhido** pelo usuário: a Edge Function reconhece pelo conteúdo (`statements/detect-bank.ts`).
+Arquivo de outro banco responde `unknown_bank`. Para um banco novo: parser em `statements/parse-<banco>.ts`,
+regra em `detect-bank.ts`, nome em `statement-import/account.ts` e o valor na constraint de banco (migration).
 
 Arquivos reais nunca devem ser versionados. Os testes usam somente fixtures
 sintéticas em [`.specs/features/card-statement-import/fixtures/`](../.specs/features/card-statement-import/fixtures).
 
 ## Fluxo de processamento
 
-1. O usuário seleciona Nubank ou Bradesco e escolhe o CSV.
-2. O app chama a Edge Function `import-card-statement` com o conteúdo e o mês
-   da fatura quando necessário.
+1. O usuário escolhe o arquivo (CSV ou PDF); o app lê o texto (CSV em UTF-8, ou Latin-1 se não for UTF-8 válido).
+2. O app chama a Edge Function `import-card-statement` com o texto e o mês
+   da fatura quando necessário; ela detecta o banco.
 3. O parser específico do banco normaliza as linhas e registra um lote em
    `statement_import_batches`.
 4. Cada linha válida é persistida em `imported_transactions` com fingerprint
