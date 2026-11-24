@@ -11,6 +11,8 @@ import {
   formatImportError,
   getHttpErrorMessage,
 } from '@/features/statements/import-card-statement-errors';
+import { UNCATEGORIZED_TRANSACTIONS_ROOT_KEY } from '@/features/statements/use-uncategorized-transactions';
+import { STATEMENT_INVOICES_KEY } from '@/features/statements/use-statement-invoices';
 
 export type StatementBank = 'NUBANK' | 'BRADESCO' | 'MERCADO_PAGO';
 export type StatementPaymentStatus = 'PAID' | 'OPEN';
@@ -98,6 +100,9 @@ export function useImportCardStatement(): UseMutationResult<
       await Promise.all([
         invalidateMonthData(queryClient),
         queryClient.invalidateQueries({ queryKey: reconciliationInboxKeyPrefix }),
+        // The pending count (tab badge and the Pendências list) comes from these two.
+        queryClient.invalidateQueries({ queryKey: UNCATEGORIZED_TRANSACTIONS_ROOT_KEY }),
+        queryClient.invalidateQueries({ queryKey: STATEMENT_INVOICES_KEY }),
       ]);
     },
     throwOnError: false,
