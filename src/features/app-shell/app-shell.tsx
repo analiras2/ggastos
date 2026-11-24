@@ -3,6 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GgastosColors } from '@/shared/theme/ggastos-theme';
+import { PullToRefresh } from '@/shared/ui/core/pull-to-refresh';
+import { useRefreshAllData } from '@/shared/lib/query/use-refresh-all-data';
 import { AddMenu } from '@/shared/ui/navigation/add-menu';
 import { BottomTabBar } from '@/shared/ui/navigation/bottom-tab-bar';
 import type { BottomTabKey } from '@/shared/ui/navigation/bottom-tab-items';
@@ -22,6 +24,7 @@ export function AppShell() {
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<BottomTabKey>('mes');
   const addMenu = useAddMenuViewModel();
+  const refreshAllData = useRefreshAllData();
   const inboxQuery = useReconciliationInbox(currentMonthKey());
   const uncategorizedTransactionsQuery = useUncategorizedTransactions();
   const pendingSuggestionsCount = (inboxQuery.data?.length ?? 0) + (uncategorizedTransactionsQuery.data?.length ?? 0);
@@ -35,10 +38,12 @@ export function AppShell() {
     <View style={[styles.shell, { paddingLeft: insets.left, paddingRight: insets.right }]}>
       <View style={styles.column}>
         <View style={styles.content}>
-          {activeTab === 'mes' ? <DashboardScreen /> : null}
-          {activeTab === 'plano' ? <PlanHubScreen pendingCount={pendingSuggestionsCount} /> : null}
-          {activeTab === 'estatisticas' ? <StatisticsScreen /> : null}
-          {activeTab === 'ajustes' ? <SettingsScreen /> : null}
+          <PullToRefresh onRefresh={refreshAllData}>
+            {activeTab === 'mes' ? <DashboardScreen /> : null}
+            {activeTab === 'plano' ? <PlanHubScreen pendingCount={pendingSuggestionsCount} /> : null}
+            {activeTab === 'estatisticas' ? <StatisticsScreen /> : null}
+            {activeTab === 'ajustes' ? <SettingsScreen /> : null}
+          </PullToRefresh>
         </View>
         <AddMenu visible={addMenu.isMenuOpen} actions={addMenu.actions} onClose={addMenu.closeMenu} />
         <BottomTabBar
